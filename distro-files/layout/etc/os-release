@@ -1,0 +1,7 @@
+NAME="ProLinux"
+PRETTY_NAME="Sineware ProLinux 2"
+ID=prolinux
+ID_LIKE=arch
+BUILD_ID=rolling
+ANSI_COLOR="38;2;23;147;209"
+HOME_URL="https://sineware.ca/prolinux/"

@@ -1,0 +1,16 @@
+{
+  "name": "prolinux-2",
+  "version": "1.0.0",
+  "description": "ProLinux 2 Build Script",
+  "main": "src/index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "ts-node src/index.ts"
+  },
+  "author": "Seshan Ravikumar",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "ts-node": "^10.9.1"
+  }
+}

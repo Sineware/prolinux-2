@@ -1,0 +1,13 @@
+[Unit]
+Description=Oneshot startup and shutdown scripts for ProLinux 2
+
+[Service]
+Type=oneshot
+ExecStart=/opt/prolinux-setup/start.sh
+RemainAfterExit=true
+ExecStop=/opt/prolinux-setup/stop.sh
+StandardOutput=journal
+
+[Install]
+WantedBy=multi-user.target
+Before=display-manager.service

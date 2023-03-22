@@ -1,0 +1,23 @@
+# ProLinux Init
+# /squishroot - squashfs rootfs
+# /persistroot - overlayed persisant storage
+# /workdir - overlayfs workdir
+# /oroot - target root
+# eventually plctl will write a config to determine
+# whether to enable persistroot and select a/b squish roots
+echo "Running ProLinux Init script..."
+#pkill pbsplash
+sleep 1
+echo "-- Welcome to Sineware ProLinux 2 --"
+modprobe squashfs
+modprobe overlay
+sleep 2
+echo "Mounting prolinux squashfs 'squishroot'"
+mount -o remount,rw /sysroot
+mount -o loop /sysroot/prolinux_a.squish /sysroot/squishroot
+mount -t overlay overlay -o lowerdir=/sysroot/squishroot,upperdir=/sysroot/persistroot,workdir=/sysroot/workdir /sysroot/oroot
+ls -l /sysroot
+echo "----"
+ls -l /sysroot/oroot
+echo "Starting up!"
+sleep 2
