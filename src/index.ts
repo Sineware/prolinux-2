@@ -59,7 +59,7 @@ async function main() {
         yes | pacman-key --populate ${arch === "arm64" ? "archlinuxarm" : "archlinux"}
         pacman -Syu --noconfirm
         pacman -S --noconfirm base-devel git nano neofetch htop wget curl sudo dialog qt6-base qt6-tools kde-sdk-meta polkit libpipewire pipewire libxcvt kwayland libnm networkmanager modemmanager libqalculate distcc ccache gdb
-        pacman -S --noconfirm bluez xorg-server xorg-xwayland openssh lightdm lightdm-gtk-greeter plasma-meta mold onboard
+        pacman -S --noconfirm bluez xorg-server xorg-xwayland openssh lightdm lightdm-gtk-greeter plasma-meta mold onboard nodejs npm maliit-keyboard
         pacman -S $(pacman -Ssq qt6-) --noconfirm
 
         ${arch === "x64" ? 'useradd -m -G wheel user' : ''}
@@ -75,6 +75,18 @@ async function main() {
         echo "prolinux-system" > /etc/hostname
 
         ln -sf /usr/share/zoneinfo/America/Toronto /etc/localtime
+
+        echo "Installing ProLinuxD"
+        cd /opt
+        git clone https://github.com/Sineware/ocs2-prolinuxd.git
+        cd ocs2-prolinuxd
+        npm ci
+        npm run build
+        cd ..
+        mv ocs2-prolinuxd prolinuxd-build
+        sudo cp -rv prolinuxd-build/dist /opt/prolinuxd
+        rm -rf prolinuxd-build
+        echo "-- Done installing ProLinuxD!"
 
         sleep 2
 EOF`);
@@ -103,7 +115,7 @@ EOF`);
     ]
 
     //const packagesToBuild = "kcmutils plasma5support kirigami-addons plasma-mobile plasma-pa plasma-nm qqc2-breeze-style"
-    const packagesToBuild = "extra-cmake-modules kcoreaddons ki18n kconfig plasma-wayland-protocols karchive kdoctools kwidgetsaddons polkit-qt-1 kcodecs kauth kguiaddons kwindowsystem kconfigwidgets kdbusaddons kcrash kiconthemes kcompletion kitemviews sonnet kglobalaccel kservice ktextwidgets gpgme qca knotifications kxmlgui kbookmarks kjobwidgets kwallet solid kio kpackage kirigami kdeclarative kwayland kidletime oxygen-icons5 breeze-icons kactivities kparts syntax-highlighting kdnssd kitemmodels ktexteditor kunitconversion threadweaver attica kcmutils plasma-framework syndication knewstuff frameworkintegration kdecoration layer-shell-qt libkscreen poppler krunner breeze kscreenlocker libqaccessibilityclient zxing-cpp phonon kfilemetadata kpty networkmanager-qt kpipewire kwin libkexiv2 selenium-webdriver-at-spi baloo kactivities-stats kded kdesu kholidays knotifyconfig kpeople kquickcharts modemmanager-qt prison libksysguard plasma-nano kuserfeedback kirigami-addons plasma5support plasma-workspace bluez-qt milou plasma-mobile plasma-nm plasma-pa qqc2-breeze-style"
+    const packagesToBuild = "extra-cmake-modules kcoreaddons ki18n kconfig plasma-wayland-protocols karchive kdoctools kwidgetsaddons polkit-qt-1 kcodecs kauth kguiaddons kwindowsystem kconfigwidgets kdbusaddons kcrash kiconthemes kcompletion kitemviews sonnet kglobalaccel kservice ktextwidgets gpgme qca knotifications kxmlgui kbookmarks kjobwidgets kwallet solid kio kpackage kirigami kdeclarative kwayland kidletime oxygen-icons5 breeze-icons kactivities kparts syntax-highlighting kdnssd kitemmodels ktexteditor kunitconversion threadweaver attica kcmutils plasma-framework syndication knewstuff frameworkintegration kdecoration layer-shell-qt libkscreen poppler krunner breeze kscreenlocker libqaccessibilityclient zxing-cpp phonon kfilemetadata kpty networkmanager-qt kpipewire kwin libkexiv2 selenium-webdriver-at-spi baloo kactivities-stats kded kdesu kholidays knotifyconfig kpeople kquickcharts modemmanager-qt prison libksysguard plasma-nano kuserfeedback kirigami-addons plasma5support plasma-workspace bluez-qt milou plasma-mobile plasma-nm plasma-pa qqc2-breeze-style plasma-settings qmlkonsole"
 
     // setup user
     // todo remove ssh-keygen -A from here
@@ -137,6 +149,7 @@ EOF`);
 EOFSU
             sleep 2
 EOF`);
+        await exec(`sudo tar -czvf ${BUILD_DIR}/kde-cache.tar.gz -C ${ROOTFS_DIR}/opt/kde/`);
     }
 
     await exec(`sudo arch-chroot ${ROOTFS_DIR} /bin/bash -x <<'EOF'
@@ -177,6 +190,8 @@ EOF`);
         sudo rm -rf ${ROOTFS_DIR}/opt/kde/build/*
         sudo rm -rf ${ROOTFS_DIR}/opt/kde/src/*
         sudo rm -rf ${ROOTFS_DIR}/var/cache/pacman/pkg/*
+        sudo rm -rf ${ROOTFS_DIR}/opt/kde/usr/share/kservices6/searchproviders/*
+        sudo rm -rf ${ROOTFS_DIR}/usr/share/kservices5/searchproviders/*
     `);
 
     // Create squashfs from root
@@ -192,6 +207,8 @@ EOF`);
         sudo mkdir -pv ${BUILD_DIR}/pmos_root_mnt/persistroot
         sudo mkdir -pv ${BUILD_DIR}/pmos_root_mnt/workdir
         sudo mkdir -pv ${BUILD_DIR}/pmos_root_mnt/oroot
+        sudo mkdir -pv ${BUILD_DIR}/pmos_root_mnt/data
+        sudo cp -v ${FILES_DIR}/prolinux.toml ${BUILD_DIR}/pmos_root_mnt/data/prolinux.toml
 
         # pmos init checks this to see if root was mounted
         sudo mkdir -pv ${BUILD_DIR}/pmos_root_mnt/usr

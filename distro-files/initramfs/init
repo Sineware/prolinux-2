@@ -16,6 +16,7 @@ echo "Mounting prolinux squashfs 'squishroot'"
 mount -o remount,rw /sysroot
 mount -o loop /sysroot/prolinux_a.squish /sysroot/squishroot
 mount -t overlay overlay -o lowerdir=/sysroot/squishroot,upperdir=/sysroot/persistroot,workdir=/sysroot/workdir /sysroot/oroot
+mount --bound /sysroot /sysroot/oroot/sineware
 ls -l /sysroot
 echo "----"
 ls -l /sysroot/oroot

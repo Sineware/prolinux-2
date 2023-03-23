@@ -34,7 +34,7 @@ export function genPMOSImage(device: string, kernel: string = ""): string {
     exec(`
         set -e
         echo "Expanding pmos image..."
-        sudo truncate -s 4G /tmp/postmarketOS-export/${device}.img
+        sudo truncate -s 5G /tmp/postmarketOS-export/${device}.img
         
         sudo losetup -f -P /tmp/postmarketOS-export/${device}.img
         losetup -l
