@@ -9,16 +9,23 @@ echo "Running ProLinux Init script..."
 #pkill pbsplash
 sleep 1
 echo "-- Welcome to Sineware ProLinux 2 --"
+#show_splash "Loading Modules..."
 modprobe squashfs
 modprobe overlay
 sleep 2
 echo "Mounting prolinux squashfs 'squishroot'"
+#show_splash "Mounting Filesystems..."
 mount -o remount,rw /sysroot
 mount -o loop /sysroot/prolinux_a.squish /sysroot/squishroot
 mount -t overlay overlay -o lowerdir=/sysroot/squishroot,upperdir=/sysroot/persistroot,workdir=/sysroot/workdir /sysroot/oroot
-mount --bound /sysroot /sysroot/oroot/sineware
+mount --bind /sysroot /sysroot/oroot/sineware
 ls -l /sysroot
 echo "----"
+#echo "Loading System Configuration..."
+#show_splash "Loading System Configuration..."
+sleep 2
+echo "----"
 ls -l /sysroot/oroot
-echo "Starting up!"
+echo "Starting up..."
+#show_splash "Starting Up..."
 sleep 2

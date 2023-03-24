@@ -15,6 +15,13 @@ const ARCH_URL = {
 let PROLINUX_VARIANT = "mobile"
 let PROLINUX_CHANNEL = "nightly"
 
+async function cleanup() {
+    console.log("Cleaning up...");
+    exec(`sudo umount -R ${ROOTFS_DIR}`);
+}
+
+const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
 async function main() {
     console.log("Build dirs: " + BUILD_DIR + ", " + ROOTFS_DIR + ", " + FILES_DIR);
     console.log("Platform arch: " + arch);
@@ -24,7 +31,7 @@ async function main() {
     }
     console.log("Target device: " + TARGET_DEVICE);
 
-    await exec(`sudo mkdir -pv ${ROOTFS_DIR}`);
+    exec(`sudo mkdir -pv ${ROOTFS_DIR}`);
     process.chdir(BUILD_DIR);
 
     // download arch linux if not exists
@@ -33,22 +40,22 @@ async function main() {
     } else {
         const arch_url = ARCH_URL[arch as keyof typeof ARCH_URL];
         console.log("Downloading Arch root from " + arch_url);
-        await exec(`curl -L ${arch_url} -o ${BUILD_DIR}/arch.tar.gz`);
+        exec(`curl -L ${arch_url} -o ${BUILD_DIR}/arch.tar.gz`);
     }
 
-    await exec(`sudo umount -R ${ROOTFS_DIR}/ || true`);
-    await exec(`sudo rm -rf ${ROOTFS_DIR}/*`);
-    await exec(`sudo rm -rf ${BUILD_DIR}/rootfs.img`);
+    exec(`sudo umount -R ${ROOTFS_DIR}/ || true`);
+    exec(`sudo rm -rf ${ROOTFS_DIR}/*`);
+    exec(`sudo rm -rf ${BUILD_DIR}/rootfs.img`);
     
     console.log("Creating and mounting rootfs.img");
-    await exec(`sudo fallocate -l 42G ${BUILD_DIR}/rootfs.img`);
-    await exec(`sudo mkfs.ext4 ${BUILD_DIR}/rootfs.img -L pmOS_root`);
-    await exec(`sudo mount ${BUILD_DIR}/rootfs.img ${ROOTFS_DIR}`);
+    exec(`sudo fallocate -l 42G ${BUILD_DIR}/rootfs.img`);
+    exec(`sudo mkfs.ext4 ${BUILD_DIR}/rootfs.img -L pmOS_root`);
+    exec(`sudo mount ${BUILD_DIR}/rootfs.img ${ROOTFS_DIR}`);
  
     // extract arch root to rootfs
-    await exec(`sudo tar -xvf ${BUILD_DIR}/arch.tar.gz -C ${ROOTFS_DIR} --strip-components=1`);  
+    exec(`sudo tar -xvf ${BUILD_DIR}/arch.tar.gz -C ${ROOTFS_DIR} --strip-components=1`);  
 
-    await exec(`sudo arch-chroot ${ROOTFS_DIR} /bin/bash -x <<'EOF'
+    exec(`sudo arch-chroot ${ROOTFS_DIR} /bin/bash -x <<'EOF'
         set -e
         chown root:root /
         echo 'Server = ${arch === "arm64" ? "https://fl.us.mirror.archlinuxarm.org/$arch/$repo" : "https://mirror.rackspace.com/archlinux/$repo/os/$arch"}' > /etc/pacman.d/mirrorlist
@@ -76,7 +83,24 @@ async function main() {
 
         ln -sf /usr/share/zoneinfo/America/Toronto /etc/localtime
 
-        echo "Installing ProLinuxD"
+        mkdir /sineware 
+
+        sleep 2
+EOF`);
+
+    // merge FILES_DIR/layout into rootfs
+    console.log("Merging files from " + FILES_DIR + "/layout into " + ROOTFS_DIR);
+    exec(`sudo rsync -a ${FILES_DIR}/layout/ ${ROOTFS_DIR}/`);
+
+    exec(`mkdir -pv ${BUILD_DIR}/cache`);
+    exec(`mkdir -pv ${BUILD_DIR}/cache-src`);
+    // mount cache folder into rootfs /home/user/.cache
+    exec(`sudo mount --bind ${BUILD_DIR}/cache ${ROOTFS_DIR}/home/user/.cache`);
+    exec(`sudo mount --bind ${BUILD_DIR}/cache-src ${ROOTFS_DIR}/opt/kde/src`);
+
+    /* ------------- ProLinuxD ------------- */
+    /*
+    echo "Installing ProLinuxD"
         cd /opt
         git clone https://github.com/Sineware/ocs2-prolinuxd.git
         cd ocs2-prolinuxd
@@ -87,19 +111,19 @@ async function main() {
         sudo cp -rv prolinuxd-build/dist /opt/prolinuxd
         rm -rf prolinuxd-build
         echo "-- Done installing ProLinuxD!"
-
-        sleep 2
-EOF`);
-
-    // merge FILES_DIR/layout into rootfs
-    console.log("Merging files from " + FILES_DIR + "/layout into " + ROOTFS_DIR);
-    await exec(`sudo rsync -a ${FILES_DIR}/layout/ ${ROOTFS_DIR}/`);
-
-    await exec(`mkdir -pv ${BUILD_DIR}/cache`);
-    await exec(`mkdir -pv ${BUILD_DIR}/cache-src`);
-    // mount cache folder into rootfs /home/user/.cache
-    await exec(`sudo mount --bind ${BUILD_DIR}/cache ${ROOTFS_DIR}/home/user/.cache`);
-    await exec(`sudo mount --bind ${BUILD_DIR}/cache-src ${ROOTFS_DIR}/opt/kde/src`);
+        */
+    exec(`
+        pwd
+        pushd .
+            cd ${__dirname}/../ocs2-prolinuxd
+            npm ci
+            npm run build
+            mkdir -pv ${ROOTFS_DIR}/opt/prolinuxd
+            cp -r dist/* ${ROOTFS_DIR}/opt/prolinuxd/
+        popd
+    `);
+    // @ts-ignore
+    /* ------------- kdesrc-build ------------- */
 
     const exportEnv = (arch === "arm64") ? [
         "export CC='ccache distcc'",
@@ -121,9 +145,9 @@ EOF`);
     // todo remove ssh-keygen -A from here
     if(process.env.KDE_CACHE === "true") {
         console.log("Using cached KDE build");
-        await exec(`sudo tar -xvf ${BUILD_DIR}/kde-cache.tar.gz -C ${ROOTFS_DIR}/ --strip-components 1`);
+        exec(`sudo mkdir -pv ${ROOTFS_DIR}/opt/kde/ && sudo tar -xvf ${BUILD_DIR}/kde-cache.tar.gz -C ${ROOTFS_DIR}/opt/kde/`);
     } else {
-        await exec(`sudo arch-chroot ${ROOTFS_DIR} /bin/bash -x <<'EOF'
+        exec(`sudo arch-chroot ${ROOTFS_DIR} /bin/bash -x <<'EOF'
             set -e
             chown -R user:user /home/user
             mkdir -pv /opt/kde
@@ -149,10 +173,10 @@ EOF`);
 EOFSU
             sleep 2
 EOF`);
-        await exec(`sudo tar -czvf ${BUILD_DIR}/kde-cache.tar.gz -C ${ROOTFS_DIR}/opt/kde/`);
+        exec(`sudo tar -czvf ${BUILD_DIR}/kde-cache.tar.gz -C ${ROOTFS_DIR}/opt/kde/ .`);
     }
 
-    await exec(`sudo arch-chroot ${ROOTFS_DIR} /bin/bash -x <<'EOF'
+    exec(`sudo arch-chroot ${ROOTFS_DIR} /bin/bash -x <<'EOF'
         mkdir -pv /usr/share/xsessions/ /usr/share/wayland-sessions/ /etc/dbus-1/
         /opt/kde/build/plasma-workspace/login-sessions/install-sessions.sh
         /opt/kde/build/plasma-mobile/bin/install-sessions.sh
@@ -169,13 +193,13 @@ EOF`);
 EOF`);
 
     // unmount cache folder
-    await exec(`sudo umount ${ROOTFS_DIR}/home/user/.cache`);
-    await exec(`sudo rm -rf ${BUILD_DIR}/home/user/.cache`);
-    await exec(`sudo umount ${ROOTFS_DIR}/opt/kde/src`);
+    exec(`sudo umount ${ROOTFS_DIR}/home/user/.cache`);
+    exec(`sudo rm -rf ${BUILD_DIR}/home/user/.cache`);
+    exec(`sudo umount ${ROOTFS_DIR}/opt/kde/src`);
 
     // drop to shell
     //console.log("Debug shell:");
-    //await exec(`sudo arch-chroot ${ROOTFS_DIR}`);
+    //exec(`sudo arch-chroot ${ROOTFS_DIR}`);
 
     // Add pmos device /lib/modules and /usr/lib/firmware
     console.log("Adding pmos device modules and firmware");
@@ -183,10 +207,11 @@ EOF`);
     if(TARGET_DEVICE === "tablet-x64uefi") {
         kernel = "edge";
     }
+    // @ts-ignore
     genPMOSImage(TARGET_DEVICE, kernel);
 
     console.log("Stripping files from RootFS");
-    await exec(`
+    exec(`
         sudo rm -rf ${ROOTFS_DIR}/opt/kde/build/*
         sudo rm -rf ${ROOTFS_DIR}/opt/kde/src/*
         sudo rm -rf ${ROOTFS_DIR}/var/cache/pacman/pkg/*
@@ -195,11 +220,11 @@ EOF`);
     `);
 
     // Create squashfs from root
-    await exec(`sudo rm -rf ${OUTPUT_DIR}/*`);
-    await exec(`mkdir -pv ${OUTPUT_DIR} && sudo mksquashfs ${ROOTFS_DIR} ${OUTPUT_DIR}/prolinux-root-${PROLINUX_VARIANT}-${PROLINUX_CHANNEL}.squish`);
+    exec(`sudo rm -rf ${OUTPUT_DIR}/*`);
+    exec(`mkdir -pv ${OUTPUT_DIR} && sudo mksquashfs ${ROOTFS_DIR} ${OUTPUT_DIR}/prolinux-root-${PROLINUX_VARIANT}-${PROLINUX_CHANNEL}.squish`);
 
     // Format and place files into rootfs
-    await exec(`
+    exec(`
         sudo mkfs.ext4 /dev/disk/by-label/pmOS_root -F -L pmOS_root
         sudo mount /dev/disk/by-label/pmOS_root ${BUILD_DIR}/pmos_root_mnt
         sudo rsync -ah --progress ${OUTPUT_DIR}/prolinux-root-${PROLINUX_VARIANT}-${PROLINUX_CHANNEL}.squish ${BUILD_DIR}/pmos_root_mnt/prolinux_a.squish
@@ -219,7 +244,7 @@ EOF`);
 
     pmosFinalCleanup();
 
-    await exec(`
+    exec(`
         sudo cp -v /tmp/postmarketOS-export/*.img ${OUTPUT_DIR}
     `);
 
@@ -233,10 +258,3 @@ try {
     console.error(e);
     cleanup();
 }
-
-async function cleanup() {
-    console.log("Cleaning up...");
-    await exec(`sudo umount -R ${ROOTFS_DIR}`);
-}
-
-const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));

@@ -1,0 +1,3 @@
+[submodule "ocs2-prolinuxd"]
+	path = ocs2-prolinuxd
+	url = https://github.com/Sineware/ocs2-prolinuxd.git
