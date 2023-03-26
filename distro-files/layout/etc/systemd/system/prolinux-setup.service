@@ -1,5 +1,6 @@
 [Unit]
 Description=Oneshot startup and shutdown scripts for ProLinux 2
+Before=display-manager.service
 
 [Service]
 Type=oneshot

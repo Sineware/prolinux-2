@@ -66,7 +66,7 @@ async function main() {
         yes | pacman-key --populate ${arch === "arm64" ? "archlinuxarm" : "archlinux"}
         pacman -Syu --noconfirm
         pacman -S --noconfirm base-devel git nano neofetch htop wget curl sudo dialog qt6-base qt6-tools kde-sdk-meta polkit libpipewire pipewire libxcvt kwayland libnm networkmanager modemmanager libqalculate distcc ccache gdb
-        pacman -S --noconfirm bluez xorg-server xorg-xwayland openssh lightdm lightdm-gtk-greeter plasma-meta mold onboard nodejs npm maliit-keyboard flatpak
+        pacman -S --noconfirm bluez xorg-server xorg-xwayland openssh lightdm lightdm-gtk-greeter plasma-meta mold onboard nodejs npm maliit-keyboard flatpak rsync
         pacman -S $(pacman -Ssq qt6-) --noconfirm
 
         ${arch === "x64" ? 'useradd -m -G wheel user' : ''}
@@ -84,6 +84,9 @@ async function main() {
         ln -sf /usr/share/zoneinfo/America/Toronto /etc/localtime
 
         mkdir /sineware 
+
+        sudo flatpak remote-delete flathub
+        flatpak remote-add --if-not-exists --user flathub https://flathub.org/repo/flathub.flatpakrepo
 
         sleep 2
 EOF`);

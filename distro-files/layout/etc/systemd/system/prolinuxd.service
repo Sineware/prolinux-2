@@ -2,9 +2,11 @@
 Description=Sineware ProLinux Daemon
 
 [Service]
-ExecStart=/opt/sbin/node /opt/prolinuxd/index.js
+Type=simple
+ExecStart=/usr/bin/node /opt/prolinuxd/index.js
 StandardOutput=journal
 StandardError=journal
+Environment=CONFIG_FILE=/sineware/data/prolinux.toml
 
 RestartSec=10
 Restart=always
