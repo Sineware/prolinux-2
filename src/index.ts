@@ -66,7 +66,7 @@ async function main() {
         yes | pacman-key --populate ${arch === "arm64" ? "archlinuxarm" : "archlinux"}
         pacman -Syu --noconfirm
         pacman -S --noconfirm base-devel git nano neofetch htop wget curl sudo dialog qt6-base qt6-tools kde-sdk-meta polkit libpipewire pipewire libxcvt kwayland libnm networkmanager modemmanager libqalculate distcc ccache gdb
-        pacman -S --noconfirm bluez xorg-server xorg-xwayland openssh lightdm lightdm-gtk-greeter plasma-meta mold onboard nodejs npm maliit-keyboard
+        pacman -S --noconfirm bluez xorg-server xorg-xwayland openssh lightdm lightdm-gtk-greeter plasma-meta mold onboard nodejs npm maliit-keyboard flatpak
         pacman -S $(pacman -Ssq qt6-) --noconfirm
 
         ${arch === "x64" ? 'useradd -m -G wheel user' : ''}
@@ -99,30 +99,19 @@ EOF`);
     exec(`sudo mount --bind ${BUILD_DIR}/cache-src ${ROOTFS_DIR}/opt/kde/src`);
 
     /* ------------- ProLinuxD ------------- */
-    /*
-    echo "Installing ProLinuxD"
-        cd /opt
-        git clone https://github.com/Sineware/ocs2-prolinuxd.git
-        cd ocs2-prolinuxd
-        npm ci
-        npm run build
-        cd ..
-        mv ocs2-prolinuxd prolinuxd-build
-        sudo cp -rv prolinuxd-build/dist /opt/prolinuxd
-        rm -rf prolinuxd-build
-        echo "-- Done installing ProLinuxD!"
-        */
     exec(`
+        set -e
         pwd
         pushd .
             cd ${__dirname}/../ocs2-prolinuxd
             npm ci
             npm run build
-            mkdir -pv ${ROOTFS_DIR}/opt/prolinuxd
-            cp -r dist/* ${ROOTFS_DIR}/opt/prolinuxd/
+            sudo mkdir -pv ${ROOTFS_DIR}/opt/prolinuxd
+            sudo cp -rv dist/* ${ROOTFS_DIR}/opt/prolinuxd/
+            sudo cp -v distro-files/plctl ${ROOTFS_DIR}/usr/sbin/
         popd
     `);
-    // @ts-ignore
+    
     /* ------------- kdesrc-build ------------- */
 
     const exportEnv = (arch === "arm64") ? [
@@ -134,12 +123,13 @@ EOF`);
         "export CXX='ccache g++'",
     ]
 
-    const checkoutBranches = [
-        ["kio", "076337fd"]
+    // @ts-ignore
+    const checkoutBranches: [[string, string]] = [
+        //["kio", "076337fd"]
     ]
 
-    //const packagesToBuild = "kcmutils plasma5support kirigami-addons plasma-mobile plasma-pa plasma-nm qqc2-breeze-style"
-    const packagesToBuild = "extra-cmake-modules kcoreaddons ki18n kconfig plasma-wayland-protocols karchive kdoctools kwidgetsaddons polkit-qt-1 kcodecs kauth kguiaddons kwindowsystem kconfigwidgets kdbusaddons kcrash kiconthemes kcompletion kitemviews sonnet kglobalaccel kservice ktextwidgets gpgme qca knotifications kxmlgui kbookmarks kjobwidgets kwallet solid kio kpackage kirigami kdeclarative kwayland kidletime oxygen-icons5 breeze-icons kactivities kparts syntax-highlighting kdnssd kitemmodels ktexteditor kunitconversion threadweaver attica kcmutils plasma-framework syndication knewstuff frameworkintegration kdecoration layer-shell-qt libkscreen poppler krunner breeze kscreenlocker libqaccessibilityclient zxing-cpp phonon kfilemetadata kpty networkmanager-qt kpipewire kwin libkexiv2 selenium-webdriver-at-spi baloo kactivities-stats kded kdesu kholidays knotifyconfig kpeople kquickcharts modemmanager-qt prison libksysguard plasma-nano kuserfeedback kirigami-addons plasma5support plasma-workspace bluez-qt milou plasma-mobile plasma-nm plasma-pa qqc2-breeze-style plasma-settings qmlkonsole"
+    const packagesToBuild = "kcmutils plasma5support kirigami-addons plasma-mobile plasma-pa plasma-nm qqc2-breeze-style"
+    //const packagesToBuild = "extra-cmake-modules kcoreaddons ki18n kconfig plasma-wayland-protocols karchive kdoctools kwidgetsaddons polkit-qt-1 kcodecs kauth kguiaddons kwindowsystem kconfigwidgets kdbusaddons kcrash kiconthemes kcompletion kitemviews sonnet kglobalaccel kservice ktextwidgets gpgme qca knotifications kxmlgui kbookmarks kjobwidgets kwallet solid kio kpackage kirigami kdeclarative kwayland kidletime oxygen-icons5 breeze-icons kactivities kparts syntax-highlighting kdnssd kitemmodels ktexteditor kunitconversion threadweaver attica kcmutils plasma-framework syndication knewstuff frameworkintegration kdecoration layer-shell-qt libkscreen poppler krunner breeze kscreenlocker libqaccessibilityclient zxing-cpp phonon kfilemetadata kpty networkmanager-qt kpipewire kwin libkexiv2 selenium-webdriver-at-spi baloo kactivities-stats kded kdesu kholidays knotifyconfig kpeople kquickcharts modemmanager-qt prison libksysguard plasma-nano kuserfeedback kirigami-addons plasma5support plasma-workspace bluez-qt milou plasma-mobile plasma-nm plasma-pa qqc2-breeze-style plasma-settings qmlkonsole"
 
     // setup user
     // todo remove ssh-keygen -A from here
@@ -169,7 +159,7 @@ EOF`);
                 ./kdesrc-build --metadata-only
                 ./kdesrc-build --src-only ${packagesToBuild}
                 ${checkoutBranches.map(([repo, branch]) => `cd /opt/kde/src/${repo} && git checkout ${branch} && cd /opt/kde/src/kdesrc-build`).join("; ")}
-                ${packagesToBuild.split(" ").map((p, i, a) => `mold -run ./kdesrc-build --no-include-dependencies --no-src ${p} && echo "-- ✅ Built ${i} of ${a.length}!"`).join("; ")}
+                ${packagesToBuild.split(" ").map((p, i, a) => `mold -run ./kdesrc-build --stop-on-failure --include-dependencies --no-src ${p}; echo "-- ✅ Built ${i} of ${a.length}!"`).join("; ")}
 EOFSU
             sleep 2
 EOF`);
@@ -177,6 +167,7 @@ EOF`);
     }
 
     exec(`sudo arch-chroot ${ROOTFS_DIR} /bin/bash -x <<'EOF'
+        set -e
         mkdir -pv /usr/share/xsessions/ /usr/share/wayland-sessions/ /etc/dbus-1/
         /opt/kde/build/plasma-workspace/login-sessions/install-sessions.sh
         /opt/kde/build/plasma-mobile/bin/install-sessions.sh
@@ -184,6 +175,7 @@ EOF`);
         systemctl enable NetworkManager
         systemctl enable sshd
         systemctl enable prolinux-setup
+        systemctl enable prolinuxd
         systemctl enable lightdm
 
         mkdir -pv /opt/build-info
@@ -198,8 +190,10 @@ EOF`);
     exec(`sudo umount ${ROOTFS_DIR}/opt/kde/src`);
 
     // drop to shell
-    //console.log("Debug shell:");
-    //exec(`sudo arch-chroot ${ROOTFS_DIR}`);
+    if(process.env.DEBUG === "true") {
+        console.log("Debug shell:");
+        exec(`sudo arch-chroot ${ROOTFS_DIR}`);
+    }
 
     // Add pmos device /lib/modules and /usr/lib/firmware
     console.log("Adding pmos device modules and firmware");

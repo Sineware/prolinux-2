@@ -3,29 +3,28 @@
 # /persistroot - overlayed persisant storage
 # /workdir - overlayfs workdir
 # /oroot - target root
-# eventually plctl will write a config to determine
-# whether to enable persistroot and select a/b squish roots
 echo "Running ProLinux Init script..."
 #pkill pbsplash
 sleep 1
 echo "-- Welcome to Sineware ProLinux 2 --"
-#show_splash "Loading Modules..."
-modprobe squashfs
-modprobe overlay
+modprobe squashfs || show_splash "ERROR: Could not load squashfs module!"
+modprobe overlay || show_splash "ERROR: Could not load overlayfs module!"
 sleep 2
 echo "Mounting prolinux squashfs 'squishroot'"
-#show_splash "Mounting Filesystems..."
 mount -o remount,rw /sysroot
-mount -o loop /sysroot/prolinux_a.squish /sysroot/squishroot
-mount -t overlay overlay -o lowerdir=/sysroot/squishroot,upperdir=/sysroot/persistroot,workdir=/sysroot/workdir /sysroot/oroot
+
+echo "----"
+echo "Loading System Configuration..."
+# read /sysroot/data/prolinux.toml for which squashfs to use
+sleep 2
+echo "----"
+
+mount -o loop /sysroot/prolinux_a.squish /sysroot/squishroot || show_splash "ERROR: Could not mount squishroot!"
+mount -t overlay overlay -o lowerdir=/sysroot/squishroot,upperdir=/sysroot/persistroot,workdir=/sysroot/workdir /sysroot/oroot || show_splash "ERROR: Could not mount overlayfs!"
 mount --bind /sysroot /sysroot/oroot/sineware
 ls -l /sysroot
 echo "----"
-#echo "Loading System Configuration..."
-#show_splash "Loading System Configuration..."
-sleep 2
-echo "----"
+
 ls -l /sysroot/oroot
 echo "Starting up..."
-#show_splash "Starting Up..."
 sleep 2
