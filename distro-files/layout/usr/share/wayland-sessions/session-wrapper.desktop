@@ -1,0 +1,12 @@
+# SPDX-FileCopyrightText: 2019 Aleix Pol <apol@kde.org>
+# SPDX-FileCopyrightText: 2022 Devin Lin <devin@kde.org>
+# SPDX-FileCopyrightText: 2023 Seshan Ravikumar <seshan.r@sineware.ca>
+# SPDX-License-Identifier: GPL-2.0-or-later
+
+[Desktop Entry]
+Exec=/usr/bin/env SESSION_BIN=/opt/kde/usr/lib/libexec/startplasmamobile-dev.sh /opt/kde/usr/lib/libexec/plasma-dbus-run-session-if-needed /usr/bin/node /opt/prolinuxd/session-wrapper/index.js
+TryExec=/opt/kde/usr/lib/libexec/startplasmamobile-dev.sh
+Type=Application
+DesktopNames=KDE
+Name=ProLinux Plasma Mobile (Development)
+X-KDE-PluginInfo-Version=5.27.80

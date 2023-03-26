@@ -1,5 +1,6 @@
 prolinuxd.modules = [
         'ocs2',
+        'pl2'
 ]
 ocs2.gateway_url = 'wss://update.sineware.ca/gateway'
 ocs2.client_type = 'prolinux,pl2'

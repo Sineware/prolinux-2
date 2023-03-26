@@ -79,4 +79,4 @@ end global
 #include /home/user/kde/src/kdesrc-build/kf5-kdepim-build-include
 
 include /opt/kde/src/kdesrc-build/kf6-qt6-build-include
-include /opt/kde/src/kdesrc-build/kf6-extragear-build-include
+#include /opt/kde/src/kdesrc-build/kf6-extragear-build-include
