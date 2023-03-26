@@ -2,7 +2,6 @@
 Description=Sineware ProLinux Daemon
 
 [Service]
-Type=oneshot
 ExecStart=/opt/sbin/node /opt/prolinuxd/index.js
 StandardOutput=journal
 StandardError=journal
