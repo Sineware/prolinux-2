@@ -3,6 +3,9 @@
 ProLinux 2 is a GNU/Linux distribution with an immutable root (A/B SquashFS), writable overlay, Flatpak, and ProLinux management tools.
 
 
+> Warning: this project is not ready for use! It is under development and probably broken at any given time.
+
+
 ## Plasma Mobile Nightly
 Currently the only edition available is the Plasma Mobile Nightly Edition, which is a developer/testing/fun focused OS, 
 building the current state of Plasma Mobile from upstream git main/master using kdesrc-build. It is in some ways the successor to the original 
@@ -13,6 +16,20 @@ ProLinux 2 Plasma Mobile Nightly Edition piggy-backs on parts of postmarketOS (i
 ### Build requirements
 - node, npm
 - cloud-utils
+- pmbootstrap
+
+Then run:
+```sh
+git submodule update --init
+npm install
+TARGET_DEVICE=tablet-x64uefi npm run build
+```
+
+This will (if successful) produce a image in "output/".
+
+TARGET_DEVICE is a postmarketOS device string. Currently only "simple" devices are supported (ones that produce a flashable image, not android sparse images. i.e. pine64-pinephone).
+
+Cross-compiling is not supported, arm64 targets must be built on arm64 devices. You probably want at least 64GB of free disk space.
 
 
 ### QEMU (tablet-x64uefi testing)
