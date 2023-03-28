@@ -5,12 +5,14 @@
   "main": "src/index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "ts-node src/index.ts"
+    "build": "ts-node src/index.ts",
+    "deploy-update": "ts-node update-deployer/update-deployer.ts"
   },
   "author": "Seshan Ravikumar",
   "license": "GPL-3.0",
   "dependencies": {
     "dotenv": "^16.0.3",
+    "jose": "^4.13.1",
     "ts-node": "^10.9.1"
   }
 }

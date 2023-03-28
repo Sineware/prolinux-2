@@ -65,9 +65,9 @@ async function main() {
         yes | pacman-key --init
         yes | pacman-key --populate ${arch === "arm64" ? "archlinuxarm" : "archlinux"}
         pacman -Syu --noconfirm
-        pacman -S --noconfirm base-devel git nano neofetch htop wget curl sudo dialog qt6-base qt6-tools kde-sdk-meta polkit libpipewire pipewire libxcvt kwayland libnm networkmanager modemmanager libqalculate distcc ccache gdb
+        pacman -S --noconfirm base-devel git nano neofetch htop wget curl sudo dialog qt6-base qt6-tools polkit libpipewire pipewire libxcvt kwayland libnm networkmanager modemmanager libqalculate distcc ccache gdb
         pacman -S --noconfirm bluez xorg-server xorg-xwayland openssh lightdm lightdm-gtk-greeter mold onboard nodejs npm maliit-keyboard flatpak rsync
-        pacman -S --noconfirm appstream-qt libdmtx libwireplumber libxaw lua ttf-hack qrencode wireplumber xorg-xmessage xorg-xsetroot zxing-cpp accountsservice
+        pacman -S --noconfirm appstream-qt libdmtx libwireplumber libxaw lua ttf-hack qrencode wireplumber xorg-xmessage xorg-xsetroot zxing-cpp accountsservice exiv2 lmdb
         pacman -S $(pacman -Ssq qt6-) --noconfirm
 
         echo "Setting up user"
@@ -131,6 +131,7 @@ EOF`);
     // @ts-ignore
     const checkoutBranches: [[string, string]] = [
         //["kio", "076337fd"]
+        //["kwin", "master"]
     ]
 
     //const packagesToBuild = "kcmutils plasma5support kirigami-addons plasma-mobile plasma-pa plasma-nm qqc2-breeze-style"
@@ -142,6 +143,7 @@ EOF`);
         console.log("Using cached KDE build");
         exec(`sudo mkdir -pv ${ROOTFS_DIR}/opt/kde/ && sudo tar -xvf ${BUILD_DIR}/kde-cache.tar.gz -C ${ROOTFS_DIR}/opt/kde/`);
     } else {
+        //exec(`sudo mkdir -pv ${ROOTFS_DIR}/usr/include/libkwineffects && sudo tar xvf ${FILES_DIR}/tmp-kwin-include.tar.gz -C ${ROOTFS_DIR}/usr/include/libkwineffects/`); // todo temp: remove this eventually
         exec(`sudo arch-chroot ${ROOTFS_DIR} /bin/bash -x <<'EOF'
             set -e
             chown -R user:user /home/user
@@ -163,6 +165,8 @@ EOF`);
                 yes | ./kdesrc-build --initial-setup
                 ./kdesrc-build --metadata-only
                 ./kdesrc-build --src-only ${packagesToBuild}
+                ${packagesToBuild.split(" ").map((p) => `find /opt/kde/src/${p} -name CMakeLists.txt -exec sed -i '1i include_directories(/opt/kde/usr/include)' {} \\;`).join("; ")}
+                ${packagesToBuild.split(" ").map((p) => `find /opt/kde/src/${p} -name CMakeLists.txt -exec sed -i '1i include_directories(/opt/kde/usr/include/KF6)' {} \\;`).join("; ")}
                 ${checkoutBranches.map(([repo, branch]) => `cd /opt/kde/src/${repo} && git checkout ${branch} && cd /opt/kde/src/kdesrc-build`).join("; ")}
                 ${packagesToBuild.split(" ").map((p, i, a) => `mold -run ./kdesrc-build --stop-on-failure --no-include-dependencies --no-src ${p}; echo "-- ✅ Built ${i} of ${a.length}!"`).join("; ")}
 EOFSU

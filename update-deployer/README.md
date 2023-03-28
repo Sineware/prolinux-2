@@ -1,0 +1,1 @@
+Script to deploy the squashfs to Sineware Cloud.
