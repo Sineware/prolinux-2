@@ -4,6 +4,8 @@ import fs from "fs";
 import { BUILD_DIR, ROOTFS_DIR, OUTPUT_DIR, FILES_DIR, arch, TARGET_DEVICE } from './helpers/consts';
 import exec from "./helpers/exec";
 import { genPMOSImage, pmosFinalCleanup } from './pmbootstrap';
+import axios from 'axios';
+import { v4 as uuidv4 } from 'uuid';
 
 console.log("Starting ProLinux build on " + new Date().toLocaleString());
 
@@ -12,8 +14,8 @@ const ARCH_URL = {
     "arm64": "http://os.archlinuxarm.org/os/ArchLinuxARM-aarch64-latest.tar.gz"
 }
 
-let PROLINUX_VARIANT = "mobile"
-let PROLINUX_CHANNEL = "nightly"
+let PROLINUX_VARIANT = process.env.PROLINUX_VARIANT;
+let PROLINUX_CHANNEL = process.env.PROLINUX_CHANNEL;
 
 async function cleanup() {
     console.log("Cleaning up...");
@@ -25,11 +27,19 @@ const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 async function main() {
     console.log("Build dirs: " + BUILD_DIR + ", " + ROOTFS_DIR + ", " + FILES_DIR);
     console.log("Platform arch: " + arch);
-    if(TARGET_DEVICE === undefined) {
+    console.log("Target device: " + TARGET_DEVICE + ", variant: " + PROLINUX_VARIANT + ", channel: " + PROLINUX_CHANNEL);
+    if(TARGET_DEVICE === undefined || TARGET_DEVICE === "" || PROLINUX_CHANNEL === undefined || PROLINUX_CHANNEL === "" || PROLINUX_VARIANT === undefined || PROLINUX_VARIANT === "") {
         console.log("No target device specified, exiting");
         process.exit(1);
     }
-    console.log("Target device: " + TARGET_DEVICE);
+
+    // Get latest build number for https://update.sineware.ca/updates/prolinux/PROLINUX_VARIANT/PROLINUX_CHANNEL
+    // {"url":"https:\/\/example.com\/rootfs.squish","variant":"phone","jwt":"jwt","product":"prolinux","id":1,"buildstring":"test build","buildnum":1001,"channel":"dev","isreleased":true,"uuid":"E0CE308F-4350-41AD-87F7-40D7835DC7D2"}
+    const res = await axios.get(`https://update.sineware.ca/updates/prolinux/${PROLINUX_VARIANT}/${PROLINUX_CHANNEL}`);
+    console.log(res.data);
+    const buildnum = res.data.buildnum + 1;
+    const builduuid = uuidv4();
+    console.log("Latest build number: " + buildnum + ", " + builduuid);
 
     exec(`sudo mkdir -pv ${ROOTFS_DIR}`);
     process.chdir(BUILD_DIR);
@@ -188,11 +198,10 @@ EOF`);
         systemctl enable lightdm
 
         mkdir -pv /opt/build-info
-        echo "Sineware ProLinux image built on $(date)" >> /opt/build-info/prolinux-info.txt
+        echo "${buildnum},${builduuid},prolinux,${PROLINUX_VARIANT},${PROLINUX_CHANNEL},$(date),prolinux-root-${PROLINUX_VARIANT}-${PROLINUX_CHANNEL}.squish,${arch}" >> /opt/build-info/prolinux-info.txt
         pacman -Q >> /opt/build-info/prolinux-sbom.txt
         ls /opt/kde/build/ >> /opt/build-info/prolinux-sbom.txt
 EOF`);
-
     // unmount cache folder
     exec(`sudo umount ${ROOTFS_DIR}/home/user/.cache`);
     exec(`sudo rm -rf ${BUILD_DIR}/home/user/.cache`);
@@ -250,6 +259,8 @@ EOF`);
     exec(`
         sudo cp -v /tmp/postmarketOS-export/*.img ${OUTPUT_DIR}
     `);
+
+    exec(`echo "${buildnum},${builduuid},prolinux,${PROLINUX_VARIANT},${PROLINUX_CHANNEL},$(date),prolinux-root-${PROLINUX_VARIANT}-${PROLINUX_CHANNEL}.squish,${arch}" > ${OUTPUT_DIR}/prolinux-info.txt`);
 
     await sleep(2000);
     await cleanup();

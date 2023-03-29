@@ -18,6 +18,24 @@ ProLinux 2 Plasma Mobile Nightly Edition piggy-backs on parts of postmarketOS (i
 - cloud-utils
 - pmbootstrap
 
+Environment Configuration (.env):
+```env
+# Upon a successful kdesrc-build, a cache tar.gz is created which can be used
+# instead of recompiling during a image build.
+KDE_CACHE=true
+
+# defines what to build (mobile,dev is currently the only valid combo)
+PROLINUX_VARIANT=mobile
+PROLINUX_CHANNEL=dev
+
+# Only used by update-deployer
+PGUSER=
+PGHOST=
+PGPASSWORD=
+PGDATABASE=
+PGPORT=
+```
+
 Then run:
 ```sh
 git submodule update --init
