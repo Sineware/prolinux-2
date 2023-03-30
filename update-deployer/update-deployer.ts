@@ -23,13 +23,13 @@ async function main() {
     const prolinuxInfoArr = fs.readFileSync(`${OUTPUT_DIR}/prolinux-info.txt`, "utf-8").split(",");
     console.log(prolinuxInfoArr);
     const prolinuxInfo = {
-        buildnum: prolinuxInfoArr[0],
-        uuid: prolinuxInfoArr[1],
-        product: prolinuxInfoArr[2],
-        variant: prolinuxInfoArr[3],
-        channel: prolinuxInfoArr[4],
-        filename: prolinuxInfoArr[6],
-        arch: prolinuxInfoArr[7],
+        buildnum: prolinuxInfoArr[0].trim(),
+        uuid: prolinuxInfoArr[1].trim(),
+        product: prolinuxInfoArr[2].trim(),
+        variant: prolinuxInfoArr[3].trim(),
+        channel: prolinuxInfoArr[4].trim(),
+        filename: prolinuxInfoArr[6].trim(),
+        arch: prolinuxInfoArr[7].trim(),
     };
     console.log(prolinuxInfo);
 
@@ -38,10 +38,9 @@ async function main() {
     const hash = exec(`sha512sum ${OUTPUT_DIR}/*.squish`, false).toString().split(" ")[0];
     console.log("Hash: " + hash);
 
-    const secret = new TextEncoder().encode(
-        '',
-    );
-    const alg = 'HS256';
+    /*const alg = "RS256";
+    const buff = Buffer.from(process.env.PRIVATE_KEY ?? "", 'utf-8');
+    const secret = await jose.importPKCS8(buff.toString(), alg)
     
     const jwt = await new jose.SignJWT({
         hash,
@@ -51,7 +50,8 @@ async function main() {
         .setExpirationTime('14d')
         .sign(secret);
     
-    console.log(jwt);
+    console.log(jwt);*/
+    let jwt = "none";
 
     /*
       Table info:
@@ -71,9 +71,13 @@ async function main() {
             jwt         text
         );
     */
+    
+    exec(`rsync -aHAXxv --delete --progress ${OUTPUT_DIR}/ espimac:/var/www/sineware/repo/${prolinuxInfo.product}/${prolinuxInfo.variant}/${prolinuxInfo.channel}/${prolinuxInfo.arch}`);
+    exec(`ssh espimac "cd /var/www/sineware/repo/${prolinuxInfo.product}/${prolinuxInfo.variant}/${prolinuxInfo.channel}/${prolinuxInfo.arch}/ && zsyncmake ${prolinuxInfo.filename}"`);
+        
     // insert the new update into the database
     console.log("Inserting the new update into the database...");
-    /*await client.query("INSERT INTO updates (uuid, product, variant, channel, buildnum, buildstring, isreleased, url, jwt, arch) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)", 
+    await client.query("INSERT INTO updates (uuid, product, variant, channel, buildnum, buildstring, isreleased, url, jwt, arch) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)", 
         [
             prolinuxInfo.uuid,
             prolinuxInfo.product,
@@ -86,9 +90,7 @@ async function main() {
             jwt,
             "x64"
             ]
-        );*/
+        );
     client.end();
-    
-    exec(`rsync -aHAXxv --delete --progress ${OUTPUT_DIR}/${prolinuxInfo.filename} espimac:/var/www/sineware/repo/${prolinuxInfo.product}/${prolinuxInfo.variant}/${prolinuxInfo.channel}/`);
 }
 main();

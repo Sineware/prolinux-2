@@ -16,10 +16,13 @@ mount -o remount,rw /sysroot
 echo "----"
 echo "Loading System Configuration..."
 # read /sysroot/data/prolinux.toml for which squashfs to use
+selected_root=$(awk -F "=" '/pl2.selected_root/ {print $2}' /sysroot/data/prolinux.toml | tr -d ' ' | tr -d "'")
+echo "Selected Root: $selected_root"
 sleep 2
+#/bin/busybox sh
 echo "----"
 
-mount -o loop /sysroot/prolinux_a.squish /sysroot/squishroot || show_splash "ERROR: Could not mount squishroot!"
+mount -o loop /sysroot/prolinux_${selected_root}.squish /sysroot/squishroot || show_splash "ERROR: Could not mount squishroot!"
 mount -t overlay overlay -o lowerdir=/sysroot/squishroot,upperdir=/sysroot/persistroot,workdir=/sysroot/workdir /sysroot/oroot || show_splash "ERROR: Could not mount overlayfs!"
 mount --bind /sysroot /sysroot/oroot/sineware
 ls -l /sysroot

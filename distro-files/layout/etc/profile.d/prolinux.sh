@@ -1,0 +1,1 @@
+alias pacman="/opt/pacman-warning.sh"

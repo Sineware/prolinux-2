@@ -47,7 +47,7 @@ global
     compile-commands-linking true
     compile-commands-export true
 
-    cmake-options -DQT_MAJOR_VERSION=6
+    cmake-options -DQT_MAJOR_VERSION=6 -GNinja
 end global
 
 # Common options that should be set for some KDE modules no matter how
