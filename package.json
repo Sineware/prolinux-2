@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "ts-node src/index.ts",
-    "deploy-update": "ts-node update-deployer/update-deployer.ts"
+    "deploy-update": "ts-node update-deployer/update-deployer.ts",
+    "gen-image": "ts-node image-gen/image-gen.ts"
   },
   "author": "Seshan Ravikumar",
   "license": "GPL-3.0",

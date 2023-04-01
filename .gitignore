@@ -2,3 +2,4 @@ node_modules/
 build/
 output/
 arch.tar.gz
+.env

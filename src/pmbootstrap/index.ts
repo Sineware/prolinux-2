@@ -1,15 +1,14 @@
 import fs from "fs"
 import path from "path"
 import exec from "../helpers/exec"
-import { BUILD_DIR, FILES_DIR } from "../helpers/consts";
+import { BUILD_DIR, FILES_DIR, OUTPUT_DIR } from "../helpers/consts";
 
-let loopDevice = "";
+export let loopDevice = "";
 
-export function genPMOSImage(device: string, kernel: string = ""): string {
-    const cleanup = () => {
-        console.log("Cleanup (genPMOSImage)");
-        exec(`sudo umount ${BUILD_DIR}/pmos_root_mnt`);
-        exec(`sudo umount ${BUILD_DIR}/pmos_boot_mnt`);
+export function createAndMountPMOSImage(device: string): string {
+    let kernel = "";
+    if(device === "tablet-x64uefi") {
+        kernel = "edge";
     }
     exec(`
         yes "" | pmbootstrap -q init
@@ -58,10 +57,27 @@ export function genPMOSImage(device: string, kernel: string = ""): string {
 
         sudo mount /dev/disk/by-label/pmOS_root ${BUILD_DIR}/pmos_root_mnt
         sudo mount /dev/disk/by-label/pmOS_boot ${BUILD_DIR}/pmos_boot_mnt
+    `);
+    return loopDevice;
+}
+export function unmountPMOSImage() {
+    console.log("Cleanup (genPMOSImage)");
+    exec(`
+        sudo umount ${BUILD_DIR}/pmos_root_mnt
+        sudo umount ${BUILD_DIR}/pmos_boot_mnt
+    `);
+}
+export function pmosFinalCleanup() {
+    exec(`sudo losetup -d ${loopDevice}`);
+}
 
+export function genPMOSImage(device: string) {
+    createAndMountPMOSImage(device);
+
+    exec(`
         sudo mkdir -pv ${BUILD_DIR}/rootfs/lib/modules/ ${BUILD_DIR}/rootfs/lib/firmware/
-        sudo cp -r ${BUILD_DIR}/pmos_root_mnt/lib/modules/* ${BUILD_DIR}/rootfs/lib/modules/
-        sudo cp -r ${BUILD_DIR}/pmos_root_mnt/lib/firmware/* ${BUILD_DIR}/rootfs/lib/firmware/
+        sudo rsync -a ${BUILD_DIR}/pmos_root_mnt/lib/modules/ ${BUILD_DIR}/rootfs/lib/modules
+        sudo rsync -a ${BUILD_DIR}/pmos_root_mnt/lib/firmware/ ${BUILD_DIR}/rootfs/lib/firmware
     `);
 
     // Find out the kernel folder name
@@ -97,8 +113,6 @@ export function genPMOSImage(device: string, kernel: string = ""): string {
     ]);
     fs.writeFileSync(path.join(BUILD_DIR, "/new-init"), originalInit.join("\n"));
 
-
-
     // bundle it
     exec(`
         sudo cp -v ${BUILD_DIR}/new-init ${BUILD_DIR}/initramfs-work/init
@@ -106,12 +120,12 @@ export function genPMOSImage(device: string, kernel: string = ""): string {
         cd ${BUILD_DIR}/initramfs-work/
         find . -print0 | cpio --null --create --verbose --format=newc | gzip --best > ${BUILD_DIR}/new-initramfs
         sudo cp -v ${BUILD_DIR}/new-initramfs ${BUILD_DIR}/pmos_boot_mnt/initramfs
+
+        mkdir -pv ${OUTPUT_DIR}/${device}
+        sudo cp -v ${BUILD_DIR}/pmos_boot_mnt/initramfs ${OUTPUT_DIR}/${device}/initramfs
+        sudo cp -v ${BUILD_DIR}/pmos_boot_mnt/initramfs-extra ${OUTPUT_DIR}/${device}/initramfs-extra
+        sudo cp -v ${BUILD_DIR}/pmos_boot_mnt/vmlinuz ${OUTPUT_DIR}/${device}/vmlinuz
     `)
 
-    cleanup();
-    return loopDevice;
-}
-
-export function pmosFinalCleanup() {
-    exec(`sudo losetup -d ${loopDevice}`);
+    unmountPMOSImage();
 }

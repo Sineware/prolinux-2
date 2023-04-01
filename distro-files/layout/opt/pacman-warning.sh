@@ -7,4 +7,4 @@ echo ""
 echo "Installing packages may break your system, espcially if the root lock is disabled."
 echo "----------------------------------------"
 read -p "Press any key to continue... (or Ctrl+C to abort)"
-pacman$@
+pacman $@

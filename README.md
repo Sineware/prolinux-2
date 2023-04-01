@@ -17,6 +17,7 @@ ProLinux 2 Plasma Mobile Nightly Edition piggy-backs on parts of postmarketOS (i
 - node, npm
 - cloud-utils
 - pmbootstrap
+- arch-install-scripts
 
 Environment Configuration (.env):
 ```env

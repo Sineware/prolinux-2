@@ -25,8 +25,8 @@ global
     # 2. num-cores-low-mem, which is set to largest value that appears safe for
     #    particularly heavyweight modules based on total memory, intended for
     #    modules like qtwebengine
-    num-cores 32
-    num-cores-low-mem 31
+    num-cores 8
+    num-cores-low-mem 7
 
     # kdesrc-build can install a sample .xsession file for "Custom"
     # (or "XSession") logins,

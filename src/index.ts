@@ -41,6 +41,9 @@ async function main() {
     const builduuid = uuidv4();
     console.log("Latest build number: " + buildnum + ", " + builduuid);
 
+    exec(`mkdir -pv ${BUILD_DIR}`);
+    exec(`mkdir -pv ${OUTPUT_DIR}`);
+    exec(`sudo rm -rf ${OUTPUT_DIR}/*`);
     exec(`sudo mkdir -pv ${ROOTFS_DIR}`);
     process.chdir(BUILD_DIR);
 
@@ -75,7 +78,7 @@ async function main() {
         yes | pacman-key --init
         yes | pacman-key --populate ${arch === "arm64" ? "archlinuxarm" : "archlinux"}
         pacman -Syu --noconfirm
-        pacman -S --noconfirm base-devel git nano neofetch htop wget curl sudo dialog qt6-base qt6-tools polkit libpipewire pipewire libxcvt kwayland libnm networkmanager modemmanager libqalculate distcc ccache gdb
+        pacman -S --noconfirm base-devel git nano neofetch htop wget curl sudo dialog qt6-base qt6-tools polkit libpipewire pipewire pipewire-pulse libxcvt kwayland libnm networkmanager modemmanager libqalculate distcc ccache gdb
         pacman -S --noconfirm bluez xorg-server xorg-xwayland openssh lightdm lightdm-gtk-greeter mold onboard nodejs npm maliit-keyboard flatpak rsync
         pacman -S --noconfirm appstream-qt libdmtx libwireplumber libxaw lua ttf-hack qrencode wireplumber xorg-xmessage xorg-xsetroot zxing-cpp accountsservice exiv2 lmdb zsync
         pacman -S $(pacman -Ssq qt6-) --noconfirm
@@ -115,25 +118,27 @@ EOF`);
     exec(`sudo mount --bind ${BUILD_DIR}/cache-src ${ROOTFS_DIR}/opt/kde/src`);
 
     /* ------------- ProLinuxD ------------- */
-    exec(`
+    /*exec(`
         set -e
         pwd
         pushd .
             cd ${__dirname}/../ocs2-prolinuxd
-            npm ci
+            npm i
             npm run build
             sudo mkdir -pv ${ROOTFS_DIR}/opt/prolinuxd
             sudo cp -rv dist/* ${ROOTFS_DIR}/opt/prolinuxd/
             sudo cp -v distro-files/plctl ${ROOTFS_DIR}/usr/sbin/
         popd
-    `);
+    `);*/
     
     /* ------------- kdesrc-build ------------- */
 
     const exportEnv = (arch === "arm64") ? [
-        "export CC='ccache distcc'",
-        "export CXX='ccache distcc g++'",
-        "export DISTCC_HOSTS='192.168.11.138/20'",
+        //"export CC='ccache distcc'",
+        //"export CXX='ccache distcc g++'",
+        //"export DISTCC_HOSTS='192.168.11.138/20'",
+	    "export CC='ccache gcc'",
+        "export CXX='ccache g++'",
     ] : [
         "export CC='ccache gcc'",
         "export CXX='ccache g++'",
@@ -146,13 +151,13 @@ EOF`);
     ]
 
     //const packagesToBuild = "kcmutils plasma5support kirigami-addons plasma-mobile plasma-pa plasma-nm qqc2-breeze-style"
-    const packagesToBuild = "extra-cmake-modules kcoreaddons ki18n kconfig plasma-wayland-protocols karchive kdoctools kwidgetsaddons polkit-qt-1 kcodecs kauth kguiaddons kwindowsystem kconfigwidgets kdbusaddons kcrash kiconthemes kcompletion kitemviews sonnet kglobalaccel kservice ktextwidgets gpgme qca knotifications kxmlgui kbookmarks kjobwidgets kwallet solid kactivities kpackage kcmutils kio kirigami kdeclarative kwayland kidletime oxygen-icons5 breeze-icons kparts syntax-highlighting kdnssd kitemmodels ktexteditor kunitconversion threadweaver attica kcmutils plasma-framework syndication knewstuff frameworkintegration kdecoration layer-shell-qt libkscreen poppler krunner breeze kscreenlocker libqaccessibilityclient zxing-cpp phonon kfilemetadata kpty networkmanager-qt kpipewire kwin libkexiv2 selenium-webdriver-at-spi baloo kactivities-stats kded kdesu kholidays knotifyconfig kpeople kquickcharts modemmanager-qt prison libksysguard plasma-nano kuserfeedback kirigami-addons plasma5support plasma-workspace bluez-qt milou plasma-mobile plasma-nm plasma-pa qqc2-breeze-style plasma-settings qmlkonsole kactivitymanagerd ksystemstats qqc2-desktop-style kscreen"
+    const packagesToBuild = "extra-cmake-modules kcoreaddons ki18n kconfig plasma-wayland-protocols karchive kdoctools kwidgetsaddons polkit-qt-1 kcodecs kauth kguiaddons kwindowsystem kconfigwidgets kdbusaddons kcrash kiconthemes kcompletion kitemviews sonnet kglobalaccel kservice ktextwidgets gpgme qca knotifications kxmlgui kbookmarks kjobwidgets kwallet solid kactivities kpackage kcmutils kio kirigami kdeclarative kwayland kidletime oxygen-icons5 breeze-icons kparts syntax-highlighting kdnssd kitemmodels ktexteditor kunitconversion threadweaver attica kcmutils plasma-framework syndication knewstuff frameworkintegration kdecoration layer-shell-qt libkscreen poppler krunner breeze kscreenlocker libqaccessibilityclient zxing-cpp phonon kfilemetadata kpty networkmanager-qt kpipewire kwin libkexiv2 selenium-webdriver-at-spi baloo kactivities-stats kded kdesu kholidays knotifyconfig kpeople kquickcharts modemmanager-qt prison libksysguard plasma-nano kuserfeedback kirigami-addons plasma5support plasma-workspace bluez-qt milou plasma-mobile plasma-nm plasma-pa qqc2-breeze-style plasma-settings kactivitymanagerd ksystemstats qqc2-desktop-style kscreen powerdevil"
 
     // setup user
     // todo remove ssh-keygen -A from here
     if(process.env.KDE_CACHE === "true") {
         console.log("Using cached KDE build");
-        exec(`sudo mkdir -pv ${ROOTFS_DIR}/opt/kde/ && sudo tar -xvf ${BUILD_DIR}/kde-cache.tar.gz -C ${ROOTFS_DIR}/opt/kde/`);
+        exec(`sudo mkdir -pv ${ROOTFS_DIR}/opt/kde/ && sudo tar --exclude='src' -xvf ${BUILD_DIR}/kde-cache.tar -C ${ROOTFS_DIR}/opt/kde/`);
     } else {
         //exec(`sudo mkdir -pv ${ROOTFS_DIR}/usr/include/libkwineffects && sudo tar xvf ${FILES_DIR}/tmp-kwin-include.tar.gz -C ${ROOTFS_DIR}/usr/include/libkwineffects/`); // todo temp: remove this eventually
         exec(`sudo arch-chroot ${ROOTFS_DIR} /bin/bash -x <<'EOF'
@@ -161,6 +166,7 @@ EOF`);
             mkdir -pv /opt/kde
             chown -R user:user /opt/kde
             ${arch === "arm64" ? 'ln -s /usr/bin/aarch64-unknown-linux-gnu-g++ "/usr/bin/ distcc g++"' : ''}
+            ${arch === "arm64" ? 'ln -s /usr/bin/aarch64-unknown-linux-gnu-g++ "/usr/bin/ g++"' : ''}
             ${arch === "x64" ? 'ln -s /usr/bin/g++ "/usr/bin/ g++"' : ''}
             sudo -u user bash << EOFSU
                 set -e
@@ -184,7 +190,7 @@ EOF`);
 EOFSU
             sleep 2
 EOF`);
-        exec(`sudo tar -czvf ${BUILD_DIR}/kde-cache.tar.gz -C ${ROOTFS_DIR}/opt/kde/ .`);
+        exec(`sudo tar --exclude='src' -cvf ${BUILD_DIR}/kde-cache.tar -C ${ROOTFS_DIR}/opt/kde/ .`);
     }
 
     exec(`sudo arch-chroot ${ROOTFS_DIR} /bin/bash -x <<'EOF'
@@ -215,15 +221,16 @@ EOF`);
         exec(`sudo arch-chroot ${ROOTFS_DIR}`);
     }
 
-    // Add pmos device /lib/modules and /usr/lib/firmware
-    console.log("Adding pmos device modules and firmware");
-    let kernel = "";
-    if(TARGET_DEVICE === "tablet-x64uefi") {
-        kernel = "edge";
-    }
-    // @ts-ignore
-    genPMOSImage(TARGET_DEVICE, kernel);
-
+    /* ------------- Target Devices ------------- */
+    const buildTargetDeviceSupport = (targetDevice: string) => {
+        console.log(`Building ${targetDevice} support`);
+        // Add pmos device /lib/modules and /usr/lib/firmware
+        console.log("Adding pmos device modules and firmware");
+        // @ts-ignore
+        genPMOSImage(targetDevice);
+        pmosFinalCleanup();
+    };
+    TARGET_DEVICE.split(",").forEach(buildTargetDeviceSupport);
     console.log("Stripping files from RootFS");
     exec(`
         sudo rm -rf ${ROOTFS_DIR}/opt/kde/build/*
@@ -232,35 +239,9 @@ EOF`);
         sudo rm -rf ${ROOTFS_DIR}/opt/kde/usr/share/kservices6/searchproviders/*
         sudo rm -rf ${ROOTFS_DIR}/usr/share/kservices5/searchproviders/*
     `);
-
     // Create squashfs from root
-    exec(`sudo rm -rf ${OUTPUT_DIR}/*`);
     exec(`mkdir -pv ${OUTPUT_DIR} && sudo mksquashfs ${ROOTFS_DIR} ${OUTPUT_DIR}/prolinux-root-${PROLINUX_VARIANT}-${PROLINUX_CHANNEL}.squish`);
-
-    // Format and place files into rootfs
-    exec(`
-        sudo mkfs.ext4 /dev/disk/by-label/pmOS_root -F -L pmOS_root
-        sudo mount /dev/disk/by-label/pmOS_root ${BUILD_DIR}/pmos_root_mnt
-        sudo rsync -ah --progress ${OUTPUT_DIR}/prolinux-root-${PROLINUX_VARIANT}-${PROLINUX_CHANNEL}.squish ${BUILD_DIR}/pmos_root_mnt/prolinux_a.squish
-        sudo mkdir -pv ${BUILD_DIR}/pmos_root_mnt/squishroot
-        sudo mkdir -pv ${BUILD_DIR}/pmos_root_mnt/persistroot
-        sudo mkdir -pv ${BUILD_DIR}/pmos_root_mnt/workdir
-        sudo mkdir -pv ${BUILD_DIR}/pmos_root_mnt/oroot
-        sudo mkdir -pv ${BUILD_DIR}/pmos_root_mnt/data
-        sudo cp -v ${FILES_DIR}/prolinux.toml ${BUILD_DIR}/pmos_root_mnt/data/prolinux.toml
-
-        # pmos init checks this to see if root was mounted
-        sudo mkdir -pv ${BUILD_DIR}/pmos_root_mnt/usr
-        
-        sudo umount /dev/disk/by-label/pmOS_root
-        sync
-    `);
-
-    pmosFinalCleanup();
-
-    exec(`
-        sudo cp -v /tmp/postmarketOS-export/*.img ${OUTPUT_DIR}
-    `);
+    //TARGET_DEVICE.split(",").forEach(buildTargetDeviceImage);
 
     exec(`echo "${buildnum},${builduuid},prolinux,${PROLINUX_VARIANT},${PROLINUX_CHANNEL},$(date),prolinux-root-${PROLINUX_VARIANT}-${PROLINUX_CHANNEL}.squish,${arch}" > ${OUTPUT_DIR}/prolinux-info.txt`);
 
