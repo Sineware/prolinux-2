@@ -5,3 +5,4 @@ export const OUTPUT_DIR = path.join(process.cwd(), "/output")
 export const FILES_DIR = path.join(__dirname + "/../../distro-files");
 export const arch = process.arch;
 export const TARGET_DEVICE = process.env.TARGET_DEVICE;
+export const MUSL_TOOLCHAIN = process.env.MUSL_TOOLCHAIN;

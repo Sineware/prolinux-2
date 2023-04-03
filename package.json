@@ -4,7 +4,7 @@
   "description": "ProLinux 2 Build Script",
   "main": "src/index.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "ts-node src/test.ts",
     "build": "ts-node src/index.ts",
     "deploy-update": "ts-node update-deployer/update-deployer.ts",
     "gen-image": "ts-node image-gen/image-gen.ts"

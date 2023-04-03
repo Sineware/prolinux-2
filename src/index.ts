@@ -6,6 +6,7 @@ import exec from "./helpers/exec";
 import { genPMOSImage, pmosFinalCleanup } from './pmbootstrap';
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
+import { compileKexecTools } from './custom-packages/kexec-tools';
 
 console.log("Starting ProLinux build on " + new Date().toLocaleString());
 
@@ -205,6 +206,7 @@ EOF`);
         systemctl enable prolinuxd
         systemctl enable lightdm
 
+        mkdir -pv /opt/device-support
         mkdir -pv /opt/build-info
         echo "${buildnum},${builduuid},prolinux,${PROLINUX_VARIANT},${PROLINUX_CHANNEL},$(date),prolinux-root-${PROLINUX_VARIANT}-${PROLINUX_CHANNEL}.squish,${arch}" >> /opt/build-info/prolinux-info.txt
         pacman -Q >> /opt/build-info/prolinux-sbom.txt
@@ -220,6 +222,10 @@ EOF`);
         console.log("Debug shell:");
         exec(`sudo arch-chroot ${ROOTFS_DIR}`);
     }
+
+    /* ------------- Addtional Packages ------------- */
+    // kexec-tools (for initramfs)
+    compileKexecTools();
 
     /* ------------- Target Devices ------------- */
     const buildTargetDeviceSupport = (targetDevice: string) => {

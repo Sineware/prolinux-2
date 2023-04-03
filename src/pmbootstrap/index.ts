@@ -80,6 +80,9 @@ export function genPMOSImage(device: string) {
         sudo rsync -a ${BUILD_DIR}/pmos_root_mnt/lib/firmware/ ${BUILD_DIR}/rootfs/lib/firmware
     `);
 
+    // Add kexec to initramfs
+    exec(`sudo cp -v {BUILD_DIR}/kexec-tools/build/sbin/kexec ${BUILD_DIR}/pmos_root_mnt/sbin/kexec`);
+
     // Find out the kernel folder name
     let kernelVer = fs.readdirSync(`${BUILD_DIR}/pmos_root_mnt/lib/modules`)[0];
 
@@ -99,7 +102,7 @@ export function genPMOSImage(device: string) {
         sudo cp -v ${BUILD_DIR}/pmos_root_mnt/lib/modules/${kernelVer}/kernel/fs/overlayfs/overlay.ko.* ${BUILD_DIR}/initramfs-work/lib/modules/${kernelVer}/kernel/fs/overlayfs/
         sudo cp -v ${FILES_DIR}/initramfs/pmos-logo-text.svg ${BUILD_DIR}/initramfs-work/usr/share/pbsplash/
 
-    `)
+    `);
 
     // Initramfs init
     let originalInit = fs.readFileSync(path.join(BUILD_DIR, "/initramfs-work/init")).toString().split("\n");
@@ -125,6 +128,10 @@ export function genPMOSImage(device: string) {
         sudo cp -v ${BUILD_DIR}/pmos_boot_mnt/initramfs ${OUTPUT_DIR}/${device}/initramfs
         sudo cp -v ${BUILD_DIR}/pmos_boot_mnt/initramfs-extra ${OUTPUT_DIR}/${device}/initramfs-extra
         sudo cp -v ${BUILD_DIR}/pmos_boot_mnt/vmlinuz ${OUTPUT_DIR}/${device}/vmlinuz
+        echo "Adding kernel+initramfs to /opt/device-support/-"
+        sudo cp -v ${BUILD_DIR}/pmos_boot_mnt/vmlinuz ${BUILD_DIR}/rootfs/opt/device-support/${device}/vmlinuz
+        sudo cp -v ${BUILD_DIR}/pmos_boot_mnt/initramfs ${BUILD_DIR}/rootfs/opt/device-support/${device}/initramfs
+        
     `)
 
     unmountPMOSImage();
