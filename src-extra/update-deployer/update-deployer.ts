@@ -1,8 +1,8 @@
 import * as dotenv from 'dotenv';
 dotenv.config();
 import fs from "fs";
-import exec from "../src/helpers/exec";
-import { OUTPUT_DIR } from '../src/helpers/consts';
+import exec from "../../src/helpers/exec";
+import { OUTPUT_DIR } from '../../src/helpers/consts';
 import * as jose from 'jose'
 import { Client } from 'pg'
 

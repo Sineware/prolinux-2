@@ -1,7 +1,7 @@
 import fs from "fs"
 import path from "path"
 import exec from "../helpers/exec"
-import { BUILD_DIR, FILES_DIR, OUTPUT_DIR } from "../helpers/consts";
+import { arch, BUILD_DIR, FILES_DIR, OUTPUT_DIR, ROOTFS_DIR, TARGET_DEVICE } from "../helpers/consts";
 
 export let loopDevice = "";
 
@@ -80,9 +80,6 @@ export function genPMOSImage(device: string) {
         sudo rsync -a ${BUILD_DIR}/pmos_root_mnt/lib/firmware/ ${BUILD_DIR}/rootfs/lib/firmware
     `);
 
-    // Add kexec to initramfs
-    exec(`sudo cp -v {BUILD_DIR}/kexec-tools/build/sbin/kexec ${BUILD_DIR}/pmos_root_mnt/sbin/kexec`);
-
     // Find out the kernel folder name
     let kernelVer = fs.readdirSync(`${BUILD_DIR}/pmos_root_mnt/lib/modules`)[0];
 
@@ -95,7 +92,7 @@ export function genPMOSImage(device: string) {
         sudo gunzip ${BUILD_DIR}/pmos_initramfs.gz -f
         cd initramfs-work
         sudo cpio --extract --make-directories --format=newc --no-absolute-filenames < ${BUILD_DIR}/pmos_initramfs
-
+        sudo cp -v ${BUILD_DIR}/kexec-tools/build/sbin/kexec ${BUILD_DIR}/initramfs-work/sbin/kexec
         sudo mkdir -pv ${BUILD_DIR}/initramfs-work/lib/modules/${kernelVer}/kernel/fs/squashfs
         sudo mkdir -pv ${BUILD_DIR}/initramfs-work/lib/modules/${kernelVer}/kernel/fs/overlayfs
         sudo cp -v ${BUILD_DIR}/pmos_root_mnt/lib/modules/${kernelVer}/kernel/fs/squashfs/squashfs.ko.* ${BUILD_DIR}/initramfs-work/lib/modules/${kernelVer}/kernel/fs/squashfs/
@@ -120,6 +117,7 @@ export function genPMOSImage(device: string) {
     exec(`
         sudo cp -v ${BUILD_DIR}/new-init ${BUILD_DIR}/initramfs-work/init
         sudo chmod +x ${BUILD_DIR}/initramfs-work/init
+        ${(arch === "x64") ? `sudo cp -r ${BUILD_DIR}/kernel/modroot/lib/modules/* ${BUILD_DIR}/initramfs-work/lib/modules/` : ""}
         cd ${BUILD_DIR}/initramfs-work/
         find . -print0 | cpio --null --create --verbose --format=newc | gzip --best > ${BUILD_DIR}/new-initramfs
         sudo cp -v ${BUILD_DIR}/new-initramfs ${BUILD_DIR}/pmos_boot_mnt/initramfs
@@ -127,11 +125,16 @@ export function genPMOSImage(device: string) {
         mkdir -pv ${OUTPUT_DIR}/${device}
         sudo cp -v ${BUILD_DIR}/pmos_boot_mnt/initramfs ${OUTPUT_DIR}/${device}/initramfs
         sudo cp -v ${BUILD_DIR}/pmos_boot_mnt/initramfs-extra ${OUTPUT_DIR}/${device}/initramfs-extra
-        sudo cp -v ${BUILD_DIR}/pmos_boot_mnt/vmlinuz ${OUTPUT_DIR}/${device}/vmlinuz
+        ${(arch === "arm64") ? `sudo cp -v ${BUILD_DIR}/pmos_boot_mnt/vmlinuz* ${OUTPUT_DIR}/${device}/vmlinuz` : `
+            echo "Copying custom compiled kernel for x64"
+            sudo cp -v ${BUILD_DIR}/kernel/vmlinuz ${BUILD_DIR}/pmos_boot_mnt/vmlinuz-edge
+            sudo rsync -a ${BUILD_DIR}/kernel/modroot/lib/modules/ ${BUILD_DIR}/rootfs/lib/modules
+        `}
         echo "Adding kernel+initramfs to /opt/device-support/-"
-        sudo cp -v ${BUILD_DIR}/pmos_boot_mnt/vmlinuz ${BUILD_DIR}/rootfs/opt/device-support/${device}/vmlinuz
+        sudo mkdir -pv ${ROOTFS_DIR}/opt/device-support/${device}
+        sudo cp -v ${BUILD_DIR}/pmos_boot_mnt/vmlinuz* ${BUILD_DIR}/rootfs/opt/device-support/${device}/vmlinuz
         sudo cp -v ${BUILD_DIR}/pmos_boot_mnt/initramfs ${BUILD_DIR}/rootfs/opt/device-support/${device}/initramfs
-        
+        sudo cp -v ${BUILD_DIR}/pmos_boot_mnt/vmlinuz* ${OUTPUT_DIR}/${device}/
     `)
 
     unmountPMOSImage();

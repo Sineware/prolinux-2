@@ -4,7 +4,9 @@
 # /workdir - overlayfs workdir
 # /oroot - target root
 echo "Running ProLinux Init script..."
-#pkill pbsplash
+show_splash "Loading system configuration..."
+pkill pbsplash
+
 sleep 1
 echo "-- Welcome to Sineware ProLinux 2 --"
 modprobe squashfs || show_splash "ERROR: Could not load squashfs module!"
@@ -19,15 +21,33 @@ echo "Loading System Configuration..."
 selected_root=$(awk -F "=" '/pl2.selected_root/ {print $2}' /sysroot/data/prolinux.toml | tr -d ' ' | tr -d "'")
 echo "Selected Root: $selected_root"
 sleep 2
-#/bin/busybox sh
 echo "----"
 
 mount -o loop /sysroot/prolinux_${selected_root}.squish /sysroot/squishroot || show_splash "ERROR: Could not mount squishroot!"
-mount -t overlay overlay -o lowerdir=/sysroot/squishroot,upperdir=/sysroot/persistroot,workdir=/sysroot/workdir /sysroot/oroot || show_splash "ERROR: Could not mount overlayfs!"
-mount --bind /sysroot /sysroot/oroot/sineware
-ls -l /sysroot
-echo "----"
 
-ls -l /sysroot/oroot
-echo "Starting up..."
-sleep 2
+if grep -q pl2.stage2 /proc/cmdline; then
+    echo "Loaded stage 2 kernel!"
+    # we are booted into the stage 2 kernel.
+    mount -t overlay overlay -o lowerdir=/sysroot/squishroot,upperdir=/sysroot/persistroot,workdir=/sysroot/workdir /sysroot/oroot || show_splash "ERROR: Could not mount overlayfs!"
+    mount --bind /sysroot /sysroot/oroot/sineware
+    ls -l /sysroot
+    echo "----"
+    #/bin/busybox sh
+
+    ls -l /sysroot/oroot
+    echo "Starting up..."
+    show_splash "Starting up..."
+    sleep 2
+else 
+    echo "Loading stage 2 kernel (kexec) from /sysroot/squishroot/device-support/$deviceinfo_codename/..."
+    cmdline=$(cat /proc/cmdline)
+    cmdline="$cmdline pl2.stage2"
+    kexec -l /sysroot/squishroot/opt/device-support/$deviceinfo_codename/vmlinuz --initrd=/sysroot/squishroot/opt/device-support/$deviceinfo_codename/initramfs --append="$cmdline"
+    umount /sysroot/squishroot
+    kexec -e
+    # if we get here, something went wrong
+    show_splash "ERROR: Could not kexec stage 2 kernel!"
+    while true; do
+        sleep 1
+    done
+fi

@@ -25,6 +25,9 @@ Environment Configuration (.env):
 # instead of recompiling during a image build.
 KDE_CACHE=true
 
+# Path to a musl toolchain
+MUSL_TOOLCHAIN=
+
 # defines what to build (mobile,dev is currently the only valid combo)
 PROLINUX_VARIANT=mobile
 PROLINUX_CHANNEL=dev
@@ -35,6 +38,8 @@ PGHOST=
 PGPASSWORD=
 PGDATABASE=
 PGPORT=
+
+PRIVATE_KEY=
 ```
 
 Then run:
@@ -48,7 +53,7 @@ This will (if successful) produce a image in "output/".
 
 TARGET_DEVICE is a postmarketOS device string. Currently only "simple" devices are supported (ones that produce a flashable image, not android sparse images. i.e. pine64-pinephone).
 
-Cross-compiling is not supported, arm64 targets must be built on arm64 devices. You probably want at least 64GB of free disk space.
+Cross-compiling is not supported, arm64 targets must be built on arm64 devices. You need at least 64GB of free disk space.
 
 
 ### QEMU (tablet-x64uefi testing)

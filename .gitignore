@@ -4,3 +4,6 @@ output/
 arch.tar.gz
 .env
 src/test.ts
+
+tmp/
+kernel/

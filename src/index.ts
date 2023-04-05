@@ -206,7 +206,6 @@ EOF`);
         systemctl enable prolinuxd
         systemctl enable lightdm
 
-        mkdir -pv /opt/device-support
         mkdir -pv /opt/build-info
         echo "${buildnum},${builduuid},prolinux,${PROLINUX_VARIANT},${PROLINUX_CHANNEL},$(date),prolinux-root-${PROLINUX_VARIANT}-${PROLINUX_CHANNEL}.squish,${arch}" >> /opt/build-info/prolinux-info.txt
         pacman -Q >> /opt/build-info/prolinux-sbom.txt

@@ -2,15 +2,20 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 import fs from "fs";
 import path from "path";
-import { OUTPUT_DIR, TARGET_DEVICE, BUILD_DIR, FILES_DIR } from '../src/helpers/consts';
-import exec from "../src/helpers/exec";
-import { createAndMountPMOSImage, unmountPMOSImage, pmosFinalCleanup, } from '../src/pmbootstrap';
+import { OUTPUT_DIR, TARGET_DEVICE, BUILD_DIR, FILES_DIR } from '../../src/helpers/consts';
+import exec from "../../src/helpers/exec";
+import { createAndMountPMOSImage, unmountPMOSImage, pmosFinalCleanup, } from '../../src/pmbootstrap';
 
 let PROLINUX_VARIANT = process.env.PROLINUX_VARIANT;
 let PROLINUX_CHANNEL = process.env.PROLINUX_CHANNEL;
 
 const buildTargetStandardPMOSDeviceImage = (targetDevice: string) => {
     console.log(`Building ${targetDevice} image`);
+    //exec(`sudo cp -v ${BUILD_DIR}/new-initramfs ${BUILD_DIR}/pmos_boot_mnt/initramfs`);
+    exec(`sudo cp -v ${OUTPUT_DIR}/${targetDevice}/* ${BUILD_DIR}/pmos_boot_mnt/`);
+    //exec(`bash`);
+    unmountPMOSImage();
+    
     // Format and place files into rootfs
     exec(`
         sudo mkfs.ext4 /dev/disk/by-label/pmOS_root -F -L pmOS_root
@@ -25,7 +30,6 @@ const buildTargetStandardPMOSDeviceImage = (targetDevice: string) => {
 
         # pmos init checks this to see if root was mounted
         sudo mkdir -pv ${BUILD_DIR}/pmos_root_mnt/usr
-        
         sudo umount /dev/disk/by-label/pmOS_root
         sync
     `);
@@ -46,7 +50,6 @@ export function main() {
     }
     createAndMountPMOSImage(TARGET_DEVICE);
     buildTargetStandardPMOSDeviceImage(TARGET_DEVICE);
-    unmountPMOSImage();
-    pmosFinalCleanup();
+    pmosFinalCleanup(); // losetup -d
 }
 main();

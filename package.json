@@ -6,8 +6,9 @@
   "scripts": {
     "test": "ts-node src/test.ts",
     "build": "ts-node src/index.ts",
-    "deploy-update": "ts-node update-deployer/update-deployer.ts",
-    "gen-image": "ts-node image-gen/image-gen.ts"
+    "deploy-update": "ts-node src-extra/update-deployer/update-deployer.ts",
+    "gen-image": "ts-node src-extra/image-gen/image-gen.ts",
+    "gen-kernel": "ts-node src-extra/kernel-gen/kernel-gen.ts"
   },
   "author": "Seshan Ravikumar",
   "license": "GPL-3.0",
