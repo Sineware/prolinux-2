@@ -34,9 +34,11 @@ if grep -q pl2.stage2 /proc/cmdline; then
     # if we are locked, we need to mount the locked rootfs
     if [ "$locked_root" = "true" ]; then
         echo "Locked rootfs detected, mounting..."
-        mkdir -pv /sysroot/tmproot
+        mkdir -pv /tmproot
         mount -t tmpfs tmpfs /tmproot
-        mount -t overlay overlay -o lowerdir=/sysroot/squishroot,lowerdir=/sysroot/persistroot,upperdir=/sysroot/tmproot,workdir=/sysroot/workdir /sysroot/oroot || show_splash "ERROR: Could not mount overlayfs!"
+        mkdir -pv /tmproot/overlay
+        mkdir -pv /tmproot/workdir
+        mount -t overlay overlay -o lowerdir=/sysroot/squishroot:/sysroot/persistroot,upperdir=/tmproot/overlay,workdir=/tmproot/workdir /sysroot/oroot || show_splash "ERROR: Could not mount overlayfs!"
     else
         mount -t overlay overlay -o lowerdir=/sysroot/squishroot,upperdir=/sysroot/persistroot,workdir=/sysroot/workdir /sysroot/oroot || show_splash "ERROR: Could not mount overlayfs!"
     fi
@@ -58,9 +60,12 @@ else
     kexec -l /sysroot/squishroot/opt/device-support/$deviceinfo_codename/vmlinuz --initrd=/sysroot/squishroot/opt/device-support/$deviceinfo_codename/initramfs --append="$cmdline"
     umount /sysroot/squishroot
     kexec -e
-    # if we get here, something went wrong
+
+    # kexec failed
     show_splash "ERROR: Could not kexec stage 2 kernel!"
-    while true; do
-        sleep 1
-    done
+    sleep 5
+    pkill pbsplash
+    /bin/busybox sh
 fi
+#pkill pbsplash
+#/bin/busybox sh
