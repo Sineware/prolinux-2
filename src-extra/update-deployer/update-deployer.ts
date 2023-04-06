@@ -2,7 +2,7 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 import fs from "fs";
 import exec from "../../src/helpers/exec";
-import { OUTPUT_DIR } from '../../src/helpers/consts';
+import { OUTPUT_DIR, arch } from '../../src/helpers/consts';
 import * as jose from 'jose'
 import { Client } from 'pg'
 
@@ -72,7 +72,7 @@ async function main() {
         );
     */
     
-    exec(`rsync -aHAXxv --delete --progress ${OUTPUT_DIR}/ espimac:/var/www/sineware/repo/${prolinuxInfo.product}/${prolinuxInfo.variant}/${prolinuxInfo.channel}/${prolinuxInfo.arch}`);
+    exec(`rsync -aHAXxv --progress ${OUTPUT_DIR}/ espimac:/var/www/sineware/repo/${prolinuxInfo.product}/${prolinuxInfo.variant}/${prolinuxInfo.channel}/${prolinuxInfo.arch}`);
     exec(`ssh espimac "cd /var/www/sineware/repo/${prolinuxInfo.product}/${prolinuxInfo.variant}/${prolinuxInfo.channel}/${prolinuxInfo.arch}/ && zsyncmake ${prolinuxInfo.filename}"`);
         
     // insert the new update into the database
@@ -84,11 +84,11 @@ async function main() {
             prolinuxInfo.variant,
             prolinuxInfo.channel,
             prolinuxInfo.buildnum,
-            "",
+            "Plasma Mobile Nightly",
             true,
             `/${prolinuxInfo.product}/${prolinuxInfo.variant}/${prolinuxInfo.channel}/${prolinuxInfo.filename}`,
             jwt,
-            "x64"
+            prolinuxInfo.arch,
             ]
         );
     client.end();

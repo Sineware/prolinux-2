@@ -26,6 +26,9 @@ const buildTargetStandardPMOSDeviceImage = (targetDevice: string) => {
         sudo mkdir -pv ${BUILD_DIR}/pmos_root_mnt/workdir
         sudo mkdir -pv ${BUILD_DIR}/pmos_root_mnt/oroot
         sudo mkdir -pv ${BUILD_DIR}/pmos_root_mnt/data
+        sudo mkdir -pv ${BUILD_DIR}/pmos_root_mnt/data/home
+        sudo cp -r ${FILES_DIR}/layout/home/* ${BUILD_DIR}/pmos_root_mnt/data/home/
+        sudo chown -R 1000:1000 ${BUILD_DIR}/pmos_root_mnt/data/home/user
         sudo cp -v ${FILES_DIR}/prolinux.toml ${BUILD_DIR}/pmos_root_mnt/data/prolinux.toml
 
         # pmos init checks this to see if root was mounted

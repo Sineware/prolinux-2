@@ -11,6 +11,7 @@ export function createAndMountPMOSImage(device: string): string {
         kernel = "edge";
     }
     exec(`
+        sudo rm -rf /tmp/postmarketOS-export/*
         yes "" | pmbootstrap -q init
 
         pmbootstrap config ui none

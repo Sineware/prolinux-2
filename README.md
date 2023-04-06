@@ -2,6 +2,7 @@
 
 ProLinux 2 is a GNU/Linux distribution with an immutable root (A/B SquashFS), writable overlay, Flatpak, and ProLinux management tools.
 
+Info and Downloads: [https://sineware.ca/prolinux/
 
 > Warning: this project is not ready for use! It is under development and probably broken at any given time.
 
@@ -23,9 +24,9 @@ Environment Configuration (.env):
 ```env
 # Upon a successful kdesrc-build, a cache tar.gz is created which can be used
 # instead of recompiling during a image build.
-KDE_CACHE=true
+KDE_CACHE=false
 
-# Path to a musl toolchain
+# Path to a musl toolchain (ex. from musl.cc)
 MUSL_TOOLCHAIN=
 
 # defines what to build (mobile,dev is currently the only valid combo)
@@ -47,6 +48,7 @@ Then run:
 git submodule update --init
 npm install
 TARGET_DEVICE=tablet-x64uefi npm run build
+TARGET_DEVICE=tablet-x64uefi npm run gen-image
 ```
 
 This will (if successful) produce a image in "output/".

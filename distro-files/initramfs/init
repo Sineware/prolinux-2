@@ -1,11 +1,12 @@
 # ProLinux Init
 # /squishroot - squashfs rootfs
 # /persistroot - overlayed persisant storage
+# /tmproot - overlayed tmpfs
 # /workdir - overlayfs workdir
 # /oroot - target root
 echo "Running ProLinux Init script..."
 show_splash "Loading system configuration..."
-pkill pbsplash
+#pkill pbsplash
 
 sleep 1
 echo "-- Welcome to Sineware ProLinux 2 --"
@@ -19,7 +20,9 @@ echo "----"
 echo "Loading System Configuration..."
 # read /sysroot/data/prolinux.toml for which squashfs to use
 selected_root=$(awk -F "=" '/pl2.selected_root/ {print $2}' /sysroot/data/prolinux.toml | tr -d ' ' | tr -d "'")
+locked_root=$(awk -F "=" '/pl2.locked_root/ {print $2}' /sysroot/data/prolinux.toml | tr -d ' ' | tr -d "'")
 echo "Selected Root: $selected_root"
+echo "Locked Root: $locked_root"
 sleep 2
 echo "----"
 
@@ -28,14 +31,24 @@ mount -o loop /sysroot/prolinux_${selected_root}.squish /sysroot/squishroot || s
 if grep -q pl2.stage2 /proc/cmdline; then
     echo "Loaded stage 2 kernel!"
     # we are booted into the stage 2 kernel.
-    mount -t overlay overlay -o lowerdir=/sysroot/squishroot,upperdir=/sysroot/persistroot,workdir=/sysroot/workdir /sysroot/oroot || show_splash "ERROR: Could not mount overlayfs!"
+    # if we are locked, we need to mount the locked rootfs
+    if [ "$locked_root" = "true" ]; then
+        echo "Locked rootfs detected, mounting..."
+        mkdir -pv /sysroot/tmproot
+        mount -t tmpfs tmpfs /tmproot
+        mount -t overlay overlay -o lowerdir=/sysroot/squishroot,lowerdir=/sysroot/persistroot,upperdir=/sysroot/tmproot,workdir=/sysroot/workdir /sysroot/oroot || show_splash "ERROR: Could not mount overlayfs!"
+    else
+        mount -t overlay overlay -o lowerdir=/sysroot/squishroot,upperdir=/sysroot/persistroot,workdir=/sysroot/workdir /sysroot/oroot || show_splash "ERROR: Could not mount overlayfs!"
+    fi
     mount --bind /sysroot /sysroot/oroot/sineware
+    mount --bind /sysroot/data/home /sysroot/oroot/home
     ls -l /sysroot
     echo "----"
     #/bin/busybox sh
 
     ls -l /sysroot/oroot
     echo "Starting up..."
+    
     show_splash "Starting up..."
     sleep 2
 else 
