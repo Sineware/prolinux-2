@@ -72,9 +72,15 @@ async function main() {
         );
     */
     
-    exec(`rsync -aHAXxv --progress ${OUTPUT_DIR}/ swadmin@router.sineware.ca:/mnt/www_vol/repo/${prolinuxInfo.product}/${prolinuxInfo.variant}/${prolinuxInfo.channel}/${prolinuxInfo.arch}`);
-    exec(`ssh swadmin@router.sineware.ca "cd /mnt/www_vol/repo/${prolinuxInfo.product}/${prolinuxInfo.variant}/${prolinuxInfo.channel}/${prolinuxInfo.arch}/ && zsyncmake ${prolinuxInfo.filename}"`);
-        
+    console.log("Compressing images...");
+    exec(`gzip --rsyncable ${OUTPUT_DIR}/*.img`);
+    
+    exec(` pushd .
+        cd ${OUTPUT_DIR}
+        zsyncmake -C -u ${prolinuxInfo.filename}
+    popd`)
+    exec(`s3cmd sync ${OUTPUT_DIR}/ s3://prolinux-update/${prolinuxInfo.product}/${prolinuxInfo.variant}/${prolinuxInfo.channel}/arm64/ --acl-public --delete-removed --recursive --dry-run`)
+
     // insert the new update into the database
     console.log("Inserting the new update into the database...");
     await client.query("INSERT INTO updates (uuid, product, variant, channel, buildnum, buildstring, isreleased, url, jwt, arch) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)", 

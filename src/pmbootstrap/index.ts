@@ -1,15 +1,11 @@
 import fs from "fs"
 import path from "path"
 import exec from "../helpers/exec"
-import { arch, BUILD_DIR, FILES_DIR, OUTPUT_DIR, ROOTFS_DIR, TARGET_DEVICE } from "../helpers/consts";
+import { arch, BUILD_DIR, FILES_DIR, OUTPUT_DIR, ROOTFS_DIR, ACCEPTABLE_ANDROID_DEVICES, ACCEPTABLE_STANDARD_DEVICES } from "../helpers/consts";
 
 export let loopDevice = "";
 
-export function createAndMountPMOSImage(device: string): string {
-    let kernel = "";
-    if(device === "tablet-x64uefi") {
-        kernel = "edge";
-    }
+export function createAndMountPMOSImage(device: string, kernel: string): string {
     exec(`
         sudo rm -rf /tmp/postmarketOS-export/*
         yes "" | pmbootstrap -q init
@@ -25,18 +21,24 @@ export function createAndMountPMOSImage(device: string): string {
             -m http://dl-cdn.alpinelinux.org/alpine/ \
             -mp http://mirror.postmarketos.org/postmarketos/ \
             --details-to-stdout \
-            install
+            install --no-sparse
 
         pmbootstrap export
     `);
     loopDevice = exec("sudo losetup -f", false).toString().trim();
     console.log(loopDevice);
+
+    let loopExtraArgs = "";
+    let rootfs_image_sector_size = ACCEPTABLE_ANDROID_DEVICES.find((d) => d.name === device)?.rootfs_image_sector_size;
+    if (rootfs_image_sector_size) {
+        loopExtraArgs += "-b " + rootfs_image_sector_size;
+    }
     exec(`
         set -e
         echo "Expanding pmos image..."
         sudo truncate -s 5G /tmp/postmarketOS-export/${device}.img
         
-        sudo losetup -f -P /tmp/postmarketOS-export/${device}.img
+        sudo losetup -f -P /tmp/postmarketOS-export/${device}.img ${loopExtraArgs}
         losetup -l
         sudo partprobe ${loopDevice}
         sudo udevadm trigger
@@ -59,6 +61,7 @@ export function createAndMountPMOSImage(device: string): string {
         sudo mount /dev/disk/by-label/pmOS_root ${BUILD_DIR}/pmos_root_mnt
         sudo mount /dev/disk/by-label/pmOS_boot ${BUILD_DIR}/pmos_boot_mnt
     `);
+    
     return loopDevice;
 }
 export function unmountPMOSImage() {
@@ -73,8 +76,6 @@ export function pmosFinalCleanup() {
 }
 
 export function genPMOSImage(device: string) {
-    createAndMountPMOSImage(device);
-
     exec(`
         sudo mkdir -pv ${BUILD_DIR}/rootfs/lib/modules/ ${BUILD_DIR}/rootfs/lib/firmware/
         sudo rsync -a ${BUILD_DIR}/pmos_root_mnt/lib/modules/ ${BUILD_DIR}/rootfs/lib/modules
@@ -83,6 +84,9 @@ export function genPMOSImage(device: string) {
 
     // Find out the kernel folder name
     let kernelVer = fs.readdirSync(`${BUILD_DIR}/pmos_root_mnt/lib/modules`)[0];
+
+    // is squashfs builtin
+    let squash_builtin = ACCEPTABLE_ANDROID_DEVICES.find((d) => d.name === device)?.squash_builtin;
 
     // extract initramfs
     exec(`
@@ -96,10 +100,9 @@ export function genPMOSImage(device: string) {
         sudo cp -v ${BUILD_DIR}/kexec-tools/build/sbin/kexec ${BUILD_DIR}/initramfs-work/sbin/kexec
         sudo mkdir -pv ${BUILD_DIR}/initramfs-work/lib/modules/${kernelVer}/kernel/fs/squashfs
         sudo mkdir -pv ${BUILD_DIR}/initramfs-work/lib/modules/${kernelVer}/kernel/fs/overlayfs
-        sudo cp -v ${BUILD_DIR}/pmos_root_mnt/lib/modules/${kernelVer}/kernel/fs/squashfs/squashfs.ko.* ${BUILD_DIR}/initramfs-work/lib/modules/${kernelVer}/kernel/fs/squashfs/
-        sudo cp -v ${BUILD_DIR}/pmos_root_mnt/lib/modules/${kernelVer}/kernel/fs/overlayfs/overlay.ko.* ${BUILD_DIR}/initramfs-work/lib/modules/${kernelVer}/kernel/fs/overlayfs/
+        ${squash_builtin ? "" :  `sudo cp -v ${BUILD_DIR}/pmos_root_mnt/lib/modules/${kernelVer}/kernel/fs/squashfs/squashfs.ko* ${BUILD_DIR}/initramfs-work/lib/modules/${kernelVer}/kernel/fs/squashfs/`}
+        sudo cp -v ${BUILD_DIR}/pmos_root_mnt/lib/modules/${kernelVer}/kernel/fs/overlayfs/overlay.ko* ${BUILD_DIR}/initramfs-work/lib/modules/${kernelVer}/kernel/fs/overlayfs/
         sudo cp -v ${FILES_DIR}/initramfs/pmos-logo-text.svg ${BUILD_DIR}/initramfs-work/usr/share/pbsplash/
-
     `);
 
     // Initramfs init
@@ -133,9 +136,8 @@ export function genPMOSImage(device: string) {
         `}
         echo "Adding kernel+initramfs to /opt/device-support/-"
         sudo mkdir -pv ${ROOTFS_DIR}/opt/device-support/${device}
-        sudo cp -v ${BUILD_DIR}/pmos_boot_mnt/vmlinuz* ${BUILD_DIR}/rootfs/opt/device-support/${device}/vmlinuz
-        sudo cp -v ${BUILD_DIR}/pmos_boot_mnt/initramfs ${BUILD_DIR}/rootfs/opt/device-support/${device}/initramfs
-        sudo cp -v ${BUILD_DIR}/pmos_boot_mnt/vmlinuz* ${OUTPUT_DIR}/${device}/
+        sudo cp -rv ${BUILD_DIR}/pmos_boot_mnt/* ${BUILD_DIR}/rootfs/opt/device-support/${device}/
+        sudo cp -rv ${BUILD_DIR}/pmos_boot_mnt/* ${OUTPUT_DIR}/${device}/
     `)
 
     unmountPMOSImage();
