@@ -139,8 +139,9 @@ export function genPMOSImage(device: string) {
             sudo rsync -a ${BUILD_DIR}/kernel/modroot/lib/modules/ ${BUILD_DIR}/rootfs/lib/modules
         `}
     `)
-    let should_gunzip_vmlinuz = ACCEPTABLE_ANDROID_DEVICES.find((d) => d.name === device)?.should_gunzip_vmlinuz;
-    if(should_gunzip_vmlinuz) {
+    let should_gunzip_vmlinuz_android = ACCEPTABLE_ANDROID_DEVICES.find((d) => d.name === device)?.should_gunzip_vmlinuz;
+    let should_gunzip_vmlinuz_standard = ACCEPTABLE_STANDARD_DEVICES.find((d) => d.name === device)?.should_gunzip_vmlinuz;
+    if(should_gunzip_vmlinuz_android || should_gunzip_vmlinuz_standard) {
         exec(`
             sudo mv -v ${BUILD_DIR}/rootfs/opt/device-support/${device}/vmlinuz ${BUILD_DIR}/rootfs/opt/device-support/${device}/vmlinuz.gz
             sudo gunzip -v ${BUILD_DIR}/rootfs/opt/device-support/${device}/vmlinuz.gz

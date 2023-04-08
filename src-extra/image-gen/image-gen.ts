@@ -2,7 +2,7 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 import fs from "fs";
 import path from "path";
-import { OUTPUT_DIR, TARGET_DEVICE, BUILD_DIR, FILES_DIR } from '../../src/helpers/consts';
+import { OUTPUT_DIR, TARGET_DEVICE, BUILD_DIR, FILES_DIR, ACCEPTABLE_ANDROID_DEVICES } from '../../src/helpers/consts';
 import exec from "../../src/helpers/exec";
 import { createAndMountPMOSImage, unmountPMOSImage, pmosFinalCleanup, } from '../../src/pmbootstrap';
 
@@ -40,6 +40,24 @@ const buildTargetStandardPMOSDeviceImage = (targetDevice: string) => {
     exec(`
         sudo cp -v /tmp/postmarketOS-export/*.img ${OUTPUT_DIR}
     `);
+
+    let adevice = ACCEPTABLE_ANDROID_DEVICES.find((d) => d.name === targetDevice)
+    if(adevice) {
+            // Convert to Android sparse image
+            exec(`
+                sudo img2simg ${OUTPUT_DIR}/${targetDevice}.img ${OUTPUT_DIR}/${targetDevice}.img ${adevice.rootfs_image_sector_size ?? ""} || echo "Image already sparse?"
+            `);
+            // Insert initramfs into boot.img
+            exec(`pushd .
+                cd ${OUTPUT_DIR}/${targetDevice}
+                mkdir -pv work
+                cd work
+                sudo abootimg -x ../boot.img
+                sudo sed -i "s/bootsize.*/bootsize = 0xf00000/g" bootimg.cfg
+                sudo abootimg --create boot.img -f bootimg.cfg -k zImage -r ../initramfs
+                sudo mv boot.img ../boot.img
+            popd`);
+    }
 
 };
 export function main() {

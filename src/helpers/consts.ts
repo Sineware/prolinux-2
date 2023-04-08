@@ -7,10 +7,13 @@ export const FILES_DIR = path.join(__dirname + "/../../distro-files");
 export const arch = process.arch;
 export const TARGET_DEVICE = process.env.TARGET_DEVICE;
 export const ACCEPTABLE_STANDARD_DEVICES = [
-    "pine64-pinephone",
-    "pine64-pinephonepro",
-    "pine64-pinebookpro",
-    "tablet-x64uefi"
+    { "name": "pine64-pinephone" },
+    { 
+        "name": "pine64-pinephonepro",
+        "should_gunzip_vmlinuz": true
+    },
+    { "name": "pine64-pinebookpro" },
+    { "name": "tablet-x64uefi" }
 ];
 export const ACCEPTABLE_ANDROID_DEVICES = [
     {
