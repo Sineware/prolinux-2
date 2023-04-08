@@ -75,7 +75,7 @@ async function main() {
     console.log("Compressing images...");
     exec(`gzip --rsyncable ${OUTPUT_DIR}/*.img`);
     
-    exec(` pushd .
+    exec(`pushd .
         cd ${OUTPUT_DIR}
         zsyncmake -C -u ${prolinuxInfo.filename}
     popd`)

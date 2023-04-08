@@ -119,7 +119,7 @@ EOF`);
     exec(`sudo mount --bind ${BUILD_DIR}/cache-src ${ROOTFS_DIR}/opt/kde/src`);
 
     /* ------------- ProLinuxD ------------- */
-    /*exec(`
+    exec(`
         set -e
         pwd
         pushd .
@@ -130,7 +130,7 @@ EOF`);
             sudo cp -rv dist/* ${ROOTFS_DIR}/opt/prolinuxd/
             sudo cp -v distro-files/plctl ${ROOTFS_DIR}/usr/sbin/
         popd
-    `);*/
+    `);
     
     /* ------------- kdesrc-build ------------- */
 

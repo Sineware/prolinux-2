@@ -12,7 +12,7 @@ let PROLINUX_CHANNEL = process.env.PROLINUX_CHANNEL;
 const buildTargetStandardPMOSDeviceImage = (targetDevice: string) => {
     console.log(`Building ${targetDevice} image`);
     //exec(`sudo cp -v ${BUILD_DIR}/new-initramfs ${BUILD_DIR}/pmos_boot_mnt/initramfs`);
-    exec(`sudo cp -v ${OUTPUT_DIR}/${targetDevice}/* ${BUILD_DIR}/pmos_boot_mnt/`);
+    exec(`sudo cp -rv ${OUTPUT_DIR}/${targetDevice}/* ${BUILD_DIR}/pmos_boot_mnt/`);
     //exec(`bash`);
     unmountPMOSImage();
     
@@ -40,19 +40,24 @@ const buildTargetStandardPMOSDeviceImage = (targetDevice: string) => {
     exec(`
         sudo cp -v /tmp/postmarketOS-export/*.img ${OUTPUT_DIR}
     `);
+
 };
 export function main() {
     if (!TARGET_DEVICE) {
         console.log("TARGET_DEVICE is not set");
         process.exit(1);
     }
-    let targetDeviceFolder = path.join(OUTPUT_DIR, TARGET_DEVICE);
+    let device;
+    let kernel;
+    [device, kernel] = TARGET_DEVICE.split(":");
+
+    let targetDeviceFolder = path.join(OUTPUT_DIR, device);
     if (!fs.existsSync(targetDeviceFolder)) {
         console.log(`${targetDeviceFolder} does not exist`);
         process.exit(1);
     }
-    createAndMountPMOSImage(TARGET_DEVICE);
-    buildTargetStandardPMOSDeviceImage(TARGET_DEVICE);
+    createAndMountPMOSImage(device, kernel);
+    buildTargetStandardPMOSDeviceImage(device);
     pmosFinalCleanup(); // losetup -d
 }
 main();

@@ -127,18 +127,25 @@ export function genPMOSImage(device: string) {
         sudo cp -v ${BUILD_DIR}/new-initramfs ${BUILD_DIR}/pmos_boot_mnt/initramfs
 
         mkdir -pv ${OUTPUT_DIR}/${device}
-        sudo cp -v ${BUILD_DIR}/pmos_boot_mnt/initramfs ${OUTPUT_DIR}/${device}/initramfs
-        sudo cp -v ${BUILD_DIR}/pmos_boot_mnt/initramfs-extra ${OUTPUT_DIR}/${device}/initramfs-extra
-        ${(arch === "arm64") ? `sudo cp -v ${BUILD_DIR}/pmos_boot_mnt/vmlinuz* ${OUTPUT_DIR}/${device}/vmlinuz` : `
-            echo "Copying custom compiled kernel for x64"
-            sudo cp -v ${BUILD_DIR}/kernel/vmlinuz ${BUILD_DIR}/pmos_boot_mnt/vmlinuz-edge
-            sudo rsync -a ${BUILD_DIR}/kernel/modroot/lib/modules/ ${BUILD_DIR}/rootfs/lib/modules
-        `}
+        
         echo "Adding kernel+initramfs to /opt/device-support/-"
         sudo mkdir -pv ${ROOTFS_DIR}/opt/device-support/${device}
         sudo cp -rv ${BUILD_DIR}/pmos_boot_mnt/* ${BUILD_DIR}/rootfs/opt/device-support/${device}/
         sudo cp -rv ${BUILD_DIR}/pmos_boot_mnt/* ${OUTPUT_DIR}/${device}/
+
+        ${(arch === "arm64") ? `` : `
+            echo "Copying custom compiled kernel for x64"
+            sudo cp -v ${BUILD_DIR}/kernel/vmlinuz ${BUILD_DIR}/pmos_boot_mnt/vmlinuz-edge
+            sudo rsync -a ${BUILD_DIR}/kernel/modroot/lib/modules/ ${BUILD_DIR}/rootfs/lib/modules
+        `}
     `)
+    let should_gunzip_vmlinuz = ACCEPTABLE_ANDROID_DEVICES.find((d) => d.name === device)?.should_gunzip_vmlinuz;
+    if(should_gunzip_vmlinuz) {
+        exec(`
+            sudo mv -v ${BUILD_DIR}/rootfs/opt/device-support/${device}/vmlinuz ${BUILD_DIR}/rootfs/opt/device-support/${device}/vmlinuz.gz
+            sudo gunzip -v ${BUILD_DIR}/rootfs/opt/device-support/${device}/vmlinuz.gz
+        `);
+    }
 
     unmountPMOSImage();
 }
