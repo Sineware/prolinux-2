@@ -45,7 +45,9 @@ const buildTargetStandardPMOSDeviceImage = (targetDevice: string) => {
     if(adevice) {
             // Convert to Android sparse image
             exec(`
-                sudo img2simg ${OUTPUT_DIR}/${targetDevice}.img ${OUTPUT_DIR}/${targetDevice}.img ${adevice.rootfs_image_sector_size ?? ""} || echo "Image already sparse?"
+                sudo mv ${OUTPUT_DIR}/${targetDevice}.img ${OUTPUT_DIR}/${targetDevice}-raw.img
+                sudo img2simg ${OUTPUT_DIR}/${targetDevice}-raw.img ${OUTPUT_DIR}/${targetDevice}.img ${adevice.rootfs_image_sector_size ?? ""}
+                sudo rm -rf ${OUTPUT_DIR}/${targetDevice}-raw.img
             `);
             // Insert initramfs into boot.img
             exec(`pushd .
