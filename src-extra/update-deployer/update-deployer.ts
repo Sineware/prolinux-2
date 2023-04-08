@@ -73,13 +73,13 @@ async function main() {
     */
     
     console.log("Compressing images...");
-    exec(`gzip --rsyncable ${OUTPUT_DIR}/*.img`);
+    exec(`gzip --rsyncable ${OUTPUT_DIR}/*.img || true`);
     
     exec(`pushd .
         cd ${OUTPUT_DIR}
-        zsyncmake -C -u ${prolinuxInfo.filename}
+        zsyncmake -C ${prolinuxInfo.filename}
     popd`)
-    exec(`s3cmd sync ${OUTPUT_DIR}/ s3://prolinux-update/${prolinuxInfo.product}/${prolinuxInfo.variant}/${prolinuxInfo.channel}/arm64/ --acl-public --delete-removed --recursive --dry-run`)
+    exec(`s3cmd sync ${OUTPUT_DIR}/ s3://prolinux-update/${prolinuxInfo.product}/${prolinuxInfo.variant}/${prolinuxInfo.channel}/arm64/ --acl-public --delete-removed --recursive`)
 
     // insert the new update into the database
     console.log("Inserting the new update into the database...");

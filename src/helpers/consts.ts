@@ -12,7 +12,10 @@ export const ACCEPTABLE_STANDARD_DEVICES = [
         "name": "pine64-pinephonepro",
         "should_gunzip_vmlinuz": true
     },
-    { "name": "pine64-pinebookpro" },
+    {
+        "name": "pine64-pinebookpro",
+        "should_gunzip_vmlinuz": true
+    },
     { "name": "tablet-x64uefi" }
 ];
 export const ACCEPTABLE_ANDROID_DEVICES = [
