@@ -73,7 +73,7 @@ async function main() {
     */
     
     console.log("Compressing images...");
-    exec(`gzip --rsyncable ${OUTPUT_DIR}/*.img || true`);
+    exec(`pigz --rsyncable ${OUTPUT_DIR}/*.img || true`);
     
     exec(`pushd .
         cd ${OUTPUT_DIR}

@@ -21,6 +21,7 @@ ProLinux 2 Plasma Mobile Nightly Edition piggy-backs on parts of postmarketOS (i
 - arch-install-scripts
 - abootimg
 - simg2img
+- pigz
 
 Environment Configuration (.env):
 ```env

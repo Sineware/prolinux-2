@@ -11,7 +11,7 @@ import { compileKexecTools } from './custom-packages/kexec-tools';
 console.log("Starting ProLinux build on " + new Date().toLocaleString());
 
 const ARCH_URL = {
-    "x64": "https://archive.archlinux.org/iso/2023.03.01/archlinux-bootstrap-x86_64.tar.gz",
+    "x64": "https://archive.archlinux.org/iso/2023.04.01/archlinux-bootstrap-x86_64.tar.gz",
     "arm64": "http://os.archlinuxarm.org/os/ArchLinuxARM-aarch64-latest.tar.gz"
 }
 
@@ -239,6 +239,13 @@ EOF`);
         createAndMountPMOSImage(device, kernel);
         genPMOSImage(device);
         pmosFinalCleanup();
+        // copy device image to staging
+        exec(`
+            sync
+            sleep 1
+            mkdir -pv ${BUILD_DIR}/img-staging
+            sudo cp /tmp/postmarketOS-export/${device}.img ${BUILD_DIR}/img-staging/${device}.img
+        `);
     };
     TARGET_DEVICE.split(",").forEach(buildTargetDeviceSupport);
     console.log("Stripping files from RootFS");
