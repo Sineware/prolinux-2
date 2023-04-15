@@ -16,7 +16,10 @@ export const ACCEPTABLE_STANDARD_DEVICES = [
         "name": "pine64-pinebookpro",
         "should_gunzip_vmlinuz": true
     },
-    { "name": "tablet-x64uefi" }
+    { "name": "tablet-x64uefi",
+        "should_gunzip_vmlinuz": false
+
+     }
 ];
 export const ACCEPTABLE_ANDROID_DEVICES = [
     {
@@ -35,3 +38,5 @@ export const ACCEPTABLE_ANDROID_DEVICES = [
 export const MUSL_TOOLCHAIN = process.env.MUSL_TOOLCHAIN;
 export const X64_KERNEL = "https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.2.9.tar.xz";
 //export const GIT_COMMIT = exec("git rev-parse HEAD", false).toString().trim() ?? "unknown";
+export let PROLINUX_VARIANT = process.env.PROLINUX_VARIANT;
+export let PROLINUX_CHANNEL = process.env.PROLINUX_CHANNEL;

@@ -27,6 +27,7 @@ export function createAndMountPMOSImage(device: string, kernel: string): string 
     `);
     loopDevice = exec("sudo losetup -f", false).toString().trim();
     console.log(loopDevice);
+    fs.writeFileSync(path.join(BUILD_DIR, "loop_device.txt"), loopDevice);
 
     let loopExtraArgs = "";
     let rootfs_image_sector_size = ACCEPTABLE_ANDROID_DEVICES.find((d) => d.name === device)?.rootfs_image_sector_size;
@@ -128,16 +129,16 @@ export function genPMOSImage(device: string) {
 
         mkdir -pv ${OUTPUT_DIR}/${device}
         
-        echo "Adding kernel+initramfs to /opt/device-support/-"
-        sudo mkdir -pv ${ROOTFS_DIR}/opt/device-support/${device}
-        sudo cp -rv ${BUILD_DIR}/pmos_boot_mnt/* ${BUILD_DIR}/rootfs/opt/device-support/${device}/
-        sudo cp -rv ${BUILD_DIR}/pmos_boot_mnt/* ${OUTPUT_DIR}/${device}/
-
         ${(arch === "arm64") ? `` : `
             echo "Copying custom compiled kernel for x64"
             sudo cp -v ${BUILD_DIR}/kernel/vmlinuz ${BUILD_DIR}/pmos_boot_mnt/vmlinuz-edge
             sudo rsync -a ${BUILD_DIR}/kernel/modroot/lib/modules/ ${BUILD_DIR}/rootfs/lib/modules
         `}
+        
+        echo "Adding kernel+initramfs to /opt/device-support/-"
+        sudo mkdir -pv ${ROOTFS_DIR}/opt/device-support/${device}
+        sudo cp -rv ${BUILD_DIR}/pmos_boot_mnt/* ${BUILD_DIR}/rootfs/opt/device-support/${device}/
+        sudo cp -rv ${BUILD_DIR}/pmos_boot_mnt/* ${OUTPUT_DIR}/${device}/
     `)
     let should_gunzip_vmlinuz_android = ACCEPTABLE_ANDROID_DEVICES.find((d) => d.name === device)?.should_gunzip_vmlinuz;
     let should_gunzip_vmlinuz_standard = ACCEPTABLE_STANDARD_DEVICES.find((d) => d.name === device)?.should_gunzip_vmlinuz;

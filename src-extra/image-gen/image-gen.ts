@@ -12,6 +12,8 @@ let loopDevice = "";
 
 const mountPMOSImage = (targetDevice: string) => {
     loopDevice = exec("sudo losetup -f", false).toString().trim();
+    fs.writeFileSync(path.join(BUILD_DIR, "loop_device.txt"), loopDevice);
+
     console.log("image-gen loopDevice: " + loopDevice);
 
     let loopExtraArgs = "";
@@ -75,7 +77,7 @@ const buildTargetStandardPMOSDeviceImage = (targetDevice: string) => {
                 cd work
                 sudo abootimg -x ../boot.img
                 sudo sed -i "s/bootsize.*/bootsize = 0xf00000/g" bootimg.cfg
-                sudo sed -i "s/cmdline.*/cmdline = console=tty0 PMOS_NO_OUTPUT_REDIRECT module_blacklist=nt36xxx/g" bootimg.cfg
+                sudo sed -i "s/cmdline.*/cmdline = console=tty0 PMOS_NO_OUTPUT_REDIRECT/g" bootimg.cfg
                 sudo abootimg --create boot.img -f bootimg.cfg -k zImage -r ../initramfs
                 sudo mv boot.img ../boot.img
             popd`);
