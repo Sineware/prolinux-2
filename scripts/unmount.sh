@@ -15,8 +15,8 @@ sleep 1
 
 sudo losetup -d /dev/disk/by-label/pmOS_root
 sudo losetup -d /dev/disk/by-label/pmOS_boot
-loopdev=$(<build/loop_device.txt.txt)
-sudo losetup -d $loopdev
+loopdev=$(<build/loop_device.txt)
+sudo losetup -d $loopdev || true
 
 sleep 1
 

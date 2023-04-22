@@ -47,7 +47,7 @@ export function createAndMountPMOSImage(device: string, kernel: string): string 
         sleep 5
 
         sudo growpart ${loopDevice} 2
-        sudo e2fsck -f ${loopDevice}p2
+        sudo e2fsck -fa ${loopDevice}p2
         sudo resize2fs ${loopDevice}p2
 
         ls -l /dev/disk/by-label

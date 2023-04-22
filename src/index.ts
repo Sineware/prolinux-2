@@ -34,6 +34,10 @@ async function main() {
         console.log("Unsupported channel: " + PROLINUX_CHANNEL + ", exiting");
         process.exit(1);
     }
+    if(!fs.existsSync(`${__dirname}/../ocs2-prolinuxd/package.json`)) {
+        console.log("ocs2-prolinuxd submodule not cloned, exiting");
+        process.exit(1);
+    }
 
     // Get latest build number for https://update.sineware.ca/updates/prolinux/PROLINUX_VARIANT/PROLINUX_CHANNEL
     // {"url":"https:\/\/example.com\/rootfs.squish","variant":"phone","jwt":"jwt","product":"prolinux","id":1,"buildstring":"test build","buildnum":1001,"channel":"dev","isreleased":true,"uuid":"E0CE308F-4350-41AD-87F7-40D7835DC7D2"}
@@ -102,9 +106,8 @@ async function main() {
 
         mkdir /sineware
         sudo -u user bash << EOFSU
-            #sudo flatpak remote-delete flathub
-            #flatpak remote-add --if-not-exists --user flathub https://flathub.org/repo/flathub.flatpakrepo
-            #flatpak install -y --user flathub org.kde.qmlkonsole
+            sudo flatpak remote-delete flathub
+            flatpak remote-add --if-not-exists --user flathub https://flathub.org/repo/flathub.flatpakrepo
 EOFSU
         sleep 2
 EOF`);
@@ -208,7 +211,7 @@ EOF`);
     /* ------------- ProLinux Embedded ------------- */
     if(PROLINUX_VARIANT === "embedded") {
         exec(`sudo arch-chroot ${ROOTFS_DIR} /bin/bash -x <<'EOF'
-            sudo pacman -S --noconfirm plasma-meta plasma-wayland-session
+            sudo pacman -S --noconfirm plasma-meta plasma-wayland-session konsole firefox dolphin
 EOF`);
     
     } // end of embedded

@@ -79,7 +79,7 @@ async function main() {
         cd ${OUTPUT_DIR}
         zsyncmake -C ${prolinuxInfo.filename}
     popd`)
-    exec(`s3cmd sync ${OUTPUT_DIR}/ s3://prolinux-update/${prolinuxInfo.product}/${prolinuxInfo.variant}/${prolinuxInfo.channel}/arm64/ --acl-public --delete-removed --recursive`)
+    exec(`sudo rsync -aHAXxv --progress ${OUTPUT_DIR}/ root@cdn.sineware.ca:/mnt/volume_tor1_01/www/repo/${prolinuxInfo.product}/${prolinuxInfo.variant}/${prolinuxInfo.channel}/${prolinuxInfo.arch}`);
 
     // insert the new update into the database
     console.log("Inserting the new update into the database...");
