@@ -78,8 +78,10 @@ export function pmosFinalCleanup() {
 
 export function genPMOSImage(device: string) {
     exec(`
-        sudo mkdir -pv ${BUILD_DIR}/rootfs/lib/modules/ ${BUILD_DIR}/rootfs/lib/firmware/
-        sudo rsync -a ${BUILD_DIR}/pmos_root_mnt/lib/modules/ ${BUILD_DIR}/rootfs/lib/modules
+        echo "Adding modules for ${device} to device-support..."
+        sudo mkdir -pv ${ROOTFS_DIR}/opt/device-support/${device}/modules
+        sudo mkdir -pv ${BUILD_DIR}/rootfs/lib/firmware/
+        sudo rsync -a ${BUILD_DIR}/pmos_root_mnt/lib/modules/ ${ROOTFS_DIR}/opt/device-support/${device}/modules
         sudo rsync -a ${BUILD_DIR}/pmos_root_mnt/lib/firmware/ ${BUILD_DIR}/rootfs/lib/firmware
     `);
 
@@ -132,7 +134,7 @@ export function genPMOSImage(device: string) {
         ${(arch === "arm64") ? `` : `
             echo "Copying custom compiled kernel for x64"
             sudo cp -v ${BUILD_DIR}/kernel/vmlinuz ${BUILD_DIR}/pmos_boot_mnt/vmlinuz-edge
-            sudo rsync -a ${BUILD_DIR}/kernel/modroot/lib/modules/ ${BUILD_DIR}/rootfs/lib/modules
+            sudo rsync -a ${BUILD_DIR}/kernel/modroot/lib/modules/ ${ROOTFS_DIR}/opt/device-support/${device}/modules
         `}
         
         echo "Adding kernel+initramfs to /opt/device-support/-"

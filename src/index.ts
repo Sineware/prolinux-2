@@ -85,8 +85,9 @@ async function main() {
         yes | pacman-key --populate ${arch === "arm64" ? "archlinuxarm" : "archlinux"}
         pacman -Syu --noconfirm
         pacman -S --noconfirm base-devel git nano neofetch htop wget curl sudo dialog qt6-base qt6-tools polkit libpipewire pipewire pipewire-pulse libxcvt kwayland libnm networkmanager modemmanager wpa_supplicant libqalculate distcc ccache gdb
-        pacman -S --noconfirm bluez xorg-server xorg-xwayland openssh lightdm lightdm-gtk-greeter mold onboard nodejs npm maliit-keyboard flatpak rsync
+        pacman -S --noconfirm bluez xorg-server xorg-xwayland openssh lightdm lightdm-gtk-greeter mold onboard nodejs npm flatpak rsync
         pacman -S --noconfirm appstream-qt libdmtx libwireplumber libxaw lua ttf-hack qrencode wireplumber xorg-xmessage xorg-xsetroot zxing-cpp accountsservice exiv2 lmdb zsync
+        pacman -S --noconfirm maliit-keyboard qt5-graphicaleffects 
         pacman -S $(pacman -Ssq qt6-) --noconfirm
 
         echo "Setting up user"
@@ -203,9 +204,9 @@ EOF`);
             /opt/kde/build/plasma-mobile/bin/install-sessions.sh
 EOF`);
         // unmount cache folder
-        exec(`sudo umount ${ROOTFS_DIR}/home/user/.cache`);
+        exec(`sudo umount ${ROOTFS_DIR}/home/user/.cache || true`);
         exec(`sudo rm -rf ${BUILD_DIR}/home/user/.cache`);
-        exec(`sudo umount ${ROOTFS_DIR}/opt/kde/src`);
+        exec(`sudo umount ${ROOTFS_DIR}/opt/kde/src || true`);
     } // end of kdesrc-build
 
     /* ------------- ProLinux Embedded ------------- */

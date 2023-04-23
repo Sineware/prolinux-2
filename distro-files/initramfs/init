@@ -16,11 +16,9 @@ echo "Running ProLinux Init script..."
 #  show_splash "Loading system configuration..."
 pkill pbsplash
 
-sleep 1
 echo "-- Welcome to Sineware ProLinux 2 --"
 modprobe squashfs || splash_error "Could not load squashfs module!"
 modprobe overlay || splash_error "Could not load overlayfs module!"
-sleep 2
 echo "Mounting prolinux squashfs 'squishroot'"
 mount -o remount,rw /sysroot
 
@@ -31,7 +29,6 @@ selected_root=$(awk -F "=" '/pl2.selected_root/ {print $2}' /sysroot/data/prolin
 locked_root=$(awk -F "=" '/pl2.locked_root/ {print $2}' /sysroot/data/prolinux.toml | tr -d ' ' | tr -d "'")
 echo "Selected Root: $selected_root"
 echo "Locked Root: $locked_root"
-sleep 2
 echo "----"
 
 mount -o loop /sysroot/prolinux_${selected_root}.squish /sysroot/squishroot 
@@ -52,6 +49,11 @@ if grep -q pl2.stage2 /proc/cmdline; then
     fi
     mount --bind /sysroot /sysroot/oroot/sineware
     mount --bind /sysroot/data/home /sysroot/oroot/home
+
+    kernel_version=$(uname -r)
+    mkdir -pv /sysroot/oroot/lib/modules
+    mount --bind /sysroot/squishroot/opt/device-support/$deviceinfo_codename/modules/${kernel_version}/ /sysroot/oroot/lib/modules || splash_error "Could not mount kernel modules!"
+
     ls -l /sysroot
     echo "----"
     #/bin/busybox sh
@@ -60,7 +62,6 @@ if grep -q pl2.stage2 /proc/cmdline; then
     echo "Starting up..."
     
     show_splash "Starting up..."
-    sleep 2
 else 
     echo "Loading stage 2 kernel (kexec) from /sysroot/squishroot/device-support/$deviceinfo_codename/..."
     cmdline=$(cat /proc/cmdline)
