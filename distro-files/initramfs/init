@@ -50,9 +50,8 @@ if grep -q pl2.stage2 /proc/cmdline; then
     mount --bind /sysroot /sysroot/oroot/sineware
     mount --bind /sysroot/data/home /sysroot/oroot/home
 
-    kernel_version=$(uname -r)
     mkdir -pv /sysroot/oroot/lib/modules
-    mount --bind /sysroot/squishroot/opt/device-support/$deviceinfo_codename/modules/${kernel_version}/ /sysroot/oroot/lib/modules || splash_error "Could not mount kernel modules!"
+    mount --bind /sysroot/squishroot/opt/device-support/$deviceinfo_codename/modules /sysroot/oroot/lib/modules || splash_error "Could not mount kernel modules!"
 
     ls -l /sysroot
     echo "----"
