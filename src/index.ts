@@ -266,11 +266,11 @@ EOF`);
     TARGET_DEVICE.split(",").forEach(buildTargetDeviceSupport);
     console.log("Stripping files from RootFS");
     exec(`
-        sudo rm -rf ${ROOTFS_DIR}/opt/kde/build/*
-        sudo rm -rf ${ROOTFS_DIR}/opt/kde/src/*
-        sudo rm -rf ${ROOTFS_DIR}/var/cache/pacman/pkg/*
-        sudo rm -rf ${ROOTFS_DIR}/opt/kde/usr/share/kservices6/searchproviders/*
-        sudo rm -rf ${ROOTFS_DIR}/usr/share/kservices5/searchproviders/*
+        sudo rm -rf ${ROOTFS_DIR}/opt/kde/build/
+        sudo rm -rf ${ROOTFS_DIR}/opt/kde/src/
+        sudo rm -rf ${ROOTFS_DIR}/var/cache/pacman/pkg/
+        #sudo rm -rf ${ROOTFS_DIR}/opt/kde/usr/share/kservices6/searchproviders/
+        #sudo rm -rf ${ROOTFS_DIR}/usr/share/kservices5/searchproviders/
     `);
     // Create squashfs from root
     exec(`mkdir -pv ${OUTPUT_DIR} && sudo mksquashfs ${ROOTFS_DIR} ${OUTPUT_DIR}/prolinux-root-${PROLINUX_VARIANT}-${PROLINUX_CHANNEL}.squish`);
