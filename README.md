@@ -20,8 +20,9 @@ ProLinux 2 Plasma Mobile Nightly Edition piggy-backs on parts of postmarketOS (i
 - pmbootstrap
 - arch-install-scripts
 - abootimg
-- simg2img
+- simg2img (android-tools)
 - pigz
+- util-linux (for Alpine)
 
 Environment Configuration (.env):
 ```env

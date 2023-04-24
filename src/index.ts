@@ -68,7 +68,7 @@ async function main() {
     
     console.log("Creating and mounting rootfs.img");
     exec(`sudo fallocate -l 42G ${BUILD_DIR}/rootfs.img`);
-    exec(`sudo mkfs.ext4 ${BUILD_DIR}/rootfs.img -L pmOS_root`);
+    exec(`sudo mkfs.ext4 -L pmOS_root ${BUILD_DIR}/rootfs.img`);
     exec(`sudo mount ${BUILD_DIR}/rootfs.img ${ROOTFS_DIR}`);
  
     // extract arch root to rootfs
@@ -87,7 +87,7 @@ async function main() {
         pacman -S --noconfirm base-devel git nano neofetch htop wget curl sudo dialog qt6-base qt6-tools polkit libpipewire pipewire pipewire-pulse libxcvt kwayland libnm networkmanager modemmanager wpa_supplicant libqalculate distcc ccache gdb
         pacman -S --noconfirm bluez xorg-server xorg-xwayland openssh lightdm lightdm-gtk-greeter mold onboard nodejs npm flatpak rsync
         pacman -S --noconfirm appstream-qt libdmtx libwireplumber libxaw lua ttf-hack qrencode wireplumber xorg-xmessage xorg-xsetroot zxing-cpp accountsservice exiv2 lmdb zsync
-        pacman -S --noconfirm maliit-keyboard qt5-graphicaleffects 
+        pacman -S --noconfirm maliit-keyboard qt5-graphicaleffects xdotool
         pacman -S $(pacman -Ssq qt6-) --noconfirm
 
         echo "Setting up user"
