@@ -23,6 +23,7 @@ ProLinux 2 Plasma Mobile Nightly Edition piggy-backs on parts of postmarketOS (i
 - simg2img (android-tools)
 - pigz
 - util-linux (for Alpine)
+- zsync
 
 Environment Configuration (.env):
 ```env
