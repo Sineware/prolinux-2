@@ -4,7 +4,7 @@ import { BUILD_DIR, ROOTFS_DIR, OUTPUT_DIR, FILES_DIR, arch, TARGET_DEVICE, PROL
 export async function buildMobileStable() {
     exec(`sudo arch-chroot ${ROOTFS_DIR} /bin/bash -x <<'EOF'
         echo "[danctnix]" >> /etc/pacman.conf
-        echo "Server = https://p64.arikawa-hi.me/\\$repo/\\$arch/" >> /etc/pacman.conf
+        echo 'Server = https://p64.arikawa-hi.me/$repo/$arch/' >> /etc/pacman.conf
         echo "SigLevel = Never" >> /etc/pacman.conf
         sudo pacman -Syy --noconfirm
 
