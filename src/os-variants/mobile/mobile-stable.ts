@@ -3,6 +3,7 @@ import { BUILD_DIR, ROOTFS_DIR, OUTPUT_DIR, FILES_DIR, arch, TARGET_DEVICE, PROL
 
 export async function buildMobileStable() {
     exec(`sudo arch-chroot ${ROOTFS_DIR} /bin/bash -x <<'EOF'
+        sudo pacman -R libpipewire pipewire pipewire-pulse wireplumber libpipewire --noconfirm 
         yes | sudo pacman -S pipewire-media-session --noconfirm
         echo "[danctnix]" >> /etc/pacman.conf
         echo 'Server = https://p64.arikawa-hi.me/$repo/$arch/' >> /etc/pacman.conf

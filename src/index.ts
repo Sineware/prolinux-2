@@ -89,7 +89,7 @@ async function main() {
         pacman -Syu --noconfirm
         pacman -S --noconfirm base-devel git nano neofetch htop wget curl sudo dialog qt6-base qt6-tools polkit libpipewire pipewire pipewire-pulse libxcvt kwayland libnm networkmanager modemmanager wpa_supplicant libqalculate distcc ccache gdb
         pacman -S --noconfirm bluez xorg-server xorg-xwayland openssh lightdm lightdm-gtk-greeter mold onboard nodejs npm flatpak rsync
-        pacman -S --noconfirm appstream-qt libdmtx libxaw lua ttf-hack qrencode xorg-xmessage xorg-xsetroot zxing-cpp accountsservice exiv2 lmdb zsync
+        pacman -S --noconfirm appstream-qt libdmtx libwireplumber wireplumber libxaw lua ttf-hack qrencode xorg-xmessage xorg-xsetroot zxing-cpp accountsservice exiv2 lmdb zsync
         pacman -S --noconfirm maliit-keyboard qt5-graphicaleffects xdotool
         pacman -S $(pacman -Ssq qt6-) --noconfirm
 

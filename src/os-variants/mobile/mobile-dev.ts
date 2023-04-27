@@ -68,14 +68,12 @@ EOF`);
 
     // ${packagesToBuild.split(" ").map((p) => `find /opt/kde/src/${p} -name CMakeLists.txt -exec sed -i '1i include_directories(/opt/kde/usr/include)' {} \\;`).join("; ")}
     // ${packagesToBuild.split(" ").map((p) => `find /opt/kde/src/${p} -name CMakeLists.txt -exec sed -i '1i include_directories(/opt/kde/usr/include/KF6)' {} \\;`).join("; ")}
-
+    
     exec(`sudo arch-chroot ${ROOTFS_DIR} /bin/bash -x <<'EOF'
         set -e
         mkdir -pv /usr/share/xsessions/ /usr/share/wayland-sessions/ /etc/dbus-1/
         /opt/kde/build/plasma-workspace/login-sessions/install-sessions.sh
         /opt/kde/build/plasma-mobile/bin/install-sessions.sh
-
-        sudo pacman -S libwireplumber wireplumber
 EOF`);
 
     // unmount cache folder
