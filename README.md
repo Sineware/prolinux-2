@@ -2,10 +2,15 @@
 
 ProLinux 2 is a GNU/Linux distribution with an immutable root (A/B SquashFS), writable overlay, Flatpak, and ProLinux management tools.
 
-Info and Downloads: [https://sineware.ca/prolinux/
+Info and Downloads: [https://sineware.ca/prolinux/](https://sineware.ca/prolinux/)
 
 > Warning: this project is not ready for use! It is under development and probably broken at any given time.
 
+ProLinux builds on the work of other open source projects,
+- Arch Linux and [Arch Linux ARM](https://archlinuxarm.org/)
+- [postmarketOS](https://postmarketos.org/)
+- [DanctNIX](https://github.com/dreemurrs-embedded)
+- and many more!
 
 ## Plasma Mobile Nightly
 Currently the only edition available is the Plasma Mobile Nightly Edition, which is a developer/testing/fun focused OS, 

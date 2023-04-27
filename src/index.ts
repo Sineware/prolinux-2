@@ -9,6 +9,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { compileKexecTools } from './custom-packages/kexec-tools';
 import { buildMobileDev } from './os-variants/mobile/mobile-dev';
 import { buildEmbedded } from './os-variants/embedded/embedded';
+import { buildMobileStable } from './os-variants/mobile/mobile-stable';
 
 console.log("Starting ProLinux build on " + new Date().toLocaleString());
 
@@ -32,10 +33,10 @@ async function main() {
         console.log("No target device specified, exiting");
         process.exit(1);
     }
-    if(PROLINUX_CHANNEL !== "dev") {
+    /*if(PROLINUX_CHANNEL !== "dev") {
         console.log("Unsupported channel: " + PROLINUX_CHANNEL + ", exiting");
         process.exit(1);
-    }
+    }*/
     if(!fs.existsSync(`${__dirname}/../ocs2-prolinuxd/package.json`)) {
         console.log("ocs2-prolinuxd submodule not cloned, exiting");
         process.exit(1);
@@ -138,8 +139,12 @@ EOF`);
         await buildMobileDev();
     } else if(PROLINUX_VARIANT === "embedded") {
         /* ------------- ProLinux Embedded ------------- */
-        buildEmbedded();
-    } // end of embedded
+        await buildEmbedded();
+    } else if(PROLINUX_VARIANT === "mobile" && PROLINUX_CHANNEL === "stable") {
+        await buildMobileStable();
+    } else {
+        throw new Error("Unknown ProLinux variant/channel");
+    }
 
     exec(`sudo arch-chroot ${ROOTFS_DIR} /bin/bash -x <<'EOF'
         set -e
