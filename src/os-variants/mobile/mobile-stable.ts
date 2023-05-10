@@ -9,6 +9,6 @@ export async function buildMobileStable() {
         echo "SigLevel = Never" >> /etc/pacman.conf
         sudo pacman -Syy --noconfirm
 
-        sudo pacman -S --noconfirm danctnix-pm-ui-meta qmlkonsole angelfish dolphin discover
+        sudo pacman -S --noconfirm danctnix-pm-ui-meta qmlkonsole angelfish dolphin discover plasma-settings
 EOF`);
 }
