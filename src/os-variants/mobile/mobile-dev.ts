@@ -18,6 +18,7 @@ export async function buildMobileDev() {
     const checkoutBranches: [[string, string]] = [
         //["kio", "076337fd"]
         //["kwin", "master"]
+        ["plasma-nm", "22377cf6"]
     ]
 
     //const packagesToBuild = "kcmutils plasma5support kirigami-addons plasma-mobile plasma-pa plasma-nm qqc2-breeze-style"
