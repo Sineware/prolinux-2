@@ -48,6 +48,8 @@ global
     compile-commands-export true
 
     cmake-options -DQT_MAJOR_VERSION=6 -GNinja
+    
+    branch-group kf6-qt6
 end global
 
 # Common options that should be set for some KDE modules no matter how
