@@ -18,11 +18,12 @@ export async function buildMobileDev() {
     const checkoutBranches: [[string, string]] = [
         //["kio", "076337fd"]
         //["kwin", "master"]
-        ["plasma-nm", "22377cf6"]
+        //["plasma-nm", "22377cf6"]
     ]
 
     //const packagesToBuild = "kcmutils plasma5support kirigami-addons plasma-mobile plasma-pa plasma-nm qqc2-breeze-style"
-    const packagesToBuild = "extra-cmake-modules kcoreaddons ki18n kconfig plasma-wayland-protocols karchive kdoctools kwidgetsaddons polkit-qt-1 kcodecs kauth kguiaddons kwindowsystem kcolorscheme kconfigwidgets kdbusaddons kcrash kiconthemes kcompletion kitemviews sonnet kglobalaccel kservice ktextwidgets gpgme qca knotifications kxmlgui kbookmarks kjobwidgets kwallet solid kactivities kpackage kcmutils kio kirigami kdeclarative kwayland kidletime oxygen-icons5 breeze-icons kparts syntax-highlighting kdnssd kitemmodels ktexteditor kunitconversion threadweaver attica kcmutils plasma-framework syndication knewstuff frameworkintegration kdecoration layer-shell-qt libkscreen poppler krunner breeze kscreenlocker libqaccessibilityclient zxing-cpp phonon kfilemetadata kpty networkmanager-qt kpipewire kglobalacceld kwin libkexiv2 selenium-webdriver-at-spi baloo kactivities-stats kded kdesu kholidays knotifyconfig kpeople kquickcharts modemmanager-qt prison libksysguard plasma-nano kuserfeedback kirigami-addons plasma5support plasma-workspace bluez-qt milou plasma-mobile plasma-nm plasma-pa qqc2-breeze-style plasma-settings kactivitymanagerd ksystemstats qqc2-desktop-style kscreen powerdevil plasma-desktop bluedevil"
+    // ktextwidgets gpgme
+    const packagesToBuild = "extra-cmake-modules kcoreaddons ki18n kconfig plasma-wayland-protocols karchive kdoctools kwidgetsaddons polkit-qt-1 kcodecs kauth kguiaddons kwindowsystem kcolorscheme kconfigwidgets kdbusaddons kcrash kiconthemes kcompletion kitemviews sonnet kglobalaccel kservice ktextwidgets qca knotifications kxmlgui kbookmarks kjobwidgets kwallet solid kactivities kpackage kcmutils kio kirigami kdeclarative kwayland kidletime oxygen-icons5 breeze-icons kparts syntax-highlighting kdnssd kitemmodels ktexteditor kunitconversion threadweaver attica kcmutils plasma-framework syndication knewstuff frameworkintegration kdecoration layer-shell-qt libkscreen poppler krunner breeze kscreenlocker libqaccessibilityclient zxing-cpp phonon kfilemetadata kpty networkmanager-qt kpipewire kglobalacceld kwin libkexiv2 selenium-webdriver-at-spi baloo kactivities-stats kded kdesu kholidays knotifyconfig kpeople kquickcharts modemmanager-qt prison libksysguard plasma-nano kuserfeedback kirigami-addons plasma5support plasma-workspace bluez-qt milou plasma-mobile plasma-nm plasma-pa qqc2-breeze-style plasma-settings kactivitymanagerd ksystemstats qqc2-desktop-style kscreen powerdevil plasma-desktop bluedevil"
 
     // todo remove ssh-keygen -A from here
     if(process.env.KDE_CACHE === "true") {

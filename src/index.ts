@@ -10,6 +10,7 @@ import { compileKexecTools } from './custom-packages/kexec-tools';
 import { buildMobileDev } from './os-variants/mobile/mobile-dev';
 import { buildEmbedded } from './os-variants/embedded/embedded';
 import { buildMobileStable } from './os-variants/mobile/mobile-stable';
+import { buildMobileCommon } from './os-variants/mobile/mobile-common';
 
 console.log("Starting ProLinux build on " + new Date().toLocaleString());
 
@@ -44,7 +45,7 @@ async function main() {
 
     // Get latest build number for https://update.sineware.ca/updates/prolinux/PROLINUX_VARIANT/PROLINUX_CHANNEL
     // {"url":"https:\/\/example.com\/rootfs.squish","variant":"phone","jwt":"jwt","product":"prolinux","id":1,"buildstring":"test build","buildnum":1001,"channel":"dev","isreleased":true,"uuid":"E0CE308F-4350-41AD-87F7-40D7835DC7D2"}
-    const res = await axios.get(`https://update.sineware.ca/updates/prolinux/${PROLINUX_VARIANT}/${PROLINUX_CHANNEL}`);
+    const res = await axios.get(`https://update.sineware.ca/updates/prolinux/${PROLINUX_VARIANT}/${PROLINUX_CHANNEL}`, {timeout: 5000});
     console.log(res.data);
     const buildnum = res.data.buildnum + 1;
     const builduuid = uuidv4();
@@ -77,6 +78,11 @@ async function main() {
     // extract arch root to rootfs
     exec(`sudo tar -xvf ${BUILD_DIR}/arch.tar.gz -C ${ROOTFS_DIR} --strip-components=1`);  
 
+    console.log("Bind mounting pacman cache...");
+    exec(`sudo mkdir -pv ${ROOTFS_DIR}/var/cache/pacman/pkg`);
+    exec(`sudo mkdir -pv ${BUILD_DIR}/pacman-cache`);
+    exec(`sudo mount --bind ${BUILD_DIR}/pacman-cache ${ROOTFS_DIR}/var/cache/pacman/pkg`);
+
     exec(`sudo arch-chroot ${ROOTFS_DIR} /bin/bash -x <<'EOF'
         set -e
         chown root:root /
@@ -87,10 +93,10 @@ async function main() {
         yes | pacman-key --init
         yes | pacman-key --populate ${arch === "arm64" ? "archlinuxarm" : "archlinux"}
         pacman -Syu --noconfirm
-        pacman -S --noconfirm base-devel git nano neofetch htop wget curl sudo dialog qt6-base qt6-tools polkit libpipewire pipewire pipewire-pulse libxcvt kwayland libnm networkmanager modemmanager wpa_supplicant libqalculate distcc ccache gdb
+        pacman -S --noconfirm base-devel git nano neofetch htop wget curl sudo dialog qt6-base qt6-tools polkit libpipewire pipewire pipewire-pulse libwireplumber wireplumber libxcvt kwayland libnm networkmanager modemmanager wpa_supplicant libqalculate distcc ccache gdb
         pacman -S --noconfirm bluez xorg-server xorg-xwayland openssh lightdm lightdm-gtk-greeter mold onboard nodejs npm flatpak rsync
-        pacman -S --noconfirm appstream-qt libdmtx libwireplumber wireplumber libxaw lua ttf-hack qrencode xorg-xmessage xorg-xsetroot zxing-cpp accountsservice exiv2 lmdb zsync
-        pacman -S --noconfirm maliit-keyboard qt5-graphicaleffects xdotool libdisplay-info qcoro-qt6
+        pacman -S --noconfirm appstream-qt libdmtx libxaw lua ttf-hack qrencode xorg-xmessage xorg-xsetroot zxing-cpp accountsservice exiv2 lmdb zsync
+        pacman -S --noconfirm maliit-keyboard qt5-graphicaleffects xdotool libdisplay-info qcoro-qt6 gpgme
         pacman -S $(pacman -Ssq qt6-) --noconfirm
 
         echo "Setting up user"
@@ -136,13 +142,15 @@ EOF`);
     
     if(PROLINUX_VARIANT === "mobile" && PROLINUX_CHANNEL === "dev") {
         /* ------------- ProLinux Mobile Dev (Plasma Mobile Nightly / kdesrc-build ) ------------- */
+        await buildMobileCommon();
         await buildMobileDev();
+    } else if(PROLINUX_VARIANT === "mobile" && PROLINUX_CHANNEL === "stable") {
+        await buildMobileCommon();
+        await buildMobileStable();
     } else if(PROLINUX_VARIANT === "embedded") {
         /* ------------- ProLinux Embedded ------------- */
         await buildEmbedded();
-    } else if(PROLINUX_VARIANT === "mobile" && PROLINUX_CHANNEL === "stable") {
-        await buildMobileStable();
-    } else {
+    }  else {
         throw new Error("Unknown ProLinux variant/channel");
     }
 
@@ -197,7 +205,7 @@ EOF`);
     exec(`
         sudo rm -rf ${ROOTFS_DIR}/opt/kde/build/
         sudo rm -rf ${ROOTFS_DIR}/opt/kde/src/
-        sudo rm -rf ${ROOTFS_DIR}/var/cache/pacman/pkg/
+        #sudo rm -rf ${ROOTFS_DIR}/var/cache/pacman/pkg/ # bind mount
         #sudo rm -rf ${ROOTFS_DIR}/opt/kde/usr/share/kservices6/searchproviders/
         #sudo rm -rf ${ROOTFS_DIR}/usr/share/kservices5/searchproviders/
     `);
