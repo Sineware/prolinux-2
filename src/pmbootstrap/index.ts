@@ -37,7 +37,7 @@ export function createAndMountPMOSImage(device: string, kernel: string): string 
     exec(`
         set -e
         echo "Expanding pmos image..."
-        sudo truncate -s 8G /tmp/postmarketOS-export/${device}.img
+        sudo truncate -s 10G /tmp/postmarketOS-export/${device}.img
         
         sudo losetup -f -P /tmp/postmarketOS-export/${device}.img ${loopExtraArgs}
         losetup -l
