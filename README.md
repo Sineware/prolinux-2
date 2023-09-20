@@ -61,6 +61,8 @@ TARGET_DEVICE=tablet-x64uefi npm run build
 TARGET_DEVICE=tablet-x64uefi npm run gen-image
 ```
 
+(For x64, also run `npm run gen-kernel` before build)
+
 This will (if successful) produce a image in "output/".
 
 TARGET_DEVICE is a postmarketOS device string. Currently only "simple" devices are supported (ones that produce a flashable image, not android sparse images. i.e. pine64-pinephone).

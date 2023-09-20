@@ -59,9 +59,10 @@ export function createAndMountPMOSImage(device: string, kernel: string): string 
         fi
         mkdir -pv ${BUILD_DIR}/pmos_root_mnt
         mkdir -pv ${BUILD_DIR}/pmos_boot_mnt
+        
+        sudo mount ${loopDevice}p2 ${BUILD_DIR}/pmos_root_mnt
+        sudo mount ${loopDevice}p1 ${BUILD_DIR}/pmos_boot_mnt
 
-        sudo mount /dev/disk/by-label/pmOS_root ${BUILD_DIR}/pmos_root_mnt
-        sudo mount /dev/disk/by-label/pmOS_boot ${BUILD_DIR}/pmos_boot_mnt
     `);
     
     return loopDevice;
