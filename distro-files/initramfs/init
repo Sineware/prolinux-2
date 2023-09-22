@@ -43,7 +43,7 @@ if grep -q pl2.stage2 /proc/cmdline; then
         mount -t tmpfs tmpfs /tmproot
         mkdir -pv /tmproot/overlay
         mkdir -pv /tmproot/workdir
-        mount -t overlay overlay -o lowerdir=/sysroot/squishroot:/sysroot/persistroot,upperdir=/tmproot/overlay,workdir=/tmproot/workdir /sysroot/oroot || splash_error "Could not mount overlayfs!"
+        mount -t overlay overlay -o lowerdir=/sysroot/persistroot:/sysroot/squishroot,upperdir=/tmproot/overlay,workdir=/tmproot/workdir /sysroot/oroot || splash_error "Could not mount overlayfs!"
     else
         mount -t overlay overlay -o lowerdir=/sysroot/squishroot,upperdir=/sysroot/persistroot,workdir=/sysroot/workdir /sysroot/oroot || splash_error "Could not mount overlayfs!"
     fi

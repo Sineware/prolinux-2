@@ -7,3 +7,4 @@ ocs2.client_type = 'prolinux,pl2'
 ocs2.access_token = ''
 pl2.selected_root = 'a'
 pl2.locked_root = true
+pl2.hostname = 'prolinux-system'
