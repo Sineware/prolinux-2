@@ -86,7 +86,7 @@ async function main() {
     exec(`sudo arch-chroot ${ROOTFS_DIR} /bin/bash -x <<'EOF'
         set -e
         chown root:root /
-        echo 'Server = ${arch === "arm64" ? "https://fl.us.mirror.archlinuxarm.org/$arch/$repo" : "https://mirror.csclub.uwaterloo.ca/archlinux/$repo/os/$arch"}' > /etc/pacman.d/mirrorlist
+        echo 'Server = ${arch === "arm64" ? "https://fl.us.mirror.archlinuxarm.org/$arch/$repo" : "http://mirror.csclub.uwaterloo.ca/archlinux/$repo/os/$arch"}' > /etc/pacman.d/mirrorlist
         
         sed -i "s/#ParallelDownloads = 5/ParallelDownloads = 5/g" /etc/pacman.conf
         
@@ -97,8 +97,8 @@ async function main() {
         pacman -S --noconfirm bluez xorg-server xorg-xwayland openssh lightdm lightdm-gtk-greeter mold onboard nodejs npm flatpak rsync
         pacman -S --noconfirm appstream-qt libdmtx libxaw lua ttf-hack qrencode xorg-xmessage xorg-xsetroot zxing-cpp accountsservice exiv2 lmdb zsync
         pacman -S --noconfirm maliit-keyboard qt5-graphicaleffects xdotool libdisplay-info qcoro-qt6 gpgme
-        pacman -S $(pacman -Ssq qt6-) --noconfirm
-        pacman -S python-websocket-client python-wsaccel pyside2
+        pacman -S --noconfirm $(pacman -Ssq qt6-) 
+        pacman -S --noconfirm python-websocket-client python-wsaccel pyside2
 
         echo "Setting up user"
         ${arch === "x64" ? 'useradd -m -G wheel user' : ''}
