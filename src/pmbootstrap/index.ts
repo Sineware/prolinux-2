@@ -93,13 +93,16 @@ export function genPMOSImage(device: string) {
     // is squashfs builtin
     let squash_builtin = ACCEPTABLE_ANDROID_DEVICES.find((d) => d.name === device)?.squash_builtin;
 
+    // is zstd initramfs
+    let uses_zstd_initramfs = ACCEPTABLE_ANDROID_DEVICES.find((d) => d.name === device)?.uses_zstd_initramfs;
+
     // extract initramfs
     exec(`
         sudo mkdir -pv ${BUILD_DIR}/initramfs-work
         sudo rm -rf ${BUILD_DIR}/initramfs-work/*
         cd ${BUILD_DIR}/
         sudo cp ${BUILD_DIR}/pmos_boot_mnt/initramfs ${BUILD_DIR}/pmos_initramfs.gz
-        sudo gunzip ${BUILD_DIR}/pmos_initramfs.gz -f
+        ${uses_zstd_initramfs ? `sudo zstd -d ${BUILD_DIR}/pmos_initramfs.gz -o ${BUILD_DIR}/pmos_initramfs` : `sudo gunzip ${BUILD_DIR}/pmos_initramfs.gz -f`}
         cd initramfs-work
         sudo cpio --extract --make-directories --format=newc --no-absolute-filenames < ${BUILD_DIR}/pmos_initramfs
         sudo cp -v ${BUILD_DIR}/kexec-tools/build/sbin/kexec ${BUILD_DIR}/initramfs-work/sbin/kexec
