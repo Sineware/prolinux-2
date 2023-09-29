@@ -47,7 +47,7 @@ global
     compile-commands-linking true
     compile-commands-export true
 
-    cmake-options -DQT_MAJOR_VERSION=6 -GNinja
+    cmake-options -DQT_MAJOR_VERSION=6 -GNinja -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
     
     branch-group kf6-qt6
 end global

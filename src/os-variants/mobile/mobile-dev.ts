@@ -7,8 +7,8 @@ export async function buildMobileDev() {
         //"export CC='ccache distcc'",
         //"export CXX='ccache distcc g++'",
         //"export DISTCC_HOSTS='192.168.11.138/20'",
-        "export CC='ccache gcc'",
-        "export CXX='ccache g++'",
+        //"export CC='ccache gcc'",
+        //"export CXX='ccache g++'",
     ] : [
         //"export CC='ccache gcc'",
         //"export CXX='ccache g++'",
