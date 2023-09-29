@@ -33,7 +33,8 @@ export const ACCEPTABLE_ANDROID_DEVICES = [
         name: "oneplus-enchilada",
         "rootfs_image_sector_size": 4096,
         "squash_builtin": true,
-        "should_gunzip_vmlinuz": true
+        "should_gunzip_vmlinuz": true,
+        "uses_zstd_initramfs": true
     },
 ];
 export const MUSL_TOOLCHAIN = process.env.MUSL_TOOLCHAIN;
