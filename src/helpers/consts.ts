@@ -26,7 +26,8 @@ export const ACCEPTABLE_ANDROID_DEVICES = [
         name: "xiaomi-beryllium",
         "rootfs_image_sector_size": 4096,
         "squash_builtin": true,
-        "should_gunzip_vmlinuz": true
+        "should_gunzip_vmlinuz": true,
+        "uses_zstd_initramfs": true
     },
     {
         name: "oneplus-enchilada",
