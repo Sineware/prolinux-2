@@ -9,6 +9,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { compileKexecTools } from './custom-packages/kexec-tools';
 import { buildMobileDev } from './os-variants/mobile/mobile-dev';
 import { buildEmbedded } from './os-variants/embedded/embedded';
+import { buildEmbeddedDev } from './os-variants/embedded/embedded-dev';
 import { buildMobileStable } from './os-variants/mobile/mobile-stable';
 import { buildMobileCommon } from './os-variants/mobile/mobile-common';
 
@@ -148,10 +149,12 @@ EOF`);
     } else if(PROLINUX_VARIANT === "mobile" && PROLINUX_CHANNEL === "stable") {
         await buildMobileCommon();
         await buildMobileStable();
-    } else if(PROLINUX_VARIANT === "embedded") {
+    } else if(PROLINUX_VARIANT === "embedded" && PROLINUX_CHANNEL === "stable") {
         /* ------------- ProLinux Embedded ------------- */
         await buildEmbedded();
-    }  else {
+    } else if (PROLINUX_VARIANT === "embedded" && PROLINUX_CHANNEL === "dev") {
+        await buildEmbeddedDev();
+    } else {
         throw new Error("Unknown ProLinux variant/channel");
     }
 
