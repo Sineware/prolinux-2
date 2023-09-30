@@ -103,7 +103,7 @@ export function genPMOSImage(device: string) {
         cd ${BUILD_DIR}/
         
         
-        ${uses_zstd_initramfs ? `sudo cp ${BUILD_DIR}/pmos_boot_mnt/initramfs ${BUILD_DIR}/pmos_initramfs.zst && sudo rm ${BUILD_DIR}/pmos_boot_mnt/pmos_initramfs && sudo zstd --rm -d ${BUILD_DIR}/pmos_initramfs.gz -o ${BUILD_DIR}/pmos_initramfs` : `sudo cp ${BUILD_DIR}/pmos_boot_mnt/initramfs ${BUILD_DIR}/pmos_initramfs.gz && sudo gunzip ${BUILD_DIR}/pmos_initramfs.gz -f`}
+        ${uses_zstd_initramfs ? `sudo cp ${BUILD_DIR}/pmos_boot_mnt/initramfs ${BUILD_DIR}/pmos_initramfs.zst && sudo rm ${BUILD_DIR}/pmos_boot_mnt/pmos_initramfs && sudo zstd --rm -d ${BUILD_DIR}/pmos_initramfs.zst -o ${BUILD_DIR}/pmos_initramfs` : `sudo cp ${BUILD_DIR}/pmos_boot_mnt/initramfs ${BUILD_DIR}/pmos_initramfs.gz && sudo gunzip ${BUILD_DIR}/pmos_initramfs.gz -f`}
         cd initramfs-work
         sudo cpio --extract --make-directories --format=newc --no-absolute-filenames < ${BUILD_DIR}/pmos_initramfs
         sudo cp -v ${BUILD_DIR}/kexec-tools/build/sbin/kexec ${BUILD_DIR}/initramfs-work/sbin/kexec
