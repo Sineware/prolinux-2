@@ -76,7 +76,7 @@ const buildTargetStandardPMOSDeviceImage = (targetDevice: string) => {
                 mkdir -pv work
                 cd work
                 sudo abootimg -x ../boot.img
-                sudo sed -i "s/bootsize.*/bootsize = 0xf00000/g" bootimg.cfg
+                sudo sed -i "s/bootsize.*/bootsize = 0xff0000/g" bootimg.cfg
                 sudo sed -i "s/cmdline.*/cmdline = console=tty0 PMOS_NO_OUTPUT_REDIRECT/g" bootimg.cfg
                 sudo abootimg --create boot.img -f bootimg.cfg -k zImage -r ../initramfs
                 sudo mv boot.img ../boot.img
