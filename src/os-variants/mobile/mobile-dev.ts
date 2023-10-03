@@ -19,6 +19,7 @@ export async function buildMobileDev() {
         //["kio", "076337fd"]
         //["kwin", "master"]
         //["plasma-nm", "22377cf6"]
+        ["knewstuff", "ec498e9"]
     ]
 
     //const packagesToBuild = "kcmutils plasma5support kirigami-addons plasma-mobile plasma-pa plasma-nm qqc2-breeze-style"
