@@ -1,8 +1,8 @@
 // Includes relevant modules used by the QML
-import QtQuick 2.15
-import QtQuick.Controls 2.15 as Controls
-import QtQuick.Layouts 1.15
-import org.kde.kirigami 2.20 as Kirigami
+import QtQuick
+import QtQuick.Controls as Controls
+import QtQuick.Layouts
+import org.kde.kirigami as Kirigami
 
 // Provides basic features needed for all kirigami applications
 Kirigami.ApplicationWindow {
@@ -26,7 +26,8 @@ Kirigami.ApplicationWindow {
         Locked Root: ${msg.payload.data.lockedRoot}
         Hostname: ${msg.payload.data.hostname}
         `
-
+        version.text = "Version: " + msg.payload.data.buildInfo.product + " " + msg.payload.data.buildInfo.variant + " " + msg.payload.data.buildInfo.channel
+        buildStr.text = "Build String: " + msg.payload.data.buildInfo.buildnum + "-" + msg.payload.data.buildInfo.uuid + " (" + msg.payload.data.buildInfo.builddate + ")"   
     }
     Timer {
         id: timer
@@ -43,9 +44,7 @@ Kirigami.ApplicationWindow {
     }
 
     Component.onCompleted: {
-        timer.setTimeout(function(){ 
-            wsapp.ws_send('{ "action": "status", "payload": {}, "id": 1}')
-         }, 1000);
+         wsapp.ws_send('{ "action": "status", "payload": {}, "id": 1}')
     }
 
     globalDrawer: Kirigami.GlobalDrawer {
@@ -63,7 +62,7 @@ Kirigami.ApplicationWindow {
     // Set the first page that will be loaded when the app opens
     // This can also be set to an id of a KirigamiPage
     pageStack.initialPage: Kirigami.Page {
-        actions.main: Kirigami.Action {
+        actions: [Kirigami.Action {
             text: "Refresh"
             icon.name: "view-refresh"
             onTriggered: {
@@ -71,7 +70,7 @@ Kirigami.ApplicationWindow {
                 wsapp.ws_send('{ "action": "status", "payload": {}, "id": 1}')
                 
             }
-        }
+        }]
         ColumnLayout {
             RowLayout {
                 id: grid
@@ -85,8 +84,5 @@ Kirigami.ApplicationWindow {
                 Text { id: buildStr; text: "Build String: xx"; font.bold: true; }
             }
         }
-        
-        
-        
     }
 }

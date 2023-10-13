@@ -4,22 +4,26 @@ import json
 import socket
 import websocket
 
-from PySide2.QtCore import QUrl, QRunnable, QThreadPool, QObject, Signal, Slot
-from PySide2.QtWidgets import QApplication, QSystemTrayIcon, QMenu, QAction, QStyle
-from PySide2.QtQml import QQmlApplicationEngine
+from PySide6.QtCore import QUrl, QRunnable, QThreadPool, QObject, Signal, Slot
+from PySide6.QtWidgets import QApplication, QSystemTrayIcon, QMenu, QStyle
+from PySide6.QtGui import QAction
+from PySide6.QtQml import QQmlApplicationEngine
 
 ## Convert the websocket to a QObject thread 
 class WebsocketSignals(QObject):
     def __init__(self):
         super(WebsocketSignals, self).__init__()
         self.wsapp = None
-    ws_msg = Signal(dict)
+    
     def set_wsapp(self, wsapp):
         self.wsapp = wsapp
+    
+    ws_msg = Signal(dict)
     @Slot(str)
     def ws_send(self, message):
         print("Sending Message:")
         self.wsapp.ws_send(message)
+
 
 class WebsocketWorker(QRunnable):
     def __init__(self, signals):
@@ -88,11 +92,15 @@ if __name__ == "__main__":
     wsapp_thread.start(wsapp)
 
     engine = QQmlApplicationEngine()
+
+    context = engine.rootContext()
+    context.setContextProperty("wsapp", wsapp_signals)
+
     engine.load(QUrl.fromLocalFile("main.qml"))
 
     root = engine.rootObjects()[0]
     wsapp_signals.ws_msg.connect(root.handleWSMessage)
-    context = engine.rootContext()
-    context.setContextProperty("wsapp", wsapp_signals)
 
-    sys.exit(app.exec_())
+    
+
+    sys.exit(app.exec())

@@ -12,6 +12,7 @@ export async function buildMobileDev() {
     ] : [
         //"export CC='ccache gcc'",
         //"export CXX='ccache g++'",
+        "export CMAKE_CXX_COMPILER_LAUNCHER=ccache"
     ]
 
     // @ts-ignore
@@ -19,12 +20,12 @@ export async function buildMobileDev() {
         //["kio", "076337fd"]
         //["kwin", "master"]
         //["plasma-nm", "22377cf6"]
-        ["knewstuff", "ec498e9"]
+        //["knewstuff", "ec498e9"]
     ]
 
     //const packagesToBuild = "kcmutils plasma5support kirigami-addons plasma-mobile plasma-pa plasma-nm qqc2-breeze-style"
     // ktextwidgets gpgme
-    const packagesToBuild = "extra-cmake-modules kcoreaddons ki18n kconfig plasma-wayland-protocols karchive kdoctools kwidgetsaddons polkit-qt-1 kcodecs kauth kguiaddons kwindowsystem kcolorscheme kconfigwidgets kdbusaddons kcrash kiconthemes kcompletion kitemviews sonnet kglobalaccel kservice ktextwidgets qca knotifications kxmlgui kbookmarks kjobwidgets kwallet solid kactivities kpackage kio kcmutils kirigami kdeclarative kwayland kidletime oxygen-icons5 kparts syntax-highlighting kdnssd kitemmodels ktexteditor kunitconversion threadweaver attica kcmutils ksvg plasma-framework syndication knewstuff frameworkintegration kdecoration layer-shell-qt libkscreen poppler krunner breeze kscreenlocker libqaccessibilityclient zxing-cpp phonon kfilemetadata kpty networkmanager-qt kpipewire kglobalacceld wayland-protocols kwin libkexiv2 selenium-webdriver-at-spi baloo kactivities-stats kded kdesu kholidays knotifyconfig kpeople kquickcharts modemmanager-qt prison libksysguard plasma-nano kuserfeedback kirigami-addons plasma5support kstatusnotifieritem plasma-workspace bluez-qt milou plasma-mobile plasma-nm plasma-pa qqc2-breeze-style plasma-settings kactivitymanagerd ksystemstats qqc2-desktop-style kscreen powerdevil plasma-desktop bluedevil plasma-integration breeze-icons konsole purpose futuresql angelfish kclock kweather kalk appstream discover"
+    const packagesToBuild = "extra-cmake-modules kcoreaddons ki18n kconfig plasma-wayland-protocols karchive kdoctools kwidgetsaddons polkit-qt-1 kcodecs kauth kguiaddons kwindowsystem kcolorscheme kconfigwidgets kdbusaddons kcrash kiconthemes kcompletion kitemviews sonnet kglobalaccel kservice ktextwidgets qca knotifications kxmlgui kbookmarks kjobwidgets kwallet kwallet-pam solid kactivities kpackage kio kcmutils kirigami kdeclarative kwayland kidletime oxygen-icons5 kparts syntax-highlighting kdnssd kitemmodels ktexteditor kunitconversion threadweaver attica kcmutils ksvg plasma-framework syndication knewstuff frameworkintegration kdecoration layer-shell-qt libkscreen poppler krunner breeze kscreenlocker libqaccessibilityclient zxing-cpp phonon kfilemetadata kpty networkmanager-qt kpipewire kglobalacceld wayland-protocols kwin libkexiv2 selenium-webdriver-at-spi baloo kactivities-stats kded kdesu kholidays knotifyconfig kpeople kquickcharts modemmanager-qt prison libksysguard plasma-nano kuserfeedback kirigami-addons plasma5support kstatusnotifieritem plasma-workspace bluez-qt milou plasma-mobile plasma-nm plasma-pa qqc2-breeze-style plasma-settings kactivitymanagerd ksystemstats qqc2-desktop-style kscreen powerdevil plasma-desktop bluedevil plasma-integration breeze-icons konsole purpose futuresql angelfish kclock kweather kalk appstream discover krdp"
 
     // todo remove ssh-keygen -A from here
     if(process.env.KDE_CACHE === "true") {

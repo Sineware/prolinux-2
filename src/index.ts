@@ -99,7 +99,7 @@ async function main() {
         pacman -S --noconfirm appstream-qt libdmtx libxaw lua ttf-hack qrencode xorg-xmessage xorg-xsetroot zxing-cpp accountsservice exiv2 lmdb zsync
         pacman -S --noconfirm maliit-keyboard qt5-graphicaleffects xdotool libdisplay-info qcoro-qt6 gpgme
         pacman -S --noconfirm $(pacman -Ssq qt6-) 
-        pacman -S --noconfirm python-websocket-client python-wsaccel pyside2
+        pacman -S --noconfirm python-websocket-client python-wsaccel pyside6 freerdp
 
         echo "Setting up user"
         ${arch === "x64" ? 'useradd -m -G wheel user' : ''}
