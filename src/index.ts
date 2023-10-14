@@ -166,7 +166,7 @@ EOF`);
         systemctl enable prolinux-setup
         systemctl enable prolinuxd
         systemctl enable getty@tty0
-        systemctl enable lightdm
+        #systemctl enable lightdm
         
         mkdir -pv /opt/build-info
         echo "${buildnum},${builduuid},prolinux,${PROLINUX_VARIANT},${PROLINUX_CHANNEL},$(date),prolinux-root-${PROLINUX_VARIANT}-${PROLINUX_CHANNEL}.squish,${arch}" >> /opt/build-info/prolinux-info.txt

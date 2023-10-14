@@ -79,6 +79,14 @@ EOF`);
         mkdir -pv /usr/share/xsessions/ /usr/share/wayland-sessions/ /etc/dbus-1/
         /opt/kde/build/plasma-workspace/login-sessions/install-sessions.sh
         /opt/kde/build/plasma-mobile/bin/install-sessions.sh
+
+        echo "auth            optional        pam_kwallet5.so" >> /etc/pam.d/lightdm
+        echo "session         optional        pam_kwallet5.so auto_start" >> /etc/pam.d/lightdm
+
+        echo "auth            optional        pam_kwallet5.so" >> /etc/pam.d/login
+        echo "session         optional        pam_kwallet5.so auto_start" >> /etc/pam.d/login
+
+        systemctl enable plasma-mobile
 EOF`);
 
     // unmount cache folder

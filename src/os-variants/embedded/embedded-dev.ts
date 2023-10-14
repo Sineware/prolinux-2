@@ -8,6 +8,9 @@ export async function buildEmbeddedDev() {
     exec(`sudo arch-chroot ${ROOTFS_DIR} /bin/bash -x <<'EOF'
             # base system packages
             sudo pacman -S --noconfirm xorg
+
+            systemctl disable plasma-mobile
+            systemctl enable plasma-desktop
 EOF`);
     // todo setup desktop defaults
 }
