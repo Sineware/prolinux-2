@@ -57,8 +57,8 @@ if [ "$(cat /proc/cmdline | grep pl2.stage2)" != "" ] || [ "$disable_kexec" = "t
     mount --bind /sysroot/squishroot/opt/device-support/$deviceinfo_codename/modules /sysroot/oroot/lib/modules || splash_error "Could not mount kernel modules!"
 
     # PMOS_BOOT to /sysroot/oroot/boot
-    mkdir -pv /sysroot/oroot/boot
-    mount /dev/disk/by-label/PMOS_BOOT /sysroot/oroot/boot || splash_error "Could not mount PMOS_BOOT!"
+    #mkdir -pv /sysroot/oroot/boot
+    #mount /dev/disk/by-label/PMOS_BOOT /sysroot/oroot/boot || splash_error "Could not mount PMOS_BOOT!"
 
     ls -l /sysroot
     echo "----"

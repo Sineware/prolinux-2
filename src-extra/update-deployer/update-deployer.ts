@@ -77,7 +77,7 @@ async function main() {
     
     exec(`pushd .
         cd ${OUTPUT_DIR}
-        zsyncmake -C ${prolinuxInfo.filename}
+        #zsyncmake -C ${prolinuxInfo.filename}
     popd`)
     exec(`sudo rsync -aHAXxv --progress ${OUTPUT_DIR}/ root@cdn.sineware.ca:/mnt/volume_tor1_01/www/repo/${prolinuxInfo.product}/${prolinuxInfo.variant}/${prolinuxInfo.channel}/${prolinuxInfo.arch}`);
 
