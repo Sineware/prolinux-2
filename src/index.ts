@@ -99,7 +99,7 @@ async function main() {
         pacman -S --noconfirm appstream-qt libdmtx libxaw lua ttf-hack qrencode xorg-xmessage xorg-xsetroot zxing-cpp accountsservice exiv2 lmdb zsync
         pacman -S --noconfirm maliit-keyboard qt5-graphicaleffects xdotool libdisplay-info qcoro-qt6 gpgme
         pacman -S --noconfirm $(pacman -Ssq qt6-) 
-        pacman -S --noconfirm python-websocket-client python-wsaccel pyside6 freerdp
+        pacman -S --noconfirm python-websocket-client python-wsaccel pyside6 freerdp noto-fonts noto-fonts-cjk noto-fonts-emoji
 
         echo "Setting up user"
         ${arch === "x64" ? 'useradd -m -G wheel user' : ''}
@@ -160,7 +160,11 @@ EOF`);
 
     exec(`sudo arch-chroot ${ROOTFS_DIR} /bin/bash -x <<'EOF'
         set -e
-        ssh-keygen -A
+
+        echo "HostKey /sineware/data/ssh-host-keys/ssh_host_rsa_key" >> /etc/ssh/sshd_config
+        echo "HostKey /sineware/data/ssh-host-keys/ssh_host_ecdsa_key" >> /etc/ssh/sshd_config
+        echo "HostKey /sineware/data/ssh-host-keys/ssh_host_ed25519_key" >> /etc/ssh/sshd_config
+
         systemctl enable NetworkManager
         systemctl enable sshd
         systemctl enable prolinux-setup

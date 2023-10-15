@@ -27,13 +27,16 @@ echo "Loading System Configuration..."
 # read /sysroot/data/prolinux.toml for which squashfs to use
 selected_root=$(awk -F "=" '/pl2.selected_root/ {print $2}' /sysroot/data/prolinux.toml | tr -d ' ' | tr -d "'")
 locked_root=$(awk -F "=" '/pl2.locked_root/ {print $2}' /sysroot/data/prolinux.toml | tr -d ' ' | tr -d "'")
+disable_kexec=$(awk -F "=" '/pl2.disable_kexec/ {print $2}' /sysroot/data/prolinux.toml | tr -d ' ' | tr -d "'")
 echo "Selected Root: $selected_root"
 echo "Locked Root: $locked_root"
+echo "Disable Kexec: $disable_kexec"
 echo "----"
 
 mount -o loop /sysroot/prolinux_${selected_root}.squish /sysroot/squishroot 
 
-if grep -q pl2.stage2 /proc/cmdline; then
+# if pl2.stage2 is in the cmdline, OR if disable_kexec is true, we are in stage 2
+if [ "$(cat /proc/cmdline | grep pl2.stage2)" != "" ] || [ "$disable_kexec" = "true" ]; then
     echo "Loaded stage 2 kernel!"
     # we are booted into the stage 2 kernel.
     # if we are locked, we need to mount the locked rootfs
@@ -53,9 +56,15 @@ if grep -q pl2.stage2 /proc/cmdline; then
     mkdir -pv /sysroot/oroot/lib/modules
     mount --bind /sysroot/squishroot/opt/device-support/$deviceinfo_codename/modules /sysroot/oroot/lib/modules || splash_error "Could not mount kernel modules!"
 
+    # PMOS_BOOT to /sysroot/oroot/boot
+    mkdir -pv /sysroot/oroot/boot
+    mount /dev/disk/by-label/PMOS_BOOT /sysroot/oroot/boot || splash_error "Could not mount PMOS_BOOT!"
+
     ls -l /sysroot
     echo "----"
     #/bin/busybox sh
+
+    mkdir -pv /sysroot/data/ssh-host-keys
 
     ls -l /sysroot/oroot
     echo "Starting up..."
