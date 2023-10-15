@@ -161,9 +161,9 @@ EOF`);
     exec(`sudo arch-chroot ${ROOTFS_DIR} /bin/bash -x <<'EOF'
         set -e
 
-        echo "HostKey /sineware/data/ssh-host-keys/ssh_host_rsa_key" >> /etc/ssh/sshd_config
-        echo "HostKey /sineware/data/ssh-host-keys/ssh_host_ecdsa_key" >> /etc/ssh/sshd_config
-        echo "HostKey /sineware/data/ssh-host-keys/ssh_host_ed25519_key" >> /etc/ssh/sshd_config
+        #echo "HostKey /sineware/data/ssh-host-keys/ssh_host_rsa_key" >> /etc/ssh/sshd_config
+        #echo "HostKey /sineware/data/ssh-host-keys/ssh_host_ecdsa_key" >> /etc/ssh/sshd_config
+        #echo "HostKey /sineware/data/ssh-host-keys/ssh_host_ed25519_key" >> /etc/ssh/sshd_config
 
         systemctl enable NetworkManager
         systemctl enable sshd

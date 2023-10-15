@@ -82,9 +82,9 @@ export function genPMOSImage(device: string) {
     exec(`
         echo "Adding modules for ${device} to device-support..."
         sudo mkdir -pv ${ROOTFS_DIR}/opt/device-support/${device}/modules
-        sudo mkdir -pv ${BUILD_DIR}/rootfs/lib/firmware/
+        sudo mkdir -pv ${ROOTFS_DIR}/opt/device-support/${device}/firmware/
         sudo rsync -a ${BUILD_DIR}/pmos_root_mnt/lib/modules/ ${ROOTFS_DIR}/opt/device-support/${device}/modules
-        sudo rsync -a ${BUILD_DIR}/pmos_root_mnt/lib/firmware/ ${BUILD_DIR}/rootfs/lib/firmware
+        sudo rsync -a ${BUILD_DIR}/pmos_root_mnt/lib/firmware/  ${ROOTFS_DIR}/opt/device-support/${device}/firmware
     `);
 
     // Find out the kernel folder name
