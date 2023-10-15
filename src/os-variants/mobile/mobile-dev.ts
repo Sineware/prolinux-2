@@ -96,6 +96,7 @@ EOF`);
             pacman -Sy --noconfirm
 
             pacman-key -r 29DF2D441A1BEDD7 && sudo pacman-key --lsign-key 29DF2D441A1BEDD7
+            pacman -S --noconfirm danctnix-keyring
             yes | pacman-key --populate danctnix
 
             # PinePhone EG25 Modem
