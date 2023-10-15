@@ -88,6 +88,20 @@ EOF`);
         echo "session         optional        pam_kwallet5.so auto_start" >> /etc/pam.d/login
 
         systemctl enable plasma-mobile
+
+        ${arch === "arm64" ? `echo "Installing packages from DanctNIX"
+            echo "[danctnix]" >> /etc/pacman.conf
+            echo 'Server = https://archmobile.mirror.danctnix.org/$repo/$arch/' >> /etc/pacman.conf
+
+            pacman -Syyu --noconfirm
+
+            # PinePhone EG25 Modem
+            pacman -S --noconfirm eg25-manager
+            # PinePhone Firmware
+            pacman -S --noconfirm rtl8723bt-firmware anx7688-firmware ov5640-firmware
+
+            # Pinephone Pro Firmware
+            pacman -S --noconfirm brcm-firmware alsa-ucm-pinephonepro` : ''}
 EOF`);
 
     // unmount cache folder
