@@ -93,7 +93,10 @@ EOF`);
             echo "[danctnix]" >> /etc/pacman.conf
             echo 'Server = https://archmobile.mirror.danctnix.org/$repo/$arch/' >> /etc/pacman.conf
 
-            pacman -Syyu --noconfirm
+            pacman -Sy --noconfirm
+
+            pacman-key -r 29DF2D441A1BEDD7 && sudo pacman-key --lsign-key 29DF2D441A1BEDD7
+            yes | pacman-key --populate danctnix
 
             # PinePhone EG25 Modem
             pacman -S --noconfirm eg25-manager
