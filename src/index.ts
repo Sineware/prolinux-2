@@ -95,7 +95,7 @@ async function main() {
         yes | pacman-key --populate ${arch === "arm64" ? "archlinuxarm" : "archlinux"}
         pacman -Syu --noconfirm
         pacman -S --noconfirm base-devel git nano neofetch htop wget curl sudo bash-completion dialog qt6-base qt6-tools polkit libpipewire pipewire pipewire-pulse libwireplumber wireplumber libxcvt kwayland libnm networkmanager modemmanager wpa_supplicant libqalculate distcc ccache gdb
-        pacman -S --noconfirm bluez xorg-server xorg-xwayland openssh lightdm lightdm-gtk-greeter mold onboard nodejs npm flatpak rsync
+        pacman -S --noconfirm bluez xorg-xwayland openssh mold nodejs npm flatpak rsync
         pacman -S --noconfirm appstream-qt libdmtx libxaw lua ttf-hack qrencode xorg-xmessage xorg-xsetroot zxing-cpp accountsservice exiv2 lmdb zsync
         pacman -S --noconfirm maliit-keyboard qt5-graphicaleffects xdotool libdisplay-info qcoro-qt6 gpgme
         pacman -S --noconfirm $(pacman -Ssq qt6-) 
@@ -118,6 +118,10 @@ async function main() {
 
         mkdir /sineware
         sudo -u user bash << EOFSU
+            echo "Setting CCache settings..."
+            ccache -M 10G
+            
+            echo "Setting up flatpak..."
             sudo flatpak remote-delete flathub
             flatpak remote-add --if-not-exists --user flathub https://flathub.org/repo/flathub.flatpakrepo
 EOFSU
