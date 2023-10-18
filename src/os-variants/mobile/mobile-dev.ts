@@ -21,9 +21,7 @@ export async function buildMobileDev() {
         //["kwin", "master"]
         //["plasma-nm", "22377cf6"]
         //["knewstuff", "ec498e9"]
-        ["plasma-mobile", "work/devinlin/foliorewrite"],
-        ["powerdevil", "/work/nico/x11-state"]
-    ]
+        ["plasma-mobile", "work/devinlin/foliorewrite"],    ]
 
     //const packagesToBuild = "kcmutils plasma5support kirigami-addons plasma-mobile plasma-pa plasma-nm qqc2-breeze-style"
     // ktextwidgets gpgme
@@ -65,7 +63,7 @@ export async function buildMobileDev() {
                 ./kdesrc-build --metadata-only
                 ./kdesrc-build --src-only ${packagesToBuild}
                 
-                ${checkoutBranches.map(([repo, branch]) => `cd /opt/kde/src/${repo} && git checkout ${branch} && cd /opt/kde/src/kdesrc-build`).join("; ")}
+                ${checkoutBranches.map(([repo, branch]) => `cd /opt/kde/src/${repo} && git checkout ${branch} && git pull --rebase && cd /opt/kde/src/kdesrc-build`).join("; ")}
                 ${packagesToBuild.split(" ").map((p, i, a) => `./kdesrc-build --stop-on-failure --no-include-dependencies --no-src ${p}; echo "-- ✅ Built ${i} of ${a.length}!"`).join("; ")}
 EOFSU
             sleep 2
