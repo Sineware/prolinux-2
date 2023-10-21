@@ -40,15 +40,16 @@ if [ "$(cat /proc/cmdline | grep pl2.stage2)" != "" ] || [ "$disable_kexec" = "t
     echo "Loaded stage 2 kernel!"
     # we are booted into the stage 2 kernel.
     # if we are locked, we need to mount the locked rootfs
+    mkdir -pv /sysroot/data/customization
     if [ "$locked_root" = "true" ]; then
         echo "Locked rootfs detected, mounting..."
         mkdir -pv /tmproot
         mount -t tmpfs tmpfs /tmproot
         mkdir -pv /tmproot/overlay
         mkdir -pv /tmproot/workdir
-        mount -t overlay overlay -o lowerdir=/sysroot/persistroot:/sysroot/squishroot,upperdir=/tmproot/overlay,workdir=/tmproot/workdir /sysroot/oroot || splash_error "Could not mount overlayfs!"
+        mount -t overlay overlay -o lowerdir=/sysroot/data/customization:/sysroot/persistroot:/sysroot/squishroot,upperdir=/tmproot/overlay,workdir=/tmproot/workdir /sysroot/oroot || splash_error "Could not mount overlayfs!"
     else
-        mount -t overlay overlay -o lowerdir=/sysroot/squishroot,upperdir=/sysroot/persistroot,workdir=/sysroot/workdir /sysroot/oroot || splash_error "Could not mount overlayfs!"
+        mount -t overlay overlay -o lowerdir=/sysroot/data/customization:/sysroot/squishroot,upperdir=/sysroot/persistroot,workdir=/sysroot/workdir /sysroot/oroot || splash_error "Could not mount overlayfs!"
     fi
     mount --bind /sysroot /sysroot/oroot/sineware
     mount --bind /sysroot/data/home /sysroot/oroot/home
@@ -66,8 +67,6 @@ if [ "$(cat /proc/cmdline | grep pl2.stage2)" != "" ] || [ "$disable_kexec" = "t
     ls -l /sysroot
     echo "----"
     #/bin/busybox sh
-
-    mkdir -pv /sysroot/data/ssh-host-keys
 
     ls -l /sysroot/oroot
     echo "Starting up..."
