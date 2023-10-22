@@ -21,7 +21,8 @@ export async function buildMobileDev() {
         //["kwin", "master"]
         //["plasma-nm", "22377cf6"]
         //["knewstuff", "ec498e9"]
-        ["plasma-mobile", "work/devinlin/foliorewrite"],    ]
+        //["plasma-mobile", "work/devinlin/foliorewrite"],    
+    ]
 
     //const packagesToBuild = "kcmutils plasma5support kirigami-addons plasma-mobile plasma-pa plasma-nm qqc2-breeze-style"
     // ktextwidgets gpgme
