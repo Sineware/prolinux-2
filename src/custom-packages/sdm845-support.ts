@@ -10,6 +10,12 @@ export function compileSDM845SupportPackages() {
         set -e
 
         cd /tmp
+
+        git clone https://github.com/andersson/qrtr.git
+        cd qrtr
+        make -j$(nproc) prefix=/usr
+        cd ..
+
         git clone https://github.com/andersson/rmtfs.git
         cd rmtfs
         make -j$(nproc) prefix=/usr
@@ -26,10 +32,6 @@ export function compileSDM845SupportPackages() {
         make -j$(nproc) prefix=/usr
         cd ..
 
-        git clone https://github.com/andersson/qrtr.git
-        cd qrtr
-        make -j$(nproc) prefix=/usr
-        cd ..
 
         # todo: prolinuxd will eventually read device_codename and start
         systemctl enable rmtfs
