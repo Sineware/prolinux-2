@@ -13,23 +13,27 @@ export function compileSDM845SupportPackages() {
 
         git clone https://github.com/andersson/qrtr.git
         cd qrtr
-        make -j$(nproc) prefix=/usr
+        make -j$(nproc) prefix=/usr all
+        make -j$(nproc) prefix=/usr install
         cd ..
 
         git clone https://github.com/andersson/rmtfs.git
         cd rmtfs
         make -j$(nproc) prefix=/usr
+        make -j$(nproc) prefix=/usr install
         echo 'SUBSYSTEM=="uio", ATTR{name}=="rmtfs", SYMLINK+="qcom_rmtfs_uio1"' > /usr/lib/udev/rules.d/65-rmtfs.rules
         cd ..
 
         git clone https://github.com/andersson/pd-mapper.git
         cd pd-mapper
         make -j$(nproc) prefix=/usr
+        make -j$(nproc) prefix=/usr install
         cd ..
 
         git clone https://github.com/andersson/tqftpserv.git
         cd tqftpserv
         make -j$(nproc) prefix=/usr
+        make -j$(nproc) prefix=/usr install
         cd ..
 
 
