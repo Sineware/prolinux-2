@@ -13,7 +13,7 @@ export function compileSDM845SupportPackages() {
 
         cd /tmp
 
-        # script to configure device wlan and bt mac addresses from /proc/cmdline (set from android bootloader)
+        # Script to configure device wlan and bt mac addresses from /proc/cmdline (set from android bootloader)
         git clone https://gitlab.com/postmarketOS/bootmac.git
         cd bootmac
         install -Dm644 bootmac.rules /usr/lib/udev/rules.d/90-bootmac.rules
@@ -49,6 +49,13 @@ export function compileSDM845SupportPackages() {
         cd tqftpserv
         make -j$(nproc) prefix=/usr
         make -j$(nproc) prefix=/usr install
+        cd ..
+
+        # ALSA UCM for sound support
+        git clone https://gitlab.com/sdm845-mainline/alsa-ucm-conf.git
+        cd alsa-ucm-conf
+        rm -rf /usr/share/alsa/ucm2
+        cp -a ucm2 /usr/share/alsa
         cd ..
 
 
