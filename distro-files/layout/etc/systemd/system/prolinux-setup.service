@@ -10,4 +10,4 @@ ExecStop=/opt/prolinux-setup/stop.sh
 StandardOutput=journal
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=basic.target

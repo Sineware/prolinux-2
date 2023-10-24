@@ -7,6 +7,7 @@ import { createAndMountPMOSImage, genPMOSImage, pmosFinalCleanup } from './pmboo
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 import { compileKexecTools } from './custom-packages/kexec-tools';
+import { compileSDM845SupportPackages } from './custom-packages/sdm845-support';
 import { buildMobileDev } from './os-variants/mobile/mobile-dev';
 import { buildEmbedded } from './os-variants/embedded/embedded';
 import { buildEmbeddedDev } from './os-variants/embedded/embedded-dev';
@@ -99,7 +100,7 @@ async function main() {
         pacman -S --noconfirm appstream-qt libdmtx libxaw lua ttf-hack qrencode xorg-xmessage xorg-xsetroot zxing-cpp accountsservice exiv2 lmdb zsync
         pacman -S --noconfirm maliit-keyboard qt5-graphicaleffects xdotool libdisplay-info qcoro-qt6 gpgme
         pacman -S --noconfirm $(pacman -Ssq qt6-) 
-        pacman -S --noconfirm python-websocket-client python-wsaccel pyside6 freerdp noto-fonts noto-fonts-cjk noto-fonts-emoji libimobiledevice libcanberra
+        pacman -S --noconfirm python-setuptools python-websocket-client python-wsaccel pyside6 freerdp noto-fonts noto-fonts-cjk noto-fonts-emoji libimobiledevice libcanberra
 
         echo "Setting up user"
         ${arch === "x64" ? 'useradd -m -G wheel user' : ''}
@@ -174,13 +175,11 @@ EOF`);
         systemctl enable prolinux-setup
         systemctl enable prolinuxd
         systemctl enable getty@tty0
-        #systemctl enable lightdm
         
         mkdir -pv /opt/build-info
         echo "${buildnum},${builduuid},prolinux,${PROLINUX_VARIANT},${PROLINUX_CHANNEL},$(date),prolinux-root-${PROLINUX_VARIANT}-${PROLINUX_CHANNEL}.squish,${arch}" >> /opt/build-info/prolinux-info.txt
         pacman -Q >> /opt/build-info/prolinux-sbom.txt
         ls /opt/kde/build/ >> /opt/build-info/prolinux-sbom.txt || true
-        echo "alias pacman = '/opt/pacman-warning.sh'" >> /etc/bash.bashrc
 EOF`);
 
     // drop to shell
@@ -192,6 +191,7 @@ EOF`);
     /* ------------- Addtional Packages ------------- */
     // kexec-tools (for initramfs)
     compileKexecTools();
+    compileSDM845SupportPackages();
 
     /* ------------- Target Devices ------------- */
     const buildTargetDeviceSupport = (targetDevice: string) => {
@@ -222,6 +222,8 @@ EOF`);
         #sudo rm -rf ${ROOTFS_DIR}/var/cache/pacman/pkg/ # bind mount
         #sudo rm -rf ${ROOTFS_DIR}/opt/kde/usr/share/kservices6/searchproviders/
         #sudo rm -rf ${ROOTFS_DIR}/usr/share/kservices5/searchproviders/
+
+        sudo umount -R ${ROOTFS_DIR}/*  || true
     `);
     // Create squashfs from root
     exec(`mkdir -pv ${OUTPUT_DIR} && sudo mksquashfs ${ROOTFS_DIR} ${OUTPUT_DIR}/prolinux-root-${PROLINUX_VARIANT}-${PROLINUX_CHANNEL}.squish`);

@@ -64,6 +64,8 @@ if [ "$(cat /proc/cmdline | grep pl2.stage2)" != "" ] || [ "$disable_kexec" = "t
     #mkdir -pv /sysroot/oroot/boot
     #mount /dev/disk/by-label/PMOS_BOOT /sysroot/oroot/boot || splash_error "Could not mount PMOS_BOOT!"
 
+    echo $deviceinfo_codename > /sysroot/deviceinfo_codename
+
     ls -l /sysroot
     echo "----"
     #/bin/busybox sh
