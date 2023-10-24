@@ -9,8 +9,6 @@ export function compileSDM845SupportPackages() {
     exec(`sudo arch-chroot ${ROOTFS_DIR} /bin/bash -x <<'EOF'
         set -e
 
-        mkdir -pv
-
         cd /tmp
         git clone https://github.com/andersson/rmtfs.git
         cd rmtfs

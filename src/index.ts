@@ -95,7 +95,7 @@ async function main() {
         yes | pacman-key --init
         yes | pacman-key --populate ${arch === "arm64" ? "archlinuxarm" : "archlinux"}
         pacman -Syu --noconfirm
-        pacman -S --noconfirm base-devel git nano neofetch htop wget curl sudo bash-completion dialog qt6-base qt6-tools polkit libpipewire pipewire pipewire-pulse libwireplumber wireplumber libxcvt libnm networkmanager modemmanager wpa_supplicant libqalculate distcc ccache gdb
+        pacman -S --noconfirm base-devel git nano neofetch htop wget curl sudo bash-completion dialog qt6-base qt6-tools polkit libpipewire pipewire pipewire-pulse libwireplumber wireplumber libxcvt libnm networkmanager modemmanager wpa_supplicant libqalculate distcc ccache gdb kwayland
         pacman -S --noconfirm bluez xorg-xwayland openssh mold nodejs npm flatpak rsync
         pacman -S --noconfirm appstream-qt libdmtx libxaw lua ttf-hack qrencode xorg-xmessage xorg-xsetroot zxing-cpp accountsservice exiv2 lmdb zsync
         pacman -S --noconfirm maliit-keyboard qt5-graphicaleffects xdotool libdisplay-info qcoro-qt6 gpgme
