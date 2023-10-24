@@ -11,6 +11,12 @@ export function compileSDM845SupportPackages() {
 
         cd /tmp
 
+        git clone https://github.com/andersson/qmic.git
+        cd qmic
+        make -j$(nproc) prefix=/usr
+        make -j$(nproc) prefix=/usr install
+        cd ..
+
         git clone https://github.com/andersson/qrtr.git
         cd qrtr
         make -j$(nproc) prefix=/usr all
