@@ -74,6 +74,7 @@ async function main() {
     
     console.log("Compressing images...");
     exec(`pigz --rsyncable ${OUTPUT_DIR}/*.img || true`);
+    console.log("Compressing complete! Uploading...")
     
     exec(`pushd .
         cd ${OUTPUT_DIR}

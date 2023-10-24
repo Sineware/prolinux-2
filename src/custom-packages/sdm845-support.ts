@@ -1,5 +1,7 @@
 import exec from "../helpers/exec"
 import { BUILD_DIR, MUSL_TOOLCHAIN, ROOTFS_DIR, arch } from "../helpers/consts";
+
+/* Installs packages to support Qualcomm Snapdrgaon SDM845 based devices */
 export function compileSDM845SupportPackages() {
     if(arch != "arm64") {
         console.log("SDM845 support packages are only available for arm64");
@@ -10,6 +12,13 @@ export function compileSDM845SupportPackages() {
         set -e
 
         cd /tmp
+
+        # script to configure device wlan and bt mac addresses from /proc/cmdline (set from android bootloader)
+        git clone https://gitlab.com/postmarketOS/bootmac.git
+        cd bootmac
+        install -Dm644 bootmac.rules /usr/lib/udev/rules.d/90-bootmac.rules
+        install -Dm755 bootmac /usr/bin/bootmac
+        cd ..
 
         git clone https://github.com/andersson/qmic.git
         cd qmic
