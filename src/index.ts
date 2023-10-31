@@ -106,7 +106,7 @@ async function main() {
         # koko
         pacman -S --noconfirm mpv
         # neochat
-        pacman -S --noconfirm libquotient
+        #pacman -S --noconfirm libquotient
 
         echo "Setting up user"
         ${arch === "x64" ? 'useradd -m -G wheel user' : ''}
