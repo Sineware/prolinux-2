@@ -103,6 +103,8 @@ async function main() {
         pacman -S --noconfirm python-setuptools python-websocket-client python-wsaccel pyside6 freerdp noto-fonts noto-fonts-cjk noto-fonts-emoji libimobiledevice libcanberra
         # plasma-dialer
         pacman -S --noconfirm abseil-cpp
+        # koko
+        pacman -S --noconfirm mpv
 
         echo "Setting up user"
         ${arch === "x64" ? 'useradd -m -G wheel user' : ''}
