@@ -88,7 +88,7 @@ async function main() {
     exec(`sudo arch-chroot ${ROOTFS_DIR} /bin/bash -x <<'EOF'
         set -e
         chown root:root /
-        echo 'Server = ${arch === "arm64" ? "https://fl.us.mirror.archlinuxarm.org/$arch/$repo" : "http://mirror.csclub.uwaterloo.ca/archlinux/$repo/os/$arch"}' > /etc/pacman.d/mirrorlist
+        echo 'Server = ${arch === "arm64" ? "https://fl.us.mirror.archlinuxarm.org/$arch/$repo" : "https://mirror.xenyth.net/archlinux/$repo/os/$arch"}' > /etc/pacman.d/mirrorlist
         
         sed -i "s/#ParallelDownloads = 5/ParallelDownloads = 5/g" /etc/pacman.conf
         
@@ -150,6 +150,19 @@ EOF`);
             sudo mkdir -pv ${ROOTFS_DIR}/opt/prolinuxd
             sudo cp -rv dist/* ${ROOTFS_DIR}/opt/prolinuxd/
             sudo cp -v distro-files/plctl ${ROOTFS_DIR}/usr/sbin/
+        popd
+    `);
+    /* ------------- ProLinux GUI Tool ------------- */
+    // copy ./prolinux-tool to /opt/prolinux-tool
+    // make a .desktop file that runs /opt/prolinux-tool/prolinux-tool
+    exec(`
+        set -e
+        pushd .
+            cd ${__dirname}/../prolinux-tool
+            sudo mkdir -pv ${ROOTFS_DIR}/opt/prolinux-tool
+
+            sudo cp -rv * ${ROOTFS_DIR}/opt/prolinux-tool/
+            sudo cp -v prolinux-tool.desktop ${ROOTFS_DIR}/usr/share/applications/
         popd
     `);
     

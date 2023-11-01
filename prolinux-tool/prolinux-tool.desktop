@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=ProLinux Tool
+Exec=bash -c 'cd /opt/prolinux-tool && /usr/bin/python3 /opt/prolinux-tool/main.py'
+
+Icon=/opt/prolinux-tool/app-icon.png
+Terminal=false
+X-KDE-FormFactor=desktop;tablet;handset;
