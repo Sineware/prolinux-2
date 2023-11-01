@@ -19,10 +19,12 @@ class WebsocketSignals(QObject):
         self.wsapp = wsapp
     
     ws_msg = Signal(dict)
-    @Slot(str)
+    @Slot(dict)
     def ws_send(self, message):
         print("Sending Message:")
-        self.wsapp.ws_send(message)
+        msg = json.dumps(message)
+        print(msg)
+        self.wsapp.ws_send(msg)
 
 
 class WebsocketWorker(QRunnable):
