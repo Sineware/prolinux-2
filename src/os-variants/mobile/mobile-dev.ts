@@ -89,6 +89,7 @@ EOF`);
 
         systemctl enable plasma-mobile
         systemctl enable bluetooth
+        systemctl enable ModemManager
 
         ${arch === "arm64" ? `echo "Installing packages from DanctNIX"
             echo "[danctnix]" >> /etc/pacman.conf

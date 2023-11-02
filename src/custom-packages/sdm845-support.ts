@@ -57,12 +57,5 @@ export function compileSDM845SupportPackages() {
         rm -rf /usr/share/alsa/ucm2
         cp -a ucm2 /usr/share/alsa
         cd ..
-
-
-        # todo: prolinuxd will eventually read device_codename and start
-        systemctl enable rmtfs
-        systemctl enable pd-mapper
-        systemctl enable tqftpserv
-        systemctl enable qrtr-ns
 EOF`);
 }
