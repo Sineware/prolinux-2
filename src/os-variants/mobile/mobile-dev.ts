@@ -26,7 +26,7 @@ export async function buildMobileDev() {
 
     //const packagesToBuild = "kcmutils plasma5support kirigami-addons plasma-mobile plasma-pa plasma-nm qqc2-breeze-style"
     // ktextwidgets gpgme
-    const packagesToBuild = "extra-cmake-modules kcoreaddons ki18n kconfig plasma-wayland-protocols karchive kdoctools kwidgetsaddons polkit-qt-1 kcodecs kauth kguiaddons kwindowsystem kcolorscheme kconfigwidgets kdbusaddons kcrash kiconthemes kcompletion kitemviews sonnet kglobalaccel kservice ktextwidgets qca knotifications kxmlgui kbookmarks kjobwidgets kwallet kwallet-pam solid kactivities kpackage kio kcmutils kirigami kdeclarative kwayland kidletime oxygen-icons5 kparts syntax-highlighting kdnssd kitemmodels ktexteditor kunitconversion threadweaver attica kcmutils ksvg plasma-framework syndication knewstuff frameworkintegration kdecoration layer-shell-qt libkscreen poppler krunner breeze kscreenlocker libqaccessibilityclient zxing-cpp phonon kfilemetadata kpty networkmanager-qt kpipewire kglobalacceld wayland-protocols kwin libkexiv2 selenium-webdriver-at-spi baloo kactivities-stats kded kdesu kholidays knotifyconfig kpeople kquickcharts modemmanager-qt prison libksysguard plasma-nano kuserfeedback kirigami-addons plasma5support kstatusnotifieritem plasma-workspace bluez-qt milou plasma-mobile plasma-nm plasma-pa qqc2-breeze-style plasma-settings kactivitymanagerd ksystemstats qqc2-desktop-style kscreen powerdevil plasma-desktop bluedevil plasma-integration breeze-icons konsole purpose futuresql kquickimageeditor angelfish kclock kweathercore extragear/utils/kweather kalk appstream discover polkit-kde-agent-1 kde-cli-tools xdg-desktop-portal-kde kcontacts kmoretools dolphin alligator elisa kasts keysmith koko tokodon"
+    const packagesToBuild = "extra-cmake-modules kcoreaddons ki18n kconfig plasma-wayland-protocols karchive kdoctools kwidgetsaddons polkit-qt-1 kcodecs kauth kguiaddons kwindowsystem kcolorscheme kconfigwidgets kdbusaddons kcrash kiconthemes kcompletion kitemviews sonnet kglobalaccel kservice ktextwidgets qca knotifications kxmlgui kbookmarks kjobwidgets kwallet kwallet-pam solid kactivities kpackage kio kcmutils kirigami kdeclarative kwayland kidletime oxygen-icons5 kparts syntax-highlighting kdnssd kitemmodels ktexteditor kunitconversion threadweaver attica kcmutils ksvg plasma-framework syndication knewstuff frameworkintegration kdecoration layer-shell-qt libkscreen poppler krunner breeze kscreenlocker libqaccessibilityclient zxing-cpp phonon kfilemetadata kpty networkmanager-qt kpipewire kglobalacceld wayland-protocols kwin libkexiv2 selenium-webdriver-at-spi baloo kactivities-stats kded kdesu kholidays knotifyconfig kpeople kquickcharts modemmanager-qt prison libksysguard plasma-nano kuserfeedback kirigami-addons plasma5support kstatusnotifieritem plasma-workspace bluez-qt milou plasma-mobile plasma-nm plasma-pa qqc2-breeze-style plasma-settings kactivitymanagerd ksystemstats qqc2-desktop-style kscreen powerdevil plasma-desktop bluedevil plasma-integration breeze-icons konsole qmlkonsole purpose futuresql kquickimageeditor angelfish kclock kweathercore extragear/utils/kweather kalk appstream discover polkit-kde-agent-1 kde-cli-tools xdg-desktop-portal-kde kcontacts kmoretools dolphin alligator elisa kasts keysmith koko tokodon spectacle"
 
     // todo remove ssh-keygen -A from here
     if(process.env.KDE_CACHE === "true") {
@@ -81,11 +81,10 @@ EOF`);
         /opt/kde/build/plasma-workspace/login-sessions/install-sessions.sh
         /opt/kde/build/plasma-mobile/bin/install-sessions.sh
 
-        echo "auth            optional        pam_kwallet5.so" >> /etc/pam.d/lightdm
-        echo "session         optional        pam_kwallet5.so auto_start" >> /etc/pam.d/lightdm
+        echo "auth            optional        /opt/kde/usr/lib/security/pam_kwallet5.so" >> /etc/pam.d/login
+        echo "session         optional        /opt/kde/usr/lib/security/pam_kwallet5.so auto_start" >> /etc/pam.d/login
 
-        echo "auth            optional        pam_kwallet5.so" >> /etc/pam.d/login
-        echo "session         optional        pam_kwallet5.so auto_start" >> /etc/pam.d/login
+        echo 'export XDG_DATA_DIRS=/home/user/.local/share/flatpak/exports/share:$XDG_DATA_DIRS' >> /opt/kde/usr/lib/libexec/plasma-dev-prefix.sh
 
         systemctl enable plasma-mobile
         systemctl enable bluetooth

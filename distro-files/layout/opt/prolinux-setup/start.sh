@@ -6,6 +6,9 @@ if [ ! -d /sineware/data/customization/etc/ssh ]; then
     systemctl restart sshd
 fi
 
+# todo investigate this
+chmod 4755 /usr/bin/bwrap
+
 # switch to the user user and add flathub if it is not already added
 su - user -c "flatpak remote-add --if-not-exists --collection-id=org.flathub.Stable --gpg-import /opt/flatpak/flathub.gpg --user flathub /opt/flatpak/flathub.flatpakrepo"
 killall pbsplash
