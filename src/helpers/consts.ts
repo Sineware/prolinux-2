@@ -37,8 +37,31 @@ export const ACCEPTABLE_ANDROID_DEVICES = [
         "uses_zstd_initramfs": true
     },
 ];
+
+export const x64KernelDevices = [
+    "tablet-x64uefi"
+]
+export const PPKernelDevices = [
+    "pine64-pinephone"
+]
+export const PPPKernelDevices = [
+    "pine64-pinephonepro"
+]
+export const SDM845KernelDevices = [
+    "xiaomi-beryllium",
+    "oneplus-enchilada",
+]
+
+export const requiredKConfigLines = [
+    `CONFIG_LOCALVERSION="-sineware-prolinux-2"`,
+    `CONFIG_DEFAULT_HOSTNAME="prolinux-system"`
+]
+
 export const MUSL_TOOLCHAIN = process.env.MUSL_TOOLCHAIN;
+
 export const X64_KERNEL = "https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.5.3.tar.xz"; // https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.2.9.tar.xz 
+export const MEGI_KERNEL = "https://codeberg.org/megi/linux/archive/orange-pi-6.6-20231103-1422.tar.gz";
+
 //export const GIT_COMMIT = exec("git rev-parse HEAD", false).toString().trim() ?? "unknown";
 export let PROLINUX_VARIANT = process.env.PROLINUX_VARIANT;
 export let PROLINUX_CHANNEL = process.env.PROLINUX_CHANNEL;

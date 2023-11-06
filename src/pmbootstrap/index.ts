@@ -1,7 +1,7 @@
 import fs from "fs"
 import path from "path"
 import exec from "../helpers/exec"
-import { arch, BUILD_DIR, FILES_DIR, OUTPUT_DIR, ROOTFS_DIR, ACCEPTABLE_ANDROID_DEVICES, ACCEPTABLE_STANDARD_DEVICES } from "../helpers/consts";
+import { arch, BUILD_DIR, FILES_DIR, OUTPUT_DIR, ROOTFS_DIR, ACCEPTABLE_ANDROID_DEVICES, ACCEPTABLE_STANDARD_DEVICES, x64KernelDevices, PPKernelDevices } from "../helpers/consts";
 
 export let loopDevice = "";
 
@@ -126,22 +126,33 @@ export function genPMOSImage(device: string) {
     ]);
     fs.writeFileSync(path.join(BUILD_DIR, "/new-init"), originalInit.join("\n"));
 
+
+    let customKernelCommands = '';
+    if(x64KernelDevices.includes(device)) {
+        customKernelCommands = `echo "Copying custom compiled kernel for x64"
+        sudo cp -v ${BUILD_DIR}/kernel/vmlinuz ${BUILD_DIR}/pmos_boot_mnt/vmlinuz-edge
+        sudo rsync -a ${BUILD_DIR}/kernel/modroot/lib/modules/ ${ROOTFS_DIR}/opt/device-support/${device}/modules`
+    } else if(PPKernelDevices.includes(device)) {
+        customKernelCommands = `echo "Copying custom compiled kernel for PinePhone"
+        sudo cp -v ${BUILD_DIR}/pp-kernel/vmlinuz ${BUILD_DIR}/pmos_boot_mnt/vmlinuz
+        sudo cp -vrf ${BUILD_DIR}/pp-kernel/dtbs/* ${BUILD_DIR}/pmos_boot_mnt/dtbs/
+        sudo rsync -a ${BUILD_DIR}/pp-kernel/modroot/lib/modules/ ${ROOTFS_DIR}/opt/device-support/${device}/modules
+        sudo cp -r ${BUILD_DIR}/pp-kernel/modroot/lib/modules/* ${BUILD_DIR}/initramfs-work/lib/modules/
+        `
+    }
+    
     // bundle it
     exec(`
         sudo cp -v ${BUILD_DIR}/new-init ${BUILD_DIR}/initramfs-work/init
         sudo chmod +x ${BUILD_DIR}/initramfs-work/init
         ${(arch === "x64") ? `sudo cp -r ${BUILD_DIR}/kernel/modroot/lib/modules/* ${BUILD_DIR}/initramfs-work/lib/modules/` : ""}
+        ${customKernelCommands}
+        
         cd ${BUILD_DIR}/initramfs-work/
         find . -print0 | cpio --null --create --verbose --format=newc | gzip --best > ${BUILD_DIR}/new-initramfs
         sudo cp -v ${BUILD_DIR}/new-initramfs ${BUILD_DIR}/pmos_boot_mnt/initramfs
 
         mkdir -pv ${OUTPUT_DIR}/${device}
-        
-        ${(arch === "arm64") ? `` : `
-            echo "Copying custom compiled kernel for x64"
-            sudo cp -v ${BUILD_DIR}/kernel/vmlinuz ${BUILD_DIR}/pmos_boot_mnt/vmlinuz-edge
-            sudo rsync -a ${BUILD_DIR}/kernel/modroot/lib/modules/ ${ROOTFS_DIR}/opt/device-support/${device}/modules
-        `}
         
         echo "Adding kernel+initramfs to /opt/device-support/-"
         sudo mkdir -pv ${ROOTFS_DIR}/opt/device-support/${device}
