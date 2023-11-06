@@ -267,8 +267,8 @@ CONFIG_SYSTEM_DATA_VERIFICATION=y
 #
 # Kexec and crash features
 #
-# CONFIG_KEXEC is not set
-# CONFIG_KEXEC_FILE is not set
+CONFIG_KEXEC=y
+CONFIG_KEXEC_FILE=y
 # CONFIG_CRASH_DUMP is not set
 # end of Kexec and crash features
 # end of General setup
