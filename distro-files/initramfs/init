@@ -33,7 +33,7 @@ echo "Locked Root: $locked_root"
 echo "Disable Kexec: $disable_kexec"
 echo "----"
 
-mount -o loop /sysroot/prolinux_${selected_root}.squish /sysroot/squishroot 
+mount -o loop /sysroot/prolinux_${selected_root}.squish /sysroot/squishroot || splash_error "Could not mount squashfs!"
 
 # if pl2.stage2 is in the cmdline, OR if disable_kexec is true, we are in stage 2
 if [ "$(cat /proc/cmdline | grep pl2.stage2)" != "" ] || [ "$disable_kexec" = "true" ]; then
