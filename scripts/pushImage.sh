@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 set -e 
 USER=user
-HOST=192.168.11.109
+HOST=192.168.1.231
 PORT=22
 DIR=/home/user/
 
-VARIANT=embedded
+VARIANT=mobile
 CHANNEL=dev
 
 SELECTED_ROOT=$(ssh -p ${PORT} ${USER}@${HOST} "cat /sineware/data/prolinux.toml" | grep "pl2.selected_root" | cut -d "=" -f2 | tr -d "'")
