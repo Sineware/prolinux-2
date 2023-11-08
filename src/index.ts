@@ -1,7 +1,7 @@
 import * as dotenv from 'dotenv';
 dotenv.config();
 import fs from "fs";
-import { BUILD_DIR, ROOTFS_DIR, OUTPUT_DIR, FILES_DIR, arch, TARGET_DEVICE, PROLINUX_CHANNEL, PROLINUX_VARIANT } from './helpers/consts';
+import { BUILD_DIR, ROOTFS_DIR, OUTPUT_DIR, FILES_DIR, arch, TARGET_DEVICE, PROLINUX_CHANNEL, PROLINUX_VARIANT, NODEJS_PACKAGE } from './helpers/consts';
 import exec from "./helpers/exec";
 import { createAndMountPMOSImage, genPMOSImage, pmosFinalCleanup } from './pmbootstrap';
 import axios from 'axios';
@@ -17,7 +17,7 @@ import { buildMobileCommon } from './os-variants/mobile/mobile-common';
 console.log("Starting ProLinux build on " + new Date().toLocaleString());
 
 const ARCH_URL = {
-    "x64": "https://archive.archlinux.org/iso/2023.04.01/archlinux-bootstrap-x86_64.tar.gz",
+    "x64": "https://archive.archlinux.org/iso/2023.11.01/archlinux-bootstrap-x86_64.tar.gz",
     "arm64": "http://os.archlinuxarm.org/os/ArchLinuxARM-aarch64-latest.tar.gz"
 }
 
@@ -96,7 +96,7 @@ async function main() {
         yes | pacman-key --populate ${arch === "arm64" ? "archlinuxarm" : "archlinux"}
         pacman -Syu --noconfirm
         pacman -S --noconfirm base-devel git nano neofetch htop wget curl sudo bash-completion dialog qt6-base qt6-tools polkit libpipewire pipewire pipewire-pulse libwireplumber wireplumber libxcvt libnm networkmanager modemmanager wpa_supplicant libqalculate distcc ccache gdb kwayland5
-        pacman -S --noconfirm bluez xorg-xwayland openssh mold nodejs npm flatpak rsync xdg-desktop-portal xdg-user-dirs ddcutil lcms2
+        pacman -S --noconfirm bluez xorg-xwayland openssh mold flatpak rsync xdg-desktop-portal xdg-user-dirs ddcutil lcms2
         pacman -S --noconfirm appstream-qt libdmtx libxaw lua ttf-hack qrencode xorg-xmessage xorg-xsetroot zxing-cpp accountsservice exiv2 lmdb zsync
         pacman -S --noconfirm maliit-keyboard qt5-graphicaleffects xdotool libdisplay-info qcoro-qt6 qtkeychain-qt6 libquotient cmark libphonenumber callaudiod reuse gpgme
         pacman -S --noconfirm $(pacman -Ssq qt6-)       
@@ -139,11 +139,19 @@ EOF`);
     console.log("Merging files from " + FILES_DIR + "/layout into " + ROOTFS_DIR);
     exec(`sudo rsync -a ${FILES_DIR}/layout/ ${ROOTFS_DIR}/`);
 
+    /* Install NODEJS_PACKAGE */
+    console.log("Installing NodeJS");
+    exec(`sudo mkdir -pv ${ROOTFS_DIR}/opt/nodejs`);
+    exec(`sudo curl -L ${NODEJS_PACKAGE} | sudo tar -xJv -C ${ROOTFS_DIR}/opt/nodejs --strip-components=1`);
+
     /* ------------- ProLinuxD ------------- */
     exec(`
         set -e
         pwd
         pushd .
+            # Set PATH to include nodejs
+            export PATH=${ROOTFS_DIR}/opt/nodejs/bin:$PATH
+            node --version
             cd ${__dirname}/../ocs2-prolinuxd
             npm i
             npm run build

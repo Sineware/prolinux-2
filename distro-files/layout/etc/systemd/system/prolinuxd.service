@@ -3,7 +3,7 @@ Description=Sineware ProLinux Daemon
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/node /opt/prolinuxd/index.js
+ExecStart=/opt/nodejs/bin/node /opt/prolinuxd/index.js
 StandardOutput=kmsg+console
 StandardError=kmsg+console
 Environment=CONFIG_FILE=/sineware/data/prolinux.toml

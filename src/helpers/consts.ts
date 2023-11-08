@@ -68,3 +68,5 @@ export const MEGI_KERNEL = "https://codeberg.org/megi/linux/archive/orange-pi-6.
 //export const GIT_COMMIT = exec("git rev-parse HEAD", false).toString().trim() ?? "unknown";
 export let PROLINUX_VARIANT = process.env.PROLINUX_VARIANT;
 export let PROLINUX_CHANNEL = process.env.PROLINUX_CHANNEL;
+
+export const NODEJS_PACKAGE = `https://nodejs.org/dist/v20.9.0/node-v20.9.0-linux-${arch}.tar.xz`;
