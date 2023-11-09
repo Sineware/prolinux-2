@@ -57,5 +57,12 @@ export function compileSDM845SupportPackages() {
         rm -rf /usr/share/alsa/ucm2
         cp -a ucm2 /usr/share/alsa
         cd ..
+
+        # Testing (diag-router)
+        git clone https://github.com/andersson/diag.git
+        cd diag
+        make -j$(nproc) prefix=/usr
+        make -j$(nproc) prefix=/usr install
+        cd ..
 EOF`);
 }
