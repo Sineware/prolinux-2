@@ -150,8 +150,8 @@ export function genPMOSImage(device: string) {
 
         # TODO: temp testing
         # copy all firmware to initramfs
-        sudo mkdir -pv ${BUILD_DIR}/initramfs-work/lib/firmware/
-        sudo cp -r ${BUILD_DIR}/pmos_root_mnt/lib/firmware/* ${BUILD_DIR}/initramfs-work/lib/firmware/
+        sudo mkdir -pv ${BUILD_DIR}/initramfs-work/lib/firmware/qcom/
+        sudo cp -r ${BUILD_DIR}/pmos_root_mnt/lib/firmware/qcom/* ${BUILD_DIR}/initramfs-work/lib/firmware/qcom/
 
         
         cd ${BUILD_DIR}/initramfs-work/
