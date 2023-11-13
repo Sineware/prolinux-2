@@ -64,5 +64,13 @@ export function compileSDM845SupportPackages() {
         make -j$(nproc) prefix=/usr
         make -j$(nproc) prefix=/usr install
         cd ..
+
+        # qbootctl (mark boot slot as successful)
+        git clone https://gitlab.com/sdm845-mainline/qbootctl.git
+        cd qbootctl
+        meson build
+        meson compile -C build
+        meson install -C build
+
 EOF`);
 }

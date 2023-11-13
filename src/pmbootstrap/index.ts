@@ -147,6 +147,12 @@ export function genPMOSImage(device: string) {
         sudo chmod +x ${BUILD_DIR}/initramfs-work/init
         ${(arch === "x64") ? `sudo cp -r ${BUILD_DIR}/kernel/modroot/lib/modules/* ${BUILD_DIR}/initramfs-work/lib/modules/` : ""}
         ${customKernelCommands}
+
+        # TODO: temp testing
+        # copy all firmware to initramfs
+        mkdir -pv ${BUILD_DIR}/initramfs-work/lib/firmware/
+        sudo cp -r ${BUILD_DIR}/pmos_root_mnt/lib/firmware/* ${BUILD_DIR}/initramfs-work/lib/firmware/
+
         
         cd ${BUILD_DIR}/initramfs-work/
         find . -print0 | cpio --null --create --verbose --format=newc | gzip --best > ${BUILD_DIR}/new-initramfs
