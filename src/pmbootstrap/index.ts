@@ -150,8 +150,8 @@ export function genPMOSImage(device: string) {
 
         # TODO: temp testing
         # copy all firmware to initramfs
-        sudo mkdir -pv ${BUILD_DIR}/initramfs-work/lib/firmware/qcom/
-        sudo cp -r ${BUILD_DIR}/pmos_root_mnt/lib/firmware/qcom/* ${BUILD_DIR}/initramfs-work/lib/firmware/qcom/
+        sudo mkdir -pv ${BUILD_DIR}/initramfs-work/lib/firmware/qcom/sdm845/oneplus6
+        sudo cp -r ${BUILD_DIR}/pmos_root_mnt/lib/firmware/qcom/sdm845/oneplus6/* ${BUILD_DIR}/initramfs-work/lib/firmware/qcom/sdm845/oneplus6/
 
         
         cd ${BUILD_DIR}/initramfs-work/
