@@ -77,7 +77,7 @@ const buildTargetStandardPMOSDeviceImage = (targetDevice: string) => {
                 cd work
                 sudo abootimg -x ../boot.img
                 sudo sed -i "s/bootsize.*/bootsize = 0xff0000/g" bootimg.cfg
-                sudo sed -i "s/cmdline.*/cmdline = console=tty0 PMOS_NO_OUTPUT_REDIRECT initcall_blacklist=remoteproc_init,geni_i2c_driver_init/g" bootimg.cfg
+                sudo sed -i "s/cmdline.*/cmdline = console=tty0 PMOS_NO_OUTPUT_REDIRECT initcall_blacklist=geni_i2c_driver_init modprobe.blacklist=qcom_common/g" bootimg.cfg
                 sudo abootimg --create boot.img -f bootimg.cfg -k zImage -r ../initramfs
                 sudo mv boot.img ../boot.img
             popd`);

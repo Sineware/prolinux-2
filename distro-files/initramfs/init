@@ -80,6 +80,7 @@ else
 
     # remove initcall_blacklist=* from cmdline
     cmdline=$(echo $cmdline | sed 's/initcall_blacklist=[^ ]*//g')
+    cmdline=$(echo $cmdline | sed 's/modprobe.blacklist=[^ ]*//g')
     
     cmdline="$cmdline pl2.stage2"
     kexec -l /sysroot/squishroot/opt/device-support/$deviceinfo_codename/vmlinuz* --initrd=/sysroot/squishroot/opt/device-support/$deviceinfo_codename/initramfs --append="$cmdline"
