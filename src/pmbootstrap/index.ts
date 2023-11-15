@@ -148,12 +148,6 @@ export function genPMOSImage(device: string) {
         ${(arch === "x64") ? `sudo cp -r ${BUILD_DIR}/kernel/modroot/lib/modules/* ${BUILD_DIR}/initramfs-work/lib/modules/` : ""}
         ${customKernelCommands}
 
-        # TODO: temp testing
-        # copy all firmware to initramfs
-        sudo mkdir -pv ${BUILD_DIR}/initramfs-work/lib/firmware/qcom/sdm845/oneplus6
-        sudo cp -r ${BUILD_DIR}/pmos_root_mnt/lib/firmware/qcom/sdm845/oneplus6/mba.mbn ${BUILD_DIR}/initramfs-work/lib/firmware/qcom/sdm845/oneplus6/mba.mbn
-
-        
         cd ${BUILD_DIR}/initramfs-work/
         find . -print0 | cpio --null --create --verbose --format=newc | gzip --best > ${BUILD_DIR}/new-initramfs
         sudo cp -v ${BUILD_DIR}/new-initramfs ${BUILD_DIR}/pmos_boot_mnt/initramfs
