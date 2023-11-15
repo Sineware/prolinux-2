@@ -77,7 +77,7 @@ const buildTargetStandardPMOSDeviceImage = (targetDevice: string) => {
                 cd work
                 sudo abootimg -x ../boot.img
                 sudo sed -i "s/bootsize.*/bootsize = 0xff0000/g" bootimg.cfg
-                sudo sed -i "s/cmdline.*/cmdline = console=tty0 PMOS_NO_OUTPUT_REDIRECT initcall_blacklist=nt36xxx initcall_blacklist=qcom-q6v5-mss/g" bootimg.cfg
+                sudo sed -i "s/cmdline.*/cmdline = console=tty0 PMOS_NO_OUTPUT_REDIRECT initcall_blacklist=novatek_nvt_ts initcall_blacklist=qcom_q6v5_mss/g" bootimg.cfg
                 sudo abootimg --create boot.img -f bootimg.cfg -k zImage -r ../initramfs
                 sudo mv boot.img ../boot.img
             popd`);
