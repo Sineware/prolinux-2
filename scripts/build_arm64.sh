@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 set -e
 TARGET_DEVICE=pine64-pinephone,pine64-pinephonepro,pine64-pinebookpro,xiaomi-beryllium:tianma,oneplus-enchilada npm run build
-TARGET_DEVICE=oneplus-enchilada npm run build
 
 ./scripts/unmount.sh
 
