@@ -34,6 +34,8 @@ const mountPMOSImage = (targetDevice: string) => {
 
 const buildTargetStandardPMOSDeviceImage = (targetDevice: string) => {
     console.log(`Building ${targetDevice} image`);
+    let adevice = ACCEPTABLE_ANDROID_DEVICES.find((d) => d.name === targetDevice)
+
     // Format and place files into rootfs
     exec(`
         sudo mkfs.ext4 /dev/disk/by-label/pmOS_root -F -L pmOS_root
@@ -49,6 +51,11 @@ const buildTargetStandardPMOSDeviceImage = (targetDevice: string) => {
         sudo chown -R 1000:1000 ${BUILD_DIR}/pmos_root_mnt/data/home/user
         sudo cp -v ${FILES_DIR}/prolinux.toml ${BUILD_DIR}/pmos_root_mnt/data/prolinux.toml
 
+        # TODO: the current situation on android is that kexec is broken
+        if [ "${adevice?.should_disable_kexec}" = true ]; then
+            echo "pl2.disable_kexec = true" >> ${BUILD_DIR}/pmos_root_mnt/data/prolinux.toml
+        fi
+
         # pmos init checks this to see if root was mounted
         sudo mkdir -pv ${BUILD_DIR}/pmos_root_mnt/usr
         sudo umount /dev/disk/by-label/pmOS_root
@@ -61,7 +68,7 @@ const buildTargetStandardPMOSDeviceImage = (targetDevice: string) => {
         sudo cp -v  ${BUILD_DIR}/img-staging/${targetDevice}.img ${OUTPUT_DIR}
     `);
 
-    let adevice = ACCEPTABLE_ANDROID_DEVICES.find((d) => d.name === targetDevice)
+    
     if(adevice) {
             // Convert to Android sparse image
             exec(`

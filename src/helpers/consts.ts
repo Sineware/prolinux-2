@@ -30,14 +30,16 @@ export const ACCEPTABLE_ANDROID_DEVICES = [
         "rootfs_image_sector_size": 4096,
         "squash_builtin": true,
         "should_gunzip_vmlinuz": true,
-        "uses_zstd_initramfs": true
+        "uses_zstd_initramfs": true,
+        "should_disable_kexec": true
     },
     {
         name: "oneplus-enchilada",
         "rootfs_image_sector_size": 4096,
         "squash_builtin": true,
         "should_gunzip_vmlinuz": true,
-        "uses_zstd_initramfs": true
+        "uses_zstd_initramfs": true,
+        "should_disable_kexec": true
     },
 ];
 
