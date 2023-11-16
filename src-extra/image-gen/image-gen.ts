@@ -53,7 +53,7 @@ const buildTargetStandardPMOSDeviceImage = (targetDevice: string) => {
 
         # TODO: the current situation on android is that kexec is broken
         if [ "${adevice?.should_disable_kexec}" = true ]; then
-            echo "pl2.disable_kexec = true" | sudo tee -a ${BUILD_DIR}/pmos_root_mnt/data/prolinux.toml
+            echo "pl2.disable_kexec = true\n" | sudo tee -a ${BUILD_DIR}/pmos_root_mnt/data/prolinux.toml
         fi
 
         # pmos init checks this to see if root was mounted
