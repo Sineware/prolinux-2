@@ -155,6 +155,7 @@ export async function buildMobileDev() {
         "kasts",
         "keysmith",
         "koko",
+        "mpvqt",
         "tokodon",
         "spectacle"
     ];
