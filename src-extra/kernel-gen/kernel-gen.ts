@@ -2,7 +2,7 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 import fs from "fs";
 import path from "path";
-import { OUTPUT_DIR, TARGET_DEVICE, BUILD_DIR, FILES_DIR, X64_KERNEL, MEGI_KERNEL, x64KernelDevices, PPKernelDevices } from '../../src/helpers/consts';
+import { OUTPUT_DIR, TARGET_DEVICE, BUILD_DIR, FILES_DIR, X64_KERNEL, MEGI_KERNEL, x64KernelDevices, PPKernelDevices, PPPKernelDevices } from '../../src/helpers/consts';
 import exec from "../../src/helpers/exec";
 
 export function buildX64Kernel() {
@@ -42,6 +42,26 @@ export function buildPPKernel() {
 `);
 }
 
+export function buildPPPKernel() {
+    exec(`
+    mkdir -pv ${BUILD_DIR}/ppp-kernel
+    pushd .
+        cd ${BUILD_DIR}/ppp-kernel
+        rm -rfv *
+        wget ${MEGI_KERNEL} -O kernel.tar.gz
+        tar -xvf kernel.tar.gz --strip-components=1    
+
+        cp -v ${__dirname + "/kconfigs/ppp-config"} .config
+        make -j$(nproc)
+        make -j$(nproc) Image dtbs modules
+
+        sudo cp -v arch/arm64/boot/Image.gz vmlinuz
+        mkdir -pv modroot && mkdir -pv dtbs 
+        make modules_install dtbs_install INSTALL_MOD_PATH=modroot INSTALL_DTBS_PATH=dtbs INSTALL_MOD_STRIP=1
+    popd
+`);
+}
+
 function main() {
     
 
@@ -52,6 +72,7 @@ function main() {
 
     if(x64KernelDevices.includes(TARGET_DEVICE)) buildX64Kernel();
     else if(PPKernelDevices.includes(TARGET_DEVICE)) buildPPKernel();
+    else if(PPPKernelDevices.includes(TARGET_DEVICE)) buildPPPKernel();
     else {
         console.error("Invalid target device");
         process.exit(1);

@@ -59,7 +59,11 @@ export const SDM845KernelDevices = [
 
 export const requiredKConfigLines = [
     `CONFIG_LOCALVERSION="-sineware-prolinux-2"`,
-    `CONFIG_DEFAULT_HOSTNAME="prolinux-system"`
+    `CONFIG_DEFAULT_HOSTNAME="prolinux-system"`,
+    `CONFIG_KEXEC=y`,
+    `CONFIG_KEXEC_CORE=y`,
+    `CONFIG_KEXEC_FILE=y`,
+    `CONFIG_KEXEC_SIG=y`
 ]
 
 export const MUSL_TOOLCHAIN = process.env.MUSL_TOOLCHAIN;
