@@ -1,7 +1,7 @@
 import fs from "fs"
 import path from "path"
 import exec from "../helpers/exec"
-import { arch, BUILD_DIR, FILES_DIR, OUTPUT_DIR, ROOTFS_DIR, ACCEPTABLE_ANDROID_DEVICES, ACCEPTABLE_STANDARD_DEVICES, x64KernelDevices, PPKernelDevices } from "../helpers/consts";
+import { arch, BUILD_DIR, FILES_DIR, OUTPUT_DIR, ROOTFS_DIR, ACCEPTABLE_ANDROID_DEVICES, ACCEPTABLE_STANDARD_DEVICES, x64KernelDevices, PPKernelDevices, PPPKernelDevices } from "../helpers/consts";
 
 export let loopDevice = "";
 
@@ -138,6 +138,13 @@ export function genPMOSImage(device: string) {
         sudo cp -vrf ${BUILD_DIR}/pp-kernel/dtbs/* ${BUILD_DIR}/pmos_boot_mnt/dtbs/
         sudo rsync -a ${BUILD_DIR}/pp-kernel/modroot/lib/modules/ ${ROOTFS_DIR}/opt/device-support/${device}/modules
         sudo cp -r ${BUILD_DIR}/pp-kernel/modroot/lib/modules/* ${BUILD_DIR}/initramfs-work/lib/modules/
+        `
+    } else if(PPPKernelDevices.includes(device)) {
+        customKernelCommands = `echo "Copying custom compiled kernel for PinePhone Pro"
+        sudo cp -v ${BUILD_DIR}/ppp-kernel/vmlinuz ${BUILD_DIR}/pmos_boot_mnt/vmlinuz
+        sudo cp -vrf ${BUILD_DIR}/ppp-kernel/dtbs/* ${BUILD_DIR}/pmos_boot_mnt/dtbs/
+        sudo rsync -a ${BUILD_DIR}/ppp-kernel/modroot/lib/modules/ ${ROOTFS_DIR}/opt/device-support/${device}/modules
+        sudo cp -r ${BUILD_DIR}/ppp-kernel/modroot/lib/modules/* ${BUILD_DIR}/initramfs-work/lib/modules/
         `
     }
     
