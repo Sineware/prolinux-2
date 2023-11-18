@@ -1,17 +1,9 @@
 #%PAM-1.0
 
-auth        substack      password-auth
-auth        include       postlogin
+auth            include         system-login
 
-account     required      pam_nologin.so
-account     include       password-auth
+account         include         system-login
 
-password    include       password-auth
+password        include         system-login
 
-session     required      pam_selinux.so close
-session     required      pam_loginuid.so
-session     required      pam_selinux.so open
-session     optional      pam_keyinit.so force revoke
-session     required      pam_namespace.so
-session     include       password-auth
-session     include       postlogin
+session         include         system-login
