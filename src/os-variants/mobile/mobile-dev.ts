@@ -138,7 +138,7 @@ export async function buildMobileDev() {
         "futuresql",
         "kquickimageeditor",
         "angelfish",
-        //"kclock",
+        "kclock",
         "kweathercore",
         "extragear/utils/kweather",
         "kalk",
