@@ -9,11 +9,13 @@ export async function buildMobileDev() {
         //"export DISTCC_HOSTS='192.168.11.138/20'",
         //"export CC='ccache gcc'",
         //"export CXX='ccache g++'",
-        "export CMAKE_CXX_COMPILER_LAUNCHER=ccache"
+        "export CMAKE_CXX_COMPILER_LAUNCHER=ccache",
+        `export LDFLAGS="-Wl,--copy-dt-needed-entries"`
     ] : [
         //"export CC='ccache gcc'",
         //"export CXX='ccache g++'",
-        "export CMAKE_CXX_COMPILER_LAUNCHER=ccache"
+        "export CMAKE_CXX_COMPILER_LAUNCHER=ccache",
+        `export LDFLAGS="-Wl,--copy-dt-needed-entries"`
     ]
 
     // @ts-ignore
@@ -158,7 +160,8 @@ export async function buildMobileDev() {
         "mpvqt",
         "tokodon",
         "spectacle",
-        "plasma-dialer"
+        "plasma-dialer",
+        "spacebar"
     ];
     const packagesToBuild = packageList.join(" ");
 
