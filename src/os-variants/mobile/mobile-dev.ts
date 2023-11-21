@@ -202,6 +202,7 @@ export async function buildMobileDev() {
                 
                 ${checkoutBranches.map(([repo, branch]) => `cd /opt/kde/src/${repo} && git checkout ${branch} && git pull --rebase && cd /opt/kde/src/kdesrc-build`).join("; ")}
                 ${packagesToBuild.split(" ").map((p, i, a) => `./kdesrc-build --stop-on-failure --no-include-dependencies --no-src ${p}; echo "-- ✅ Built ${i} of ${a.length}!"`).join("; ")}
+                
 EOFSU
             sleep 2
 EOF`);
@@ -243,6 +244,14 @@ EOF`);
 
             # Pinephone Pro Firmware
             pacman -S --noconfirm brcm-firmware alsa-ucm-pinephonepro` : ''}
+
+        echo "Compiling QMLTermWidget"
+        cd /tmp
+        git clone https://invent.kde.org/jbbgameich/qmltermwidget.git
+        cd qmltermwidget
+        cmake -B build && cmake --build build
+        sudo cmake --install build
+        cd ..
 EOF`);
 
     // unmount cache folder
