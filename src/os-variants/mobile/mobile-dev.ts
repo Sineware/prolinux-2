@@ -223,6 +223,9 @@ EOF`);
 
         echo 'export XDG_DATA_DIRS=/home/user/.local/share/flatpak/exports/share:$XDG_DATA_DIRS' >> /opt/kde/usr/lib/libexec/plasma-dev-prefix.sh
 
+        # Workaround plasmaphonedialer absolute path in .desktop file
+        ln -s /opt/kde/usr/bin/plasmaphonedialer /usr/bin/plasmaphonedialer
+
         systemctl enable plasma-mobile
         systemctl enable bluetooth
         systemctl enable ModemManager
