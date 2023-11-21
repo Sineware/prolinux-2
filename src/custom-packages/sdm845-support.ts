@@ -11,7 +11,8 @@ export function compileSDM845SupportPackages() {
     exec(`sudo arch-chroot ${ROOTFS_DIR} /bin/bash -x <<'EOF'
         set -e
 
-        cd /tmp
+        mkdir -mv /tmp/sdm845-support
+        cd /tmp/sdm845-support/
 
         # Script to configure device wlan and bt mac addresses from /proc/cmdline (set from android bootloader)
         git clone https://gitlab.com/postmarketOS/bootmac.git
@@ -71,6 +72,9 @@ export function compileSDM845SupportPackages() {
         #meson build
         #meson compile -C build
         #meson install -C build
+
+        # clean up
+        rm -rf /tmp/sdm845-support
 
 EOF`);
 }
