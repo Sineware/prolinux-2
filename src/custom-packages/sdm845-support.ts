@@ -11,7 +11,7 @@ export function compileSDM845SupportPackages() {
     exec(`sudo arch-chroot ${ROOTFS_DIR} /bin/bash -x <<'EOF'
         set -e
 
-        mkdir -mv /tmp/sdm845-support
+        mkdir -pv /tmp/sdm845-support
         cd /tmp/sdm845-support/
 
         # Script to configure device wlan and bt mac addresses from /proc/cmdline (set from android bootloader)
