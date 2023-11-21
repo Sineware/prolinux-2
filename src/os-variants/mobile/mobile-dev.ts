@@ -249,8 +249,8 @@ EOF`);
         cd /tmp
         git clone https://invent.kde.org/jbbgameich/qmltermwidget.git
         cd qmltermwidget
-        cmake -DCMAKE_PREFIX_PATH=/opt/kde/usr/ -DQT_MAJOR_VERSION=6 -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -B build && cmake -DCMAKE_PREFIX_PATH=/opt/kde/usr/ -DQT_MAJOR_VERSION=6 -DCMAKE_CXX_COMPILER_LAUNCHER=ccache --build build
-        sudo cmake -DCMAKE_PREFIX_PATH=/opt/kde/usr/ --install build
+        cmake -DCMAKE_PREFIX_PATH=/opt/kde/usr/ -DQT_MAJOR_VERSION=6 -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -B build && cmake --build build
+        sudo cmake --install build
         cd ..
 EOF`);
 
