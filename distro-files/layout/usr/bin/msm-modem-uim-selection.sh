@@ -17,4 +17,5 @@ eend() {
 
 source /etc/conf.d/msm-modem-uim-selection
 source /usr/lib/msm-modem-uim-selection/msm-modem-uim-selection.initd
-start
+start || true
+
