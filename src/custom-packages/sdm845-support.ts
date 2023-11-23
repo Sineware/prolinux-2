@@ -73,6 +73,10 @@ export function compileSDM845SupportPackages() {
         #meson compile -C build
         #meson install -C build
 
+        # msm-modem-uim-selection
+        # This script is used to select the correct uim application for dual-sim devices
+        # (runs before ModemManager), otherwise you will get "sim-missing" failed state.
+
         # clean up
         rm -rf /tmp/sdm845-support
 

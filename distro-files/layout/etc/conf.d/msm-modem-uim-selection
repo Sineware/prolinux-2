@@ -1,0 +1,6 @@
+# Maximum time to wait for SIM card to appear after starting the modem.
+# Some SIM cards or modem firmwares might take longer to initialize. :(
+# To avoid blocking boot without a SIM card for too long this is fairly short
+# by default (1 second), but you can increase it to e.g. 30 seconds if necessary.
+# Set to 0 to disable waiting entirely.
+sim_wait_time=4
