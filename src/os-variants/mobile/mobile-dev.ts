@@ -134,7 +134,7 @@ export async function buildMobileDev() {
         "bluedevil",
         "plasma-integration",
         "breeze-icons",
-        "konsole",
+        //"konsole",
         "qmlkonsole",
         "purpose",
         "futuresql",
