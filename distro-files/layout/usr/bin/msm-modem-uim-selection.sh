@@ -1,5 +1,3 @@
-
-
 #!/bin/bash
 
 # taken from https://gitlab.com/postmarketOS/pmaports/-/blob/master/modem/msm-modem/msm-modem-uim-selection.initd
