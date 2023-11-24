@@ -38,6 +38,14 @@ mount -o loop /sysroot/prolinux_${selected_root}.squish /sysroot/squishroot
 # if pl2.stage2 is in the cmdline, OR if disable_kexec is true, we are in stage 2
 if [ "$(cat /proc/cmdline | grep pl2.stage2)" != "" ] || [ "$disable_kexec" = "true" ]; then
     echo "Loaded stage 2 kernel!"
+
+    # If /sysroot/data/.reset_persistroot exists, we need to reset the persistroot
+    if [ -f /sysroot/data/.reset_persistroot ]; then
+        echo "Resetting persistroot..."
+        rm -rf /sysroot/persistroot/*
+        rm -rf /sysroot/data/.reset_persistroot
+    fi
+
     # we are booted into the stage 2 kernel.
     # if we are locked, we need to mount the locked rootfs
     mkdir -pv /sysroot/data/customization
