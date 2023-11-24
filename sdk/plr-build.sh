@@ -1,16 +1,21 @@
 #!/usr/bin/env bash
 # ProLinux Remote Build for kdesrc-build
 # Uses a target device running ProLinux to build kde packages over ssh
+# and starts a distcc docker container to run g++ on your host machine.
 set -e
+echo "~~ ProLinux 2 Remote Build for kdesrc-build ~~"
 
-HOST=$1
-PORT=$2
-SRC_FOLDER=$3
-PKG_NAME=$4
+HOST=user@172.16.42.1
+PORT=22
+PKG_NAME=$1
+SRC_FOLDER=$2
 
 
 remote_cmd () {
-    echo $(ssh -p ${PORT} ${HOST} "$1")
+    echo $(ssh -T -q -p ${PORT} ${HOST} "bash -c '$1'")
+}
+remote_cmd_interactive () {
+    ssh -t -q -p ${PORT} ${HOST} "bash -c '$1'"
 }
 
 get_config () {
@@ -27,13 +32,27 @@ fi
 
 if [ "$(remote_cmd "test -d /opt/kde/src/kdesrc-build && echo 1 || echo 0")" = "0" ]; then
     echo "[OK] [First Run] Installing kdesrc-build..."
+    remote_cmd "mkdir -p /opt/kde/src"
     remote_cmd "cd /opt/kde/src && git clone https://invent.kde.org/sdk/kdesrc-build.git"
     remote_cmd "cd /opt/kde/src/kdesrc-build && ./kdesrc-build --version"
     remote_cmd "cd /opt/kde/src/kdesrc-build && ./kdesrc-build --initial-setup"
+    echo "[OK] [First Run] Installing tweaks..."
+    # Add these lines to /usr/bin/distcc-g++ using sudo tee -a /usr/bin/distcc-g++
+    #!/bin/sh
+    #exec /usr/bin/distcc g++ $@
+    remote_cmd "sudo tee -a /usr/bin/distcc-g++ << EOF
+#!/bin/sh
+exec /usr/bin/distcc g++ \$@
+EOF"
+    remote_cmd "sudo chmod +x /usr/bin/distcc-g++"
+    remote_cmd "sudo tee -a /usr/bin/distcc-gcc << EOF
+#!/bin/sh
+exec /usr/bin/distcc gcc \$@
+EOF"
+    remote_cmd "sudo chmod +x /usr/bin/distcc-gcc"
 else
-    echo "[OK] kdesrc-build already installed"
+    echo "[OK] kdesrc-build already installed, skipping initial setup..."
 fi
-
 
 #check if $SRC_FOLDER exists
 if [ ! -d "$SRC_FOLDER" ]; then
@@ -42,9 +61,27 @@ if [ ! -d "$SRC_FOLDER" ]; then
 fi
 
 # RSync $SRC_FOLDER to remote /opt/kde/src/$PKG_NAME
-echo "Syncing $SRC_FOLDER to remote /opt/kde/src/$PKG_NAME"
-rsync -e "ssh -p ${PORT}" --info=progress2 -avz $SRC_FOLDER ${HOST}:/opt/kde/src/$PKG_NAME
+echo "[OK] Syncing $SRC_FOLDER to remote /opt/kde/src/$PKG_NAME"
+rsync -e "ssh -p ${PORT}" --info=progress2 -avz $SRC_FOLDER ${HOST}:/opt/kde/src/$PKG_NAME --exclude .git
 
-echo "Starting build..."
+echo "[OK] Preparing to build on device..."
 remote_cmd "cd /opt/kde/src/kdesrc-build && ./kdesrc-build --version"
-remote_cmd "cd /opt/kde/src/kdesrc-build && ./kdesrc-build $PKG_NAME --no-src"
+remote_cmd "cd /opt/kde/src/kdesrc-build && ./kdesrc-build --metadata-only"
+
+echo "[OK] Starting prolinux-sdk distcc container..."
+if [ ! "$(docker ps -a -q -f name=prolinux-sdk-distcc)" ]; then
+    if [ "$(docker ps -aq -f status=exited -f name=prolinux-sdk-distcc)" ]; then
+        docker rm prolinux-sdk-distcc
+    fi
+    docker run -d --name prolinux-sdk-distcc -p 3632:3632 sineware/prolinux-sdk:latest distccd --no-detach --daemon --allow 0.0.0.0/0 --enable-tcp-insecure --verbose
+fi
+
+echo "[OK] Building $PKG_NAME on device..."
+remote_cmd_interactive "cd /opt/kde/src/kdesrc-build && DISTCC_HOSTS="172.16.42.2/24" CC="distcc-gcc" CXX="distcc-g++" ./kdesrc-build $PKG_NAME --no-src --no-include-dependencies"
+echo "[OK] Done building $PKG_NAME on device!"
+
+echo "[OK] Shutting down prolinux-sdk distcc container..."
+docker stop prolinux-sdk-distcc
+docker rm prolinux-sdk-distcc
+
+echo "[OK] Success!"

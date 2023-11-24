@@ -18,8 +18,14 @@ RUN pacman -Syyu --noconfirm && \
     zsync \
     nodejs \ 
     npm \
+    aarch64-linux-gnu-gcc \
+    distcc \
     && \
     pacman -Scc --noconfirm
+
+# Symlink all aarch64-linux-gnu-* to aarch64-unknown-linux-gnu-*  so cross compilation works
+RUN cd /usr/bin && \
+    for f in aarch64-linux-gnu-*; do ln -s $f aarch64-unknown-linux-gnu-${f#aarch64-linux-gnu-}; done
 
 RUN useradd -m -G wheel user
 RUN echo "user ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
