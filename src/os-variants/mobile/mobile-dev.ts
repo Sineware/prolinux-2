@@ -60,7 +60,8 @@ export async function buildMobileDev() {
         "kwallet",
         "kwallet-pam",
         "solid",
-        "kactivities",
+        //"kactivities",
+        "plasma-activities", // kactivities
         "kpackage",
         "kio",
         "kcmutils",
@@ -78,7 +79,8 @@ export async function buildMobileDev() {
         "threadweaver",
         "attica",
         "ksvg",
-        "plasma-framework",
+        //"plasma-framework",
+        "libplasma", // plasma-framework
         "syndication",
         "knewstuff",
         "frameworkintegration",
@@ -102,7 +104,7 @@ export async function buildMobileDev() {
         "libkexiv2",
         "selenium-webdriver-at-spi",
         "baloo",
-        "kactivities-stats",
+        "plasma-activities-stats", //"kactivities-stats",
         "kded",
         "kdesu",
         "kholidays",
