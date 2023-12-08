@@ -17,7 +17,7 @@ import { buildMobileCommon } from './os-variants/mobile/mobile-common';
 console.log("Starting ProLinux build on " + new Date().toLocaleString());
 
 const ARCH_URL = {
-    "x64": "https://archive.archlinux.org/iso/2023.11.01/archlinux-bootstrap-x86_64.tar.gz",
+    "x64": "https://archive.archlinux.org/iso/2023.12.01/archlinux-bootstrap-2023.12.01-x86_64.tar.gz",
     "arm64": "http://os.archlinuxarm.org/os/ArchLinuxARM-aarch64-latest.tar.gz"
 }
 

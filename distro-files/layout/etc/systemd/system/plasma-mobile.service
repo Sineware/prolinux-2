@@ -28,7 +28,7 @@ StartLimitBurst=5
 StartLimitIntervalSec=30
 
 [Service]
-ExecStart=dbus-run-session /opt/kde/usr/lib/libexec/plasma-dbus-run-session-if-needed /opt/kde/usr/lib/libexec/startplasmamobile-dev.sh
+ExecStart=/opt/kde/usr/lib/libexec/startplasmamobile-dev.sh
 TimeoutStartSec=30
 User=1000
 PAMName=login

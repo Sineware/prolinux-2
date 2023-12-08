@@ -221,7 +221,7 @@ EOF`);
         /opt/kde/build/plasma-mobile/bin/install-sessions.sh
 
         echo "auth            optional        /opt/kde/usr/lib/security/pam_kwallet5.so" >> /etc/pam.d/login
-        echo "session         optional        /opt/kde/usr/lib/security/pam_kwallet5.so auto_start" >> /etc/pam.d/login
+        echo "session         optional        /opt/kde/usr/lib/security/pam_kwallet5.so force_run" >> /etc/pam.d/login
 
         echo 'export XDG_DATA_DIRS=/home/user/.local/share/flatpak/exports/share:$XDG_DATA_DIRS' >> /opt/kde/usr/lib/libexec/plasma-dev-prefix.sh
 
