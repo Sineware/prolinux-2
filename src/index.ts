@@ -253,7 +253,7 @@ EOF`);
         sudo umount -R ${ROOTFS_DIR}/*  || true
     `);
     // Create squashfs from root
-    exec(`mkdir -pv ${OUTPUT_DIR} && sudo mksquashfs ${ROOTFS_DIR} ${OUTPUT_DIR}/prolinux-root-${PROLINUX_VARIANT}-${PROLINUX_CHANNEL}.squish`);
+    exec(`mkdir -pv ${OUTPUT_DIR} && sudo mksquashfs ${ROOTFS_DIR} ${OUTPUT_DIR}/prolinux-root-${PROLINUX_VARIANT}-${PROLINUX_CHANNEL}.squish -noappend -comp xz`);
 
     // Create tar from root
     //exec(`sudo tar -C ${ROOTFS_DIR} -cvf ${OUTPUT_DIR}/prolinux-root-${PROLINUX_VARIANT}-${PROLINUX_CHANNEL}.tar .`);
