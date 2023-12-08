@@ -17,7 +17,7 @@ Currently the only edition available is the Plasma Mobile Nightly Edition, which
 building the current state of Plasma Mobile from upstream git main/master using kdesrc-build. It is in some ways the successor to the original 
 Alpine/postmarketOS based Plasma Mobile Nightly repository.
 
-ProLinux 2 Plasma Mobile Nightly Edition piggy-backs on parts of postmarketOS (initramfs, kernel, pmbootstrap) to target devices.
+ProLinux 2 Plasma Mobile Nightly Edition piggy-backs on parts of postmarketOS (initramfs, kernel) using pmbootstrap to target devices.
 
 ### Build requirements
 - node, npm
@@ -28,7 +28,9 @@ ProLinux 2 Plasma Mobile Nightly Edition piggy-backs on parts of postmarketOS (i
 - simg2img (android-tools)
 - pigz
 - util-linux (for Alpine)
-- zsync
+- zsync,
+- gcc,g++,make
+- zstd
 
 Environment Configuration (.env):
 ```env
