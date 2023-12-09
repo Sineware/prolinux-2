@@ -108,6 +108,9 @@ async function main() {
         # neochat
         #pacman -S --noconfirm libquotient
 
+        # fixes plasma-mobile app list
+        pacman -S --noconfirm xorg
+
         echo "Setting up user"
         ${arch === "x64" ? 'useradd -m -G wheel user' : ''}
         ${arch === "arm64" ? 'usermod -l user alarm' : ''}
