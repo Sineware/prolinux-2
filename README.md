@@ -25,7 +25,7 @@ ProLinux 2 Plasma Mobile Nightly Edition piggy-backs on parts of postmarketOS (i
 - pmbootstrap
 - arch-install-scripts
 - abootimg
-- simg2img (android-tools)
+- simg2img (android-tools, debian: android-sdk-libsparse-utils)
 - pigz
 - util-linux (for Alpine)
 - zsync,
