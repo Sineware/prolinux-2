@@ -31,6 +31,7 @@ ProLinux 2 Plasma Mobile Nightly Edition piggy-backs on parts of postmarketOS (i
 - zsync,
 - gcc,g++,make
 - zstd
+- rsync
 
 Environment Configuration (.env):
 ```env
