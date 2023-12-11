@@ -95,21 +95,21 @@ async function main() {
         yes | pacman-key --init
         yes | pacman-key --populate ${arch === "arm64" ? "archlinuxarm" : "archlinux"}
         pacman -Syu --noconfirm
-        pacman -S --noconfirm base-devel git nano neofetch htop wget curl sudo bash-completion dialog qt6-base qt6-tools polkit libpipewire pipewire pipewire-pulse libwireplumber wireplumber libxcvt libnm networkmanager modemmanager wpa_supplicant libqalculate distcc ccache gdb kwayland5
-        pacman -S --noconfirm bluez xorg-xwayland openssh mold flatpak rsync xdg-desktop-portal xdg-user-dirs ddcutil lcms2
-        pacman -S --noconfirm appstream-qt libdmtx libxaw lua ttf-hack qrencode xorg-xmessage xorg-xsetroot zxing-cpp accountsservice exiv2 lmdb zsync
-        pacman -S --noconfirm maliit-keyboard qt5-graphicaleffects xdotool libdisplay-info qcoro-qt6 qtkeychain-qt6 libquotient cmark libphonenumber callaudiod reuse gpgme
-        pacman -S --noconfirm $(pacman -Ssq qt6-)       
-        pacman -S --noconfirm python-setuptools python-websocket-client python-wsaccel pyside6 freerdp noto-fonts noto-fonts-cjk noto-fonts-emoji libimobiledevice libcanberra upower udisks2
+        pacman -S --noconfirm --needed base-devel git nano neofetch htop wget curl sudo bash-completion dialog qt6-base qt6-tools polkit libpipewire pipewire pipewire-pulse libwireplumber wireplumber libxcvt libnm networkmanager modemmanager wpa_supplicant libqalculate distcc ccache gdb kwayland5
+        pacman -S --noconfirm --needed bluez xorg-xwayland openssh mold flatpak rsync xdg-desktop-portal xdg-user-dirs ddcutil lcms2
+        pacman -S --noconfirm --needed appstream-qt libdmtx libxaw lua ttf-hack qrencode xorg-xmessage xorg-xsetroot zxing-cpp accountsservice exiv2 lmdb zsync
+        pacman -S --noconfirm --needed maliit-keyboard qt5-graphicaleffects xdotool libdisplay-info qcoro-qt6 qtkeychain-qt6 libquotient cmark libphonenumber callaudiod reuse gpgme
+        pacman -S --noconfirm --needed $(pacman -Ssq qt6-)       
+        pacman -S --noconfirm --needed python-setuptools python-websocket-client python-wsaccel pyside6 freerdp noto-fonts noto-fonts-cjk noto-fonts-emoji libimobiledevice libcanberra upower udisks2
         # plasma-dialer
-        pacman -S --noconfirm abseil-cpp
+        pacman -S --noconfirm --needed abseil-cpp
         # koko, elisa
-        pacman -S --noconfirm mpv vlc
+        pacman -S --noconfirm --needed mpv vlc
         # neochat
-        #pacman -S --noconfirm libquotient
+        #pacman -S --noconfirm --needed libquotient
 
         # fixes plasma-mobile app list
-        pacman -S --noconfirm xorg
+        pacman -S --noconfirm --needed xorg
 
         echo "Setting up user"
         ${arch === "x64" ? 'useradd -m -G wheel user' : ''}
