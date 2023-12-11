@@ -191,6 +191,8 @@ export async function buildMobileDev() {
                 whoami
                 ${exportEnv.join("; ")}
                 export CCACHE_LOGFILE=/home/user/.cache/ccache.log
+                alias pacman="pacman --needed"
+                
                 cd /opt/kde
                 mkdir -p /opt/kde/src
                 cd /opt/kde/src
