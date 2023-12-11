@@ -32,6 +32,8 @@ ProLinux 2 Plasma Mobile Nightly Edition piggy-backs on parts of postmarketOS (i
 - gcc,g++,make
 - zstd
 - rsync
+- parted
+`/sbin:/usr/sbin` in PATH
 
 Environment Configuration (.env):
 ```env
