@@ -33,6 +33,7 @@ ProLinux 2 Plasma Mobile Nightly Edition piggy-backs on parts of postmarketOS (i
 - zstd
 - rsync
 - parted
+- squashfs
 
 `/sbin:/usr/sbin` in PATH
 
