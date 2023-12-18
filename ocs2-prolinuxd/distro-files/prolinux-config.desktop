@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=ProLinux Config Tool        
+Exec=/usr/bin/node /opt/prolinuxd/prolinux-config/index.js
+Icon=/opt/prolinuxd/app-icon.png
+Terminal=false
+X-KDE-FormFactor=desktop;tablet;handset;
