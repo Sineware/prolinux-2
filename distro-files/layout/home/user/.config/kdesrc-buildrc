@@ -80,5 +80,5 @@ end global
 # is simply read-in at this point as if you'd typed it in yourself.
 #include /home/user/kde/src/kdesrc-build/kf5-kdepim-build-include
 
-include /opt/kde/src/kdesrc-build/kf6-qt6-build-include
+include /opt/kde/src/kdesrc-build/data/build-include/kf6-qt6.ksb
 #include /opt/kde/src/kdesrc-build/kf6-extragear-build-include
