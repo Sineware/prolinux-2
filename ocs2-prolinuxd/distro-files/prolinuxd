@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
-while true
-do
-    /opt/nodejs/bin/node /opt/prolinuxd/index.js
-    echo "prolinuxd exited with code $?.  Respawning..." >&2
-    sleep 2
-done

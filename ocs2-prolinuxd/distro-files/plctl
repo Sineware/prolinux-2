@@ -1,2 +1,2 @@
 #!/usr/bin/env sh
-exec /opt/nodejs/bin/node /opt/prolinuxd/prolinux-cli/index.js $@
+exec /opt/nodejs/bin/node /opt/prolinuxd/cli-src/plctl.js $@

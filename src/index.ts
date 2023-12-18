@@ -156,11 +156,15 @@ EOF`);
             export PATH=${ROOTFS_DIR}/opt/nodejs/bin:$PATH
             node --version
             cd ${__dirname}/../ocs2-prolinuxd
-            npm i
-            npm run build
+            npm ci
+            tsc
             sudo mkdir -pv ${ROOTFS_DIR}/opt/prolinuxd
             sudo cp -rv dist/* ${ROOTFS_DIR}/opt/prolinuxd/
             sudo cp -v distro-files/plctl ${ROOTFS_DIR}/usr/sbin/
+
+            # Copy node_modules
+            sudo mkdir -pv ${ROOTFS_DIR}/opt/prolinuxd/node_modules
+            sudo cp -rv node_modules/* ${ROOTFS_DIR}/opt/prolinuxd/node_modules/
         popd
     `);
     /* ------------- ProLinux GUI Tool ------------- */

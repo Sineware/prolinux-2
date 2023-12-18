@@ -33,22 +33,22 @@ fi
 if [ "$(remote_cmd "test -d /opt/kde/src/kdesrc-build && echo 1 || echo 0")" = "0" ]; then
     echo "[OK] [First Run] Installing kdesrc-build..."
     remote_cmd "mkdir -p /opt/kde/src"
-    remote_cmd "cd /opt/kde/src && git clone https://invent.kde.org/sdk/kdesrc-build.git"
-    remote_cmd "cd /opt/kde/src/kdesrc-build && ./kdesrc-build --version"
-    remote_cmd "cd /opt/kde/src/kdesrc-build && ./kdesrc-build --initial-setup"
+    remote_cmd_interactive "cd /opt/kde/src && git clone https://invent.kde.org/sdk/kdesrc-build.git"
+    remote_cmd_interactive "cd /opt/kde/src/kdesrc-build && ./kdesrc-build --version"
+    remote_cmd_interactive "cd /opt/kde/src/kdesrc-build && ./kdesrc-build --initial-setup"
     echo "[OK] [First Run] Installing tweaks..."
     # Add these lines to /usr/bin/distcc-g++ using sudo tee -a /usr/bin/distcc-g++
     #!/bin/sh
     #exec /usr/bin/distcc g++ $@
-    remote_cmd "sudo tee -a /usr/bin/distcc-g++ << EOF
+    remote_cmd 'sudo tee -a /usr/bin/distcc-g++ << EOF
 #!/bin/sh
-exec /usr/bin/distcc g++ \$@
-EOF"
+exec /usr/bin/distcc g++ $@
+EOF'
     remote_cmd "sudo chmod +x /usr/bin/distcc-g++"
-    remote_cmd "sudo tee -a /usr/bin/distcc-gcc << EOF
+    remote_cmd 'sudo tee -a /usr/bin/distcc-gcc << EOF
 #!/bin/sh
-exec /usr/bin/distcc gcc \$@
-EOF"
+exec /usr/bin/distcc gcc $@
+EOF'
     remote_cmd "sudo chmod +x /usr/bin/distcc-gcc"
 else
     echo "[OK] kdesrc-build already installed, skipping initial setup..."

@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 [Desktop Entry]
-Exec=/usr/lib/libexec/plasma-dbus-run-session-if-needed /usr/bin/node /opt/prolinuxd/session-wrapper/index.js
+Exec=/usr/lib/libexec/plasma-dbus-run-session-if-needed /usr/bin/node /opt/prolinuxd/session-wrapper-src/wrapper.js
 TryExec=/usr/bin/startplasmamobile
 Type=Application
 DesktopNames=KDE
