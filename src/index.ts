@@ -110,7 +110,7 @@ async function main() {
         
         yes | pacman-key --init
         yes | pacman-key --populate ${arch === "arm64" ? "archlinuxarm" : "archlinux"}
-        pacman -R --noconfirm linux-aarch64 mkinitcpio
+        pacman -R --noconfirm linux-aarch64 linux-firmware linux-firmware-whence mkinitcpio mkinitcpio-busybox
         pacman -Syu --noconfirm
         pacman -S --noconfirm --needed base-devel git nano neofetch htop wget curl sudo bash-completion dialog qt6-base qt6-tools polkit libpipewire pipewire pipewire-pulse libwireplumber wireplumber libxcvt libnm networkmanager modemmanager wpa_supplicant libqalculate distcc ccache gdb kwayland5
         pacman -S --noconfirm --needed bluez xorg-xwayland openssh mold flatpak rsync xdg-desktop-portal xdg-user-dirs ddcutil lcms2
