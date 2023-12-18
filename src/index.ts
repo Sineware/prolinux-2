@@ -73,7 +73,7 @@ async function main() {
     exec(`sudo rm -rf ${BUILD_DIR}/rootfs.img`);
     
     console.log("Creating and mounting rootfs.img");
-    exec(`sudo fallocate -l 42G ${BUILD_DIR}/rootfs.img`);
+    exec(`sudo fallocate -l 50G ${BUILD_DIR}/rootfs.img`);
     exec(`sudo mkfs.ext4 -L pmOS_root ${BUILD_DIR}/rootfs.img`);
     exec(`sudo mount ${BUILD_DIR}/rootfs.img ${ROOTFS_DIR}`);
  
