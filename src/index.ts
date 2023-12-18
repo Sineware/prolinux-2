@@ -158,6 +158,7 @@ EOF`);
             export PATH=${ROOTFS_DIR}/opt/nodejs/bin:$PATH
             node --version
             cd ${__dirname}/../ocs2-prolinuxd
+            rm -rf dist/*
             npm ci
             tsc
             sudo mkdir -pv ${ROOTFS_DIR}/opt/prolinuxd
