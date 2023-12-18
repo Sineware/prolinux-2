@@ -110,6 +110,7 @@ async function main() {
         
         yes | pacman-key --init
         yes | pacman-key --populate ${arch === "arm64" ? "archlinuxarm" : "archlinux"}
+        pacman -R --noconfirm linux-aarch64 mkinitcpio
         pacman -Syu --noconfirm
         pacman -S --noconfirm --needed base-devel git nano neofetch htop wget curl sudo bash-completion dialog qt6-base qt6-tools polkit libpipewire pipewire pipewire-pulse libwireplumber wireplumber libxcvt libnm networkmanager modemmanager wpa_supplicant libqalculate distcc ccache gdb kwayland5
         pacman -S --noconfirm --needed bluez xorg-xwayland openssh mold flatpak rsync xdg-desktop-portal xdg-user-dirs ddcutil lcms2
@@ -281,6 +282,7 @@ EOF
         sudo umount -R ${ROOTFS_DIR}/*  || true
 
         sudo rm -rf ${ROOTFS_DIR}/var/cache/pacman/pkg/*
+        sudo rm -rf ${ROOTFS_DIR}/boot/*
     `);
     // Create squashfs from root
     exec(`mkdir -pv ${OUTPUT_DIR} && sudo mksquashfs ${ROOTFS_DIR} ${OUTPUT_DIR}/prolinux-root-${PROLINUX_VARIANT}-${PROLINUX_CHANNEL}.squish -noappend -comp xz`);
