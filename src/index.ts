@@ -99,7 +99,9 @@ async function main() {
         pacman -S --noconfirm --needed bluez xorg-xwayland openssh mold flatpak rsync xdg-desktop-portal xdg-user-dirs ddcutil lcms2
         pacman -S --noconfirm --needed appstream-qt libdmtx libxaw lua ttf-hack qrencode xorg-xmessage xorg-xsetroot zxing-cpp accountsservice exiv2 lmdb zsync
         pacman -S --noconfirm --needed maliit-keyboard qt5-graphicaleffects xdotool libdisplay-info qcoro-qt6 qtkeychain-qt6 libquotient cmark libphonenumber callaudiod reuse gpgme
-        pacman -S --noconfirm --needed $(pacman -Ssq qt6-)       
+        
+        pacman -S --noconfirm --needed phonon-qt6-vlc pyside6 python-pyqt6 python-pyqt6-3d python-pyqt6-charts python-pyqt6-datavisualization python-pyqt6-networkauth python-pyqt6-sip python-pyqt6-webengine qt6-3d qt6-5compat qt6-base qt6-charts qt6-connectivity qt6-datavis3d qt6-declarative qt6-graphs qt6-grpc qt6-httpserver qt6-imageformats qt6-languageserver qt6-location qt6-lottie qt6-multimedia qt6-multimedia-ffmpeg qt6-multimedia-gstreamer qt6-networkauth qt6-positioning qt6-quick3d qt6-quick3dphysics qt6-quickeffectmaker qt6-quicktimeline qt6-remoteobjects qt6-scxml qt6-sensors qt6-serialbus qt6-serialport qt6-shadertools qt6-speech qt6-svg qt6-tools qt6-translations qt6-virtualkeyboard qt6-wayland qt6-webchannel qt6-webengine qt6-websockets qt6-webview   
+        
         pacman -S --noconfirm --needed python-setuptools python-websocket-client python-wsaccel pyside6 freerdp noto-fonts noto-fonts-cjk noto-fonts-emoji libimobiledevice libcanberra upower udisks2
         # plasma-dialer
         pacman -S --noconfirm --needed abseil-cpp
