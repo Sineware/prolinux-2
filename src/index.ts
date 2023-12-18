@@ -270,15 +270,17 @@ EOF`);
     TARGET_DEVICE.split(",").forEach(buildTargetDeviceSupport);
     console.log("Cleaning up rootfs before final squash...");
     exec(`
-        sudo pacman -R --noconfirm qt6-doc qt6-examples
-
+        sudo arch-chroot ${ROOTFS_DIR} /bin/bash -x <<'EOF'
+            set -e
+            sudo pacman -R --noconfirm qt6-doc qt6-examples
+EOF
+        sudo rm -rf ${ROOTFS_DIR}/usr/share/doc/*
         sudo rm -rf ${ROOTFS_DIR}/opt/kde/build/
         sudo rm -rf ${ROOTFS_DIR}/opt/kde/src/
-        #sudo rm -rf ${ROOTFS_DIR}/var/cache/pacman/pkg/ # bind mount
-        #sudo rm -rf ${ROOTFS_DIR}/opt/kde/usr/share/kservices6/searchproviders/
-        #sudo rm -rf ${ROOTFS_DIR}/usr/share/kservices5/searchproviders/
 
         sudo umount -R ${ROOTFS_DIR}/*  || true
+
+        sudo rm -rf ${ROOTFS_DIR}/var/cache/pacman/pkg/*
     `);
     // Create squashfs from root
     exec(`mkdir -pv ${OUTPUT_DIR} && sudo mksquashfs ${ROOTFS_DIR} ${OUTPUT_DIR}/prolinux-root-${PROLINUX_VARIANT}-${PROLINUX_CHANNEL}.squish -noappend -comp xz`);
