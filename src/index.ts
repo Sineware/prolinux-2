@@ -15,6 +15,7 @@ import { buildMobileStable } from './os-variants/mobile/mobile-stable';
 import { buildMobileCommon } from './os-variants/mobile/mobile-common';
 
 console.log("Starting ProLinux build on " + new Date().toLocaleString());
+console.log("🍜 Go get your noodles, this may take a while!");
 
 const ARCH_URL = {
     "x64": "https://archive.archlinux.org/iso/2023.12.01/archlinux-bootstrap-2023.12.01-x86_64.tar.gz",
@@ -252,8 +253,10 @@ EOF`);
         `);
     };
     TARGET_DEVICE.split(",").forEach(buildTargetDeviceSupport);
-    console.log("Stripping files from RootFS");
+    console.log("Cleaning up rootfs before final squash...");
     exec(`
+        sudo pacman -R --noconfirm qt6-doc qt6-examples
+
         sudo rm -rf ${ROOTFS_DIR}/opt/kde/build/
         sudo rm -rf ${ROOTFS_DIR}/opt/kde/src/
         #sudo rm -rf ${ROOTFS_DIR}/var/cache/pacman/pkg/ # bind mount
