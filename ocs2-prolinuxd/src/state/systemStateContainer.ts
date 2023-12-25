@@ -27,7 +27,8 @@ export const state = {
             locked_root: true,
             hostname: "",
             disable_kexec: false,
-            remote_api: true
+            remote_api: true,
+            user_shadow: ""
         }
     }),
     tracked: proxy({}),

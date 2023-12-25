@@ -1,3 +1,4 @@
+import fs from "node:fs";
 import { state } from "../../state/systemStateContainer";
 import { runCmd } from "../../helpers/runCmd";
 import { log } from "../../logging";
@@ -5,7 +6,7 @@ import { getProLinuxInfo } from "../../helpers/getProLinuxInfo";
 
 const config = state.config;
 
-export async function setHostname() {
+async function setHostname() {
     // Set system hostname
     if(config.pl2.hostname) {
         log.info("Setting system hostname to " + config.pl2.hostname);
@@ -15,12 +16,7 @@ export async function setHostname() {
         log.error("No hostname configured, skipping hostname setup");
     }
 }
-export async function setSSHHostKeys() {
-    // Generate SSH host keys
-    log.info("Generating SSH host keys");
-    await runCmd("ssh-keygen", ["-A"]);
-}
-export async function startDeviceSpecificServices() {
+async function startDeviceSpecificServices() {
     const prolinuxInfo = await getProLinuxInfo();
     log.info("Running on platform '" + prolinuxInfo.deviceinfoCodename + "'");
 
@@ -50,9 +46,38 @@ export async function startDeviceSpecificServices() {
     }
 
 }
+async function startPasswordService() {
+    // Start password service
+    log.info("Starting password service...");
+
+    // If config.pl2.user_shadow is not "", then replace the user: line in /etc/shadow with it
+    if(config.pl2.user_shadow !== "") {
+        log.info("Setting user password from config...");
+        const shadow = fs.readFileSync("/etc/shadow", "utf-8");
+        const newShadow = shadow.split("\n").map((line) => {
+            if(line.startsWith("user:")) {
+                return config.pl2.user_shadow;
+            } else {
+                return line;
+            }
+        }).join("\n");
+        fs.writeFileSync("/etc/shadow", newShadow);
+    }
+
+    // Watches /etc/shadow for password changes, and persists them to the config
+    fs.watch("/etc/shadow", async (eventType, filename) => {
+        log.info("Shadow file (password) updated: " +  eventType + ", " + filename);
+        const shadow = fs.readFileSync("/etc/shadow", "utf-8");
+        const user_shadow = shadow.split("\n").filter((line) => {
+            return line.startsWith("user:");
+        })[0];
+        config.pl2.user_shadow = user_shadow;
+    });
+}
 
 /* Boot-time setup */
 export async function loadPL2Module() {
     await setHostname();
     await startDeviceSpecificServices();
+    await startPasswordService();
 }
