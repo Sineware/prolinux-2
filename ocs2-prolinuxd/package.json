@@ -6,20 +6,16 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "ts-node src/index.ts",
-    "build_app": "ncc build app-src/prolinux-config.ts --v8-cache -m -o dist/prolinux-config",
-    "build_cli": "ncc build cli-src/plctl.ts --v8-cache -m -o dist/prolinux-cli",
-    "clone_plamo_nightly": "if cd plasma-mobile-nightly; then git pull; else git clone https://github.com/Sineware/plasma-mobile-nightly.git; fi",
-    "build_plama_nightly": "ncc build plasma-mobile-nightly/src/index.ts --v8-cache -m -o dist/plasma-mobile-nightly",
-    "build": "ncc build session-wrapper-src/wrapper.ts --v8-cache -m -o dist/session-wrapper && ncc build src/index.ts --v8-cache -m -o dist/ && npm run build_app && npm run build_cli"
+    "build": "tsc"
   },
   "author": "Seshan Ravikumar",
   "license": "GPL-2.0",
   "devDependencies": {
+    "@types/deep-extend": "^0.6.2",
+    "@types/lodash": "^4.14.200",
     "@types/node": "^18.11.17",
     "@types/uuid": "^9.0.0",
     "@types/ws": "^8.5.3",
-    "@types/deep-extend": "^0.6.2",
-    "@types/lodash": "^4.14.200",
     "ts-node": "^10.9.1",
     "typescript": "^4.9.4"
   },
@@ -32,6 +28,7 @@
     "is-reachable": "^5.2.1",
     "node-pty": "^0.10.1",
     "uuid": "^9.0.0",
+    "valtio": "^1.12.1",
     "ws": "^8.11.0",
     "zod": "^3.20.2"
   }

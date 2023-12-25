@@ -12,6 +12,6 @@ Copyright (C) 2023 Seshan Ravikumar
     This is free software, and you are welcome to redistribute it
     under the conditions of the GNU GPLv3 or later.
 
-Warning: Changes made to the rootfs will not persist.
+Warning: Changes made to the rootfs will not persist if the root-lock is enabled.
 ---
 

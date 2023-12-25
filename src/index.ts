@@ -177,6 +177,7 @@ EOF`);
             cd ${__dirname}/../ocs2-prolinuxd
             rm -rf dist/*
             npm ci
+            echo "Building ProLinuxD..."
             tsc
             sudo mkdir -pv ${ROOTFS_DIR}/opt/prolinuxd
             sudo cp -rv dist/* ${ROOTFS_DIR}/opt/prolinuxd/

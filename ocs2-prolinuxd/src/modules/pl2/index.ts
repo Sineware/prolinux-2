@@ -1,7 +1,9 @@
-import { config } from "../../index";
+import { state } from "../../state/systemStateContainer";
 import { runCmd } from "../../helpers/runCmd";
-import {log} from "../../logging";
+import { log } from "../../logging";
 import { getProLinuxInfo } from "../../helpers/getProLinuxInfo";
+
+const config = state.config;
 
 export async function setHostname() {
     // Set system hostname

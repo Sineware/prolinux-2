@@ -1,9 +1,13 @@
+import { spawn } from 'node:child_process';
+import fs from 'node:fs';
 import { v4 as uuidv4 } from 'uuid';
 import WebSocket from 'ws';
-import fs from 'node:fs';
+
 import { log } from "../../logging";
-import { config, localSocket } from '../../index';
-import { spawn } from 'node:child_process';
+import { localSocket } from '../../index';
+import { state } from '../../state/systemStateContainer';
+
+const config = state.config;
 
 export interface APIOrganization {
     id: number;

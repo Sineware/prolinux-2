@@ -19,6 +19,11 @@ export enum LocalActions {
     SET_REMOTE_API = "set-remote-api",
     SET_RESET_PERSISTROOT_FLAG = "set-reset-persistroot-flag",
 }
+export interface LocalWSMessage {
+    action: LocalActions,
+    payload: any,
+    id?: string | null
+}
 export interface ProLinuxInfo {
     buildnum: string,
     uuid: string,
