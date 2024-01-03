@@ -17,7 +17,7 @@ export function compileHybrisSupportPackages() {
 
         cd libhybris/hybris
             ./autogen.sh --enable-wayland \
-                --with-android-headers=/home/user/headers/src \
+                --with-android-headers=/tmp/libhybris-build/src \
                 --enable-property-cache \
                 --enable-experimental \
                 --enable-glvnd \
