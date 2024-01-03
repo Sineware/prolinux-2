@@ -193,6 +193,8 @@ export async function buildMobileDev() {
                 export CCACHE_LOGFILE=/home/user/.cache/ccache.log
                 alias pacman="pacman --needed"
                 
+                pacman --noconfirm -S --needed perl-json-xs
+
                 cd /opt/kde
                 mkdir -p /opt/kde/src
                 cd /opt/kde/src
