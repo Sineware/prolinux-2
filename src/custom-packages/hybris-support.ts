@@ -11,7 +11,7 @@ export function compileHybrisSupportPackages() {
         mkdir -pv /tmp/libhybris-build
         cd /tmp/libhybris-build
 
-        git clone ${libhyrbis_url} .
+        git clone ${libhyrbis_url}
         wget ${android_headers_url} -O android-headers.tar.xz
         tar -xvf android-headers.tar.xz
 
