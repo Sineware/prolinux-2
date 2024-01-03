@@ -8,6 +8,7 @@ import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 import { compileKexecTools } from './custom-packages/kexec-tools';
 import { compileSDM845SupportPackages } from './custom-packages/sdm845-support';
+import { compileHybrisSupportPackages } from './custom-packages/hybris-support';
 import { buildMobileDev } from './os-variants/mobile/mobile-dev';
 import { buildEmbedded } from './os-variants/embedded/embedded';
 import { buildEmbeddedDev } from './os-variants/embedded/embedded-dev';
@@ -247,6 +248,7 @@ EOF`);
     // kexec-tools (for initramfs)
     compileKexecTools();
     compileSDM845SupportPackages();
+    compileHybrisSupportPackages();
 
     /* ------------- Target Devices ------------- */
     const buildTargetDeviceSupport = (targetDevice: string) => {
