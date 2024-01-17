@@ -7,7 +7,7 @@ global
     #include-dependencies true
 
     # Install directory for KDE software
-    kdedir /opt/kde/usr
+    install-dir /opt/kde/usr
 
     # Directory for downloaded source code
     source-dir /opt/kde/src
