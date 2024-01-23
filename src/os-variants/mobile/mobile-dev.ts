@@ -24,7 +24,7 @@ export async function buildMobileDev() {
         //["kwin", "19672bc8"]
         //["plasma-nm", "22377cf6"]
         //["knewstuff", "ec498e9"]
-        //["plasma-mobile", "work/devinlin/foliorewrite"],    
+        ["plasma-mobile", "work/devinlin/flickdeceleration"],    
     ]
 
     const packageList = [
