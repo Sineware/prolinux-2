@@ -8,12 +8,12 @@ import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 import { compileKexecTools } from './custom-packages/kexec-tools';
 import { compileSDM845SupportPackages } from './custom-packages/sdm845-support';
-import { compileHybrisSupportPackages } from './custom-packages/hybris-support';
 import { buildMobileDev } from './os-variants/mobile/mobile-dev';
 import { buildEmbedded } from './os-variants/embedded/embedded';
 import { buildEmbeddedDev } from './os-variants/embedded/embedded-dev';
 import { buildMobileStable } from './os-variants/mobile/mobile-stable';
 import { buildMobileCommon } from './os-variants/mobile/mobile-common';
+import { buildMobileHaliumDev } from './os-variants/mobile-halium/mobile-halium-dev';
 
 // #  Copyright (C) 2023 Seshan Ravikumar
 // #
@@ -112,6 +112,7 @@ async function main() {
         yes | pacman-key --init
         yes | pacman-key --populate ${arch === "arm64" ? "archlinuxarm" : "archlinux"}
         ${arch === "arm64" ? 'pacman -R --noconfirm linux-aarch64 linux-firmware linux-firmware-whence mkinitcpio mkinitcpio-busybox' : ''}
+        pacman -Syy --noconfirm archlinux-keyring
         pacman -Syu --noconfirm
         pacman -S --noconfirm --needed base-devel git nano neofetch htop wget curl sudo bash-completion dialog qt6-base qt6-tools polkit libpipewire pipewire pipewire-pulse libwireplumber wireplumber libxcvt libnm networkmanager modemmanager wpa_supplicant libqalculate distcc ccache gdb kwayland5
         pacman -S --noconfirm --needed bluez xorg-xwayland openssh mold flatpak rsync xdg-desktop-portal xdg-user-dirs ddcutil lcms2
@@ -210,11 +211,17 @@ EOF`);
     } else if(PROLINUX_VARIANT === "mobile" && PROLINUX_CHANNEL === "stable") {
         await buildMobileCommon();
         await buildMobileStable();
-    } else if(PROLINUX_VARIANT === "embedded" && PROLINUX_CHANNEL === "stable") {
+    } else if(PROLINUX_VARIANT === "mobile-halium" && PROLINUX_CHANNEL === "dev") {
+        await buildMobileCommon();
+        await buildMobileHaliumDev();
         /* ------------- ProLinux Embedded ------------- */
+    } else if(PROLINUX_VARIANT === "embedded" && PROLINUX_CHANNEL === "stable") {
         await buildEmbedded();
     } else if (PROLINUX_VARIANT === "embedded" && PROLINUX_CHANNEL === "dev") {
         await buildEmbeddedDev();
+        /* ------------- ProLinux Server ------------- */
+    } else if(PROLINUX_VARIANT === "server" && PROLINUX_CHANNEL === "dev") {
+
     } else {
         throw new Error("Unknown ProLinux variant/channel");
     }
@@ -248,11 +255,17 @@ EOF`);
     // kexec-tools (for initramfs)
     compileKexecTools();
     compileSDM845SupportPackages();
-    compileHybrisSupportPackages();
+    //compileHybrisSupportPackages();
 
     /* ------------- Target Devices ------------- */
     const buildTargetDeviceSupport = (targetDevice: string) => {
         console.log(`Building ${targetDevice} support`);
+
+        if(targetDevice.startsWith("halium-")) {
+            console.log("Skipping pmbootstrap (halium device).");
+            return;
+        }
+
         // Add pmos device /lib/modules and /usr/lib/firmware
         console.log("Adding pmos device modules and firmware");
         let kernel = "";
