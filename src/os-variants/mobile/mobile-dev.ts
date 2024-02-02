@@ -92,7 +92,6 @@ export async function buildMobileDev() {
         "breeze",
         "kscreenlocker",
         "libqaccessibilityclient",
-        "zxing-cpp",
         "phonon",
         "kfilemetadata",
         "kpty",
