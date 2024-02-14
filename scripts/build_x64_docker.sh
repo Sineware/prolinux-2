@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 set -e
+echo "Running ProLinux 2 Build using the ProLinux SDK Container"
+if [ ! -f package.json ]; then
+  echo "This script must be run from the root of the project"
+  exit 1
+fi
 
-
-
-#docker run -it prolinux-sdk:latest bash
-# run ./scripts/build_x64.sh in the container and mount cwd to /home/user/prolinux-2
-
-docker run -it -v $(pwd):/home/user/prolinux-2 prolinux-sdk:latest bash -c "cd /home/user/prolinux-2 && ./scripts/build_x64.sh"
+docker run -it --rm --privileged=true -v $(pwd):/home/user/prolinux-2 sineware/prolinux-sdk:latest bash -c "cd /home/user/prolinux-2 && ./scripts/unmount.sh && ./scripts/build_x64.sh"

@@ -14,7 +14,7 @@ import { buildEmbeddedDev } from './os-variants/embedded/embedded-dev';
 import { buildMobileStable } from './os-variants/mobile/mobile-stable';
 import { buildMobileCommon } from './os-variants/mobile/mobile-common';
 import { buildMobileHaliumDev } from './os-variants/mobile-halium/mobile-halium-dev';
-
+import { buildServerDev } from './os-variants/server/server-dev';
 // #  Copyright (C) 2023 Seshan Ravikumar
 // #
 // #  This program is free software: you can redistribute it and/or modify
@@ -102,6 +102,10 @@ async function main() {
     exec(`sudo mkdir -pv ${BUILD_DIR}/pacman-cache`);
     exec(`sudo mount --bind ${BUILD_DIR}/pacman-cache ${ROOTFS_DIR}/var/cache/pacman/pkg`);
 
+    // merge FILES_DIR/layout into rootfs
+    console.log("Merging files from " + FILES_DIR + "/layout into " + ROOTFS_DIR);
+    exec(`sudo rsync -a ${FILES_DIR}/layout/ ${ROOTFS_DIR}/`);
+
     exec(`sudo arch-chroot ${ROOTFS_DIR} /bin/bash -x <<'EOF'
         set -e
         chown root:root /
@@ -132,6 +136,11 @@ async function main() {
         # fixes plasma-mobile app list
         pacman -S --noconfirm --needed xorg
 
+        # server related packages
+        pacman -S --noconfirm --needed podman podman-docker podman-dnsname netavark buildah
+
+
+
         echo "Setting up user"
         ${arch === "x64" ? 'useradd -m -G wheel user' : ''}
         ${arch === "arm64" ? 'usermod -l user alarm' : ''}
@@ -158,10 +167,6 @@ async function main() {
 EOFSU
         sleep 2
 EOF`);
-
-    // merge FILES_DIR/layout into rootfs
-    console.log("Merging files from " + FILES_DIR + "/layout into " + ROOTFS_DIR);
-    exec(`sudo rsync -a ${FILES_DIR}/layout/ ${ROOTFS_DIR}/`);
 
     /* Install NODEJS_PACKAGE */
     console.log("Installing NodeJS");
@@ -221,7 +226,7 @@ EOF`);
         await buildEmbeddedDev();
         /* ------------- ProLinux Server ------------- */
     } else if(PROLINUX_VARIANT === "server" && PROLINUX_CHANNEL === "dev") {
-
+        await buildServerDev();
     } else {
         throw new Error("Unknown ProLinux variant/channel");
     }
@@ -238,6 +243,7 @@ EOF`);
         systemctl enable prolinux-setup
         systemctl enable prolinuxd
         systemctl enable getty@tty0
+        systemctl enable podman
         
         mkdir -pv /opt/build-info
         echo "${buildnum},${builduuid},prolinux,${PROLINUX_VARIANT},${PROLINUX_CHANNEL},$(date),prolinux-root-${PROLINUX_VARIANT}-${PROLINUX_CHANNEL}.squish,${arch}" >> /opt/build-info/prolinux-info.txt
@@ -288,8 +294,8 @@ EOF`);
     console.log("Cleaning up rootfs before final squash...");
     exec(`
         sudo arch-chroot ${ROOTFS_DIR} /bin/bash -x <<'EOF'
-            set -e
             sudo pacman -R --noconfirm qt6-doc qt6-examples
+            echo "Cleaned up packages."
 EOF
         sudo rm -rf ${ROOTFS_DIR}/usr/share/doc/*
         sudo rm -rf ${ROOTFS_DIR}/opt/kde/build/
