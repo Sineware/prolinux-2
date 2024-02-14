@@ -162,7 +162,8 @@ export async function buildMobileDev() {
         "tokodon",
         "spectacle",
         "plasma-dialer",
-        "spacebar"
+        "spacebar",
+        "krecorder"
     ];
     const packagesToBuild = packageList.join(" ");
 
