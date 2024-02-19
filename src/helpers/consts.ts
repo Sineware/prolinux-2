@@ -19,7 +19,7 @@ export const ACCEPTABLE_STANDARD_DEVICES = [
         "name": "pine64-pinebookpro",
         "should_gunzip_vmlinuz": true
     },
-    { "name": "tablet-x64uefi",
+    { "name": "generic-x86_64",
         "should_gunzip_vmlinuz": false
 
      }
@@ -44,7 +44,7 @@ export const ACCEPTABLE_ANDROID_DEVICES = [
 ];
 
 export const x64KernelDevices = [
-    "tablet-x64uefi"
+    "generic-x86_64"
 ]
 export const PPKernelDevices = [
     "pine64-pinephone"

@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -e
-TARGET_DEVICE=tablet-x64uefi:edge npm run build
+export TARGET_DEVICE=generic-x86_64:edge 
 
-TARGET_DEVICE=tablet-x64uefi:edge npm run gen-image
+npm run build
+npm run gen-image

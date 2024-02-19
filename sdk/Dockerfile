@@ -21,6 +21,8 @@ RUN pacman-key --init && pacman-key --populate archlinux && pacman -Syy --noconf
     aarch64-linux-gnu-gcc \
     distcc \
     rsync \
+    parted \
+    squashfs-tools \
     && \
     pacman -Scc --noconfirm
 

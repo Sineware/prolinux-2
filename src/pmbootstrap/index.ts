@@ -14,6 +14,7 @@ export function createAndMountPMOSImage(device: string, kernel: string): string 
         pmbootstrap config device ${device}
         pmbootstrap config kernel ${kernel}
         pmbootstrap config extra_packages osk-sdl
+        pmbootstrap config hostname prolinux-system
 
         pmbootstrap -q -y zap -p
 

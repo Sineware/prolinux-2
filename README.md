@@ -64,8 +64,8 @@ Then run:
 ```sh
 git submodule update --init
 npm install
-TARGET_DEVICE=tablet-x64uefi npm run build
-TARGET_DEVICE=tablet-x64uefi npm run gen-image
+TARGET_DEVICE=generic-x86_64 npm run build
+TARGET_DEVICE=generic-x86_64 npm run gen-image
 ```
 
 (For x64, also run `npm run gen-kernel` before build)
@@ -77,7 +77,7 @@ TARGET_DEVICE is a postmarketOS device string. Currently only "simple" devices a
 Cross-compiling is not supported, arm64 targets must be built on arm64 devices. You need at least 64GB of free disk space.
 
 
-### QEMU (tablet-x64uefi testing)
+### QEMU (generic-x86_64 testing)
 ```sh
-qemu-system-x86_64 --enable-kvm -m 4G -smp 4 -device virtio-tablet-pci -device virtio-keyboard-pci -device virtio-vga-gl -display gtk,gl=on -drive if=pflash,format=raw,readonly=on,file=/usr/share/edk2-ovmf/x64/OVMF_CODE.fd -drive id=disk,file=output/tablet-x64uefi.img,if=none -device ahci,id=ahci -device ide-hd,drive=disk,bus=ahci.0 -netdev user,id=net0,hostfwd=tcp::8022-:22 -device virtio-net-pci,netdev=net0
+qemu-system-x86_64 --enable-kvm -m 4G -smp 4 -device virtio-tablet-pci -device virtio-keyboard-pci -device virtio-vga-gl -display gtk,gl=on -drive if=pflash,format=raw,readonly=on,file=/usr/share/edk2-ovmf/x64/OVMF_CODE.fd -drive id=disk,file=output/generic-x86_64.img,if=none -device ahci,id=ahci -device ide-hd,drive=disk,bus=ahci.0 -netdev user,id=net0,hostfwd=tcp::8022-:22 -device virtio-net-pci,netdev=net0
 ```
