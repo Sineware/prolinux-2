@@ -137,7 +137,7 @@ async function main() {
         pacman -S --noconfirm --needed xorg
 
         # server related packages
-        pacman -S --noconfirm --needed podman podman-docker podman-dnsname netavark buildah
+        pacman -S --noconfirm --needed podman podman-docker netavark buildah
 
 
 
