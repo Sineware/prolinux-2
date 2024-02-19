@@ -145,7 +145,7 @@ async function main() {
         ${arch === "x64" ? 'useradd -m -G wheel user' : ''}
         ${arch === "arm64" ? 'usermod -l user alarm' : ''}
         ${arch === "arm64" ? 'groupmod -n user alarm' : ''}
-        ${arch === "arm64" ? 'usermod -d /home/user -m user' : ''}
+        ${arch === "arm64" ? 'usermod -d /home/user -m user || true' : ''}
         echo "user:147147" | chpasswd
         echo "user ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
         echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
