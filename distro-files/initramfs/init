@@ -59,6 +59,9 @@ if [ "$(cat /proc/cmdline | grep pl2.stage2)" != "" ] || [ "$disable_kexec" = "t
     else
         mount -t overlay overlay -o lowerdir=/sysroot/data/customization:/sysroot/squishroot,upperdir=/sysroot/persistroot,workdir=/sysroot/workdir /sysroot/oroot || splash_error "Could not mount overlayfs!"
     fi
+
+    echo "Binding persistent directories into oroot"
+
     mount --bind /sysroot /sysroot/oroot/sineware
     mount --bind /sysroot/data/home /sysroot/oroot/home
 
@@ -67,6 +70,10 @@ if [ "$(cat /proc/cmdline | grep pl2.stage2)" != "" ] || [ "$disable_kexec" = "t
 
     mkdir -pv /sysroot/oroot/lib/firmware
     mount --bind /sysroot/squishroot/opt/device-support/$deviceinfo_codename/firmware /sysroot/oroot/usr/lib/firmware || splash_error "Could not mount firmware!"
+
+    # Podman container directories
+    mkdir -pv /sysroot/data/containers
+    mount --bind /sysroot/data/containers /sysroot/oroot/var/lib/containers
 
     # PMOS_BOOT to /sysroot/oroot/boot
     #mkdir -pv /sysroot/oroot/boot

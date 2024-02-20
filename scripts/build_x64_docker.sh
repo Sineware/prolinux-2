@@ -6,4 +6,4 @@ if [ ! -f package.json ]; then
   exit 1
 fi
 
-docker run -it --rm --privileged=true -v /dev:/dev -v $(pwd):/home/user/prolinux-2 sineware/prolinux-sdk:latest bash -c "cd /home/user/prolinux-2 && ./scripts/unmount.sh && ./scripts/build_x64.sh"
+docker run -t --rm --privileged=true -v /dev:/dev -v $(pwd):/home/user/prolinux-2 sineware/prolinux-sdk:latest bash -c "cd /home/user/prolinux-2 && ./scripts/unmount.sh && ./scripts/build_x64.sh"
