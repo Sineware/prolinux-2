@@ -132,7 +132,9 @@ export function genPMOSImage(device: string) {
     if(x64KernelDevices.includes(device)) {
         customKernelCommands = `echo "Copying custom compiled kernel for x64"
         sudo cp -v ${BUILD_DIR}/kernel/vmlinuz ${BUILD_DIR}/pmos_boot_mnt/vmlinuz-edge
-        sudo rsync -a ${BUILD_DIR}/kernel/modroot/lib/modules/ ${ROOTFS_DIR}/opt/device-support/${device}/modules`
+        sudo rsync -a ${BUILD_DIR}/kernel/modroot/lib/modules/ ${ROOTFS_DIR}/opt/device-support/${device}/modules
+        sudo rm -rf ${BUILD_DIR}/initramfs-work/lib/modules/* # remove old modules`
+        
     } else if(PPKernelDevices.includes(device)) {
         customKernelCommands = `echo "Copying custom compiled kernel for PinePhone"
         sudo cp -v ${BUILD_DIR}/pp-kernel/vmlinuz ${BUILD_DIR}/pmos_boot_mnt/vmlinuz
@@ -153,7 +155,8 @@ export function genPMOSImage(device: string) {
     exec(`
         sudo cp -v ${BUILD_DIR}/new-init ${BUILD_DIR}/initramfs-work/init
         sudo chmod +x ${BUILD_DIR}/initramfs-work/init
-        ${(arch === "x64") ? `sudo cp -r ${BUILD_DIR}/kernel/modroot/lib/modules/* ${BUILD_DIR}/initramfs-work/lib/modules/` : ""}
+        ${(arch === "x64") ? `sudo rsync -a ${BUILD_DIR}/kernel/modroot/lib/modules/*/kernel/fs/* ${BUILD_DIR}/initramfs-work/lib/modules/*/kernel/fs/ && sudo rsync -a ${BUILD_DIR}/kernel/modroot/lib/modules/*/kernel/drivers/* ${BUILD_DIR}/initramfs-work/lib/modules/*/kernel/drivers/` : ""}
+
         ${customKernelCommands}
 
         cd ${BUILD_DIR}/initramfs-work/

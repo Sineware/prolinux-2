@@ -2,10 +2,20 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 import fs from "fs";
 import path from "path";
-import { OUTPUT_DIR, TARGET_DEVICE, BUILD_DIR, FILES_DIR, X64_KERNEL, MEGI_KERNEL, x64KernelDevices, PPKernelDevices, PPPKernelDevices } from '../../src/helpers/consts';
+import { OUTPUT_DIR, TARGET_DEVICE, BUILD_DIR, FILES_DIR, X64_KERNEL, MEGI_KERNEL, x64KernelDevices, requiredKConfigLines, PPKernelDevices, PPPKernelDevices } from '../../src/helpers/consts';
 import exec from "../../src/helpers/exec";
 
 export function buildX64Kernel() {
+    const kconfig = fs.readFileSync(__dirname + "/kconfigs/x64-config", "utf-8");
+    for(const line of requiredKConfigLines) {
+        if(!kconfig.includes(line)) {
+            console.error(`Required kconfig line not found: ${line}`);
+            process.exit(1);
+        }
+        console.log(`Verified KConfig Value: ${line}`);
+    }
+
+
     exec(`
         mkdir -pv ${BUILD_DIR}/kernel
         pushd .
