@@ -61,17 +61,28 @@ async function startPasswordService() {
                 return line;
             }
         }).join("\n");
-        fs.writeFileSync("/etc/shadow", newShadow);
+        await fs.promises.writeFile("/etc/shadow", newShadow);
     }
 
     // Watches /etc/shadow for password changes, and persists them to the config
     fs.watch("/etc/shadow", async (eventType, filename) => {
         log.info("Shadow file (password) updated: " +  eventType + ", " + filename);
-        const shadow = fs.readFileSync("/etc/shadow", "utf-8");
+        const shadow = await fs.promises.readFile("/etc/shadow", "utf-8");
         const user_shadow = shadow.split("\n").filter((line) => {
             return line.startsWith("user:");
         })[0];
         config.pl2.user_shadow = user_shadow;
+    });
+}
+async function startNMNetworksService() {
+    // we know that saved networks are in /etc/NetworkManager/system-connections
+    // this function is similar to the password service, in that it watches for changes to the network configuration
+    // but here we instead copy the file to /sineware/data/customization/etc/NetworkManager/system-connections
+    log.info("Starting NetworkManager networks sync service...");
+    fs.watch("/etc/NetworkManager/system-connections", async (eventType, filename) => {
+        log.info("NetworkManager configuration updated: " +  eventType + ", " + filename);
+        const network = await fs.promises.readFile("/etc/NetworkManager/system-connections/" + filename, "utf-8");
+        await fs.promises.writeFile(`/sineware/data/customization/etc/NetworkManager/system-connections/${filename}`, network);
     });
 }
 
@@ -80,4 +91,5 @@ export async function loadPL2Module() {
     await setHostname();
     await startDeviceSpecificServices();
     await startPasswordService();
+    await startNMNetworksService();
 }
