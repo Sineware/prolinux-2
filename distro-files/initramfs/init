@@ -17,8 +17,8 @@ echo "Running ProLinux Init script..."
 pkill pbsplash
 
 echo "-- Welcome to Sineware ProLinux 2 --"
-modprobe squashfs || splash_error "Could not load squashfs module!"
-modprobe overlay || splash_error "Could not load overlayfs module!"
+modprobe squashfs || echo "Could not load squashfs module!"
+modprobe overlay || echo "Could not load overlayfs module!"
 echo "Mounting prolinux squashfs 'squishroot'"
 mount -o remount,rw /sysroot
 
