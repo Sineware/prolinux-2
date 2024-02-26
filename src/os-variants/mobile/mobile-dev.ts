@@ -196,6 +196,10 @@ export async function buildMobileDev() {
                 sudo pacman --noconfirm -S --needed perl-json-xs
 
                 cd /opt/kde
+
+                git config --global --add url.http://invent.kde.org/.insteadOf kde:
+                git config --global --add url.ssh://git@invent.kde.org/.pushInsteadOf kde:
+
                 mkdir -p /opt/kde/src
                 cd /opt/kde/src
                 rm -rf kdesrc-build
