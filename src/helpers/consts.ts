@@ -73,7 +73,8 @@ export const requiredKConfigLines = [
     `CONFIG_SATA_AHCI=y`,
     `CONFIG_ATA_SFF=y`,
     `CONFIG_NVME_CORE=y`,
-    `CONFIG_BLK_DEV_NVME=y`
+    `CONFIG_BLK_DEV_NVME=y`,
+    `CONFIG_USB_STORAGE=y`
 ]
 
 export const MUSL_TOOLCHAIN = process.env.MUSL_TOOLCHAIN;
