@@ -46,6 +46,7 @@ export async function setupSecureSwitchRole(): Promise<boolean> {
 export async function deleteSecureSwitchRole() {
     log.info("[Server] [SecureSwitch] Deleting Suricata container...");
     try {
+        await runCmd("podman", ["stop", SURICATA_CONTAINER_NAME]);
         await runCmd("podman", ["rm", SURICATA_CONTAINER_NAME]);
     } catch(e: any) {
         log.error("[Server] [SecureSwitch] Failed to delete Suricata container: " + e.message);
