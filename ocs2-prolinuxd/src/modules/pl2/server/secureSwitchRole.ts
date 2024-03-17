@@ -33,9 +33,13 @@ export async function setupSecureSwitchRole(): Promise<boolean> {
         await runCmd("podman", ["create", "--name", SURICATA_CONTAINER_NAME, "--net=host", "--cap-add=net_admin", "--cap-add=net_raw", "--cap-add=sys_nice", SURICATA_IMAGE_NAME, "-i", "br0"]);
         
         // generate a linux MAC Address for the bridge using the following format: 00:00:00:00:00:00
-        const bridgeMac = generateMACAddress();
-        log.info("[Server] [SecureSwitch] Generated MAC Address for bridge: " + bridgeMac);
-        state.extraConfig.server_roles.secure_switch.config.bridge_mac = bridgeMac;
+        if(state.extraConfig.server_roles.secure_switch.config.bridge_mac === "") {
+            const bridgeMac = generateMACAddress();
+            log.info("[Server] [SecureSwitch] Generated MAC Address for bridge: " + bridgeMac);
+            state.extraConfig.server_roles.secure_switch.config.bridge_mac = bridgeMac;
+        } else {
+            log.info("[Server] [SecureSwitch] Using existing MAC Address for bridge: " + state.extraConfig.server_roles.secure_switch.config.bridge_mac);
+        }
         return true;
     }
 }
