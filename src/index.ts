@@ -137,9 +137,7 @@ async function main() {
         pacman -S --noconfirm --needed xorg
 
         # server related packages
-        pacman -S --noconfirm --needed podman podman-docker netavark aardvark-dns buildah dhclient screen jq
-
-
+        pacman -S --noconfirm --needed podman podman-docker netavark aardvark-dns buildah dhclient screen jq smartmontools unzip
 
         echo "Setting up user"
         ${arch === "x64" ? 'useradd -m -G wheel user' : ''}

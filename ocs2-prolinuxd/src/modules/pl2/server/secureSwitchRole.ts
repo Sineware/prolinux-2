@@ -7,6 +7,17 @@ import { state } from "../../../state/systemStateContainer";
 const SURICATA_CONTAINER_NAME = `PLINTERNAL_${ServerRoleType.SECURE_SWITCH_APPLIANCE}_surciata`;
 const SURICATA_IMAGE_NAME = "docker.io/jasonish/suricata:latest@sha256:01e8d513beb284c8738ce0fbd98a8e95d202f1e27a04c15b00c1c61c3a2b8fdc";
 
+const EVEBOX_CONTAINER_NAME = `PLINTERNAL_${ServerRoleType.SECURE_SWITCH_APPLIANCE}_evebox`;
+const EVEBOX_IMAGE_NAME = "docker.io/jasonish/evebox:latest@sha256:c133c313867c431877efd8a76d78d9083d9fbcea6e8e862cb203ffded71802bb";
+
+export const makeDirs = async () => {
+    await runCmd("mkdir", ["-pv", "/sineware/data/server/secure_switch"]);
+    await runCmd("mkdir", ["-pv", "/sineware/data/server/secure_switch/logs"]);
+    await runCmd("mkdir", ["-pv", "/sineware/data/server/secure_switch/rules"]);
+    await runCmd("mkdir", ["-pv", "/sineware/data/server/secure_switch/etc"]);
+    await runCmd("mkdir", ["-pv", "/sineware/data/server/secure_switch/evebox"]);
+}
+
 function generateMACAddress(): string {
     const hexDigits = "0123456789ABCDEF";
     let macAddress = "52:54:00"; // Using the QEMU VM OUI space
@@ -20,15 +31,12 @@ function generateMACAddress(): string {
 // this function creates the podman container SURIATA_CONTAINER_NAME
 export async function setupSecureSwitchRole(): Promise<boolean> {
     log.info("[Server] [SecureSwitch] Setting up Suricata container...");
-    await runCmd("mkdir", ["-pv", "/sineware/data/server/secure_switch"]);
-    await runCmd("mkdir", ["-pv", "/sineware/data/server/secure_switch/logs"]);
-    await runCmd("mkdir", ["-pv", "/sineware/data/server/secure_switch/rules"]);
-    await runCmd("mkdir", ["-pv", "/sineware/data/server/secure_switch/etc"]);
-
+    await makeDirs();
+    let suricataExists = false;
     try {
         await runCmd("podman", ["inspect", SURICATA_CONTAINER_NAME]);
         log.info("[Server] [SecureSwitch] Suricata container already exists!");
-        return false;
+        suricataExists = true;
     } catch(e: any) {
         log.info("[Server] [SecureSwitch] Suricata container does not exist, creating...");
         // create but don't start the container
@@ -43,7 +51,7 @@ export async function setupSecureSwitchRole(): Promise<boolean> {
                 "-v", "/sineware/data/server/secure_switch/rules:/var/lib/suricata",
                 "-v", "/sineware/data/server/secure_switch/etc:/etc/suricata",
                 SURICATA_IMAGE_NAME, "-q", "0" // runs on nfqueue 0, set in setup-bridge.sh
-            ]
+            ], true, 3600000
         );
         
         // generate a linux MAC Address for the bridge using the following format: 00:00:00:00:00:00
@@ -54,8 +62,28 @@ export async function setupSecureSwitchRole(): Promise<boolean> {
         } else {
             log.info("[Server] [SecureSwitch] Using existing MAC Address for bridge: " + state.extraConfig.server_roles.secure_switch.config.bridge_mac);
         }
-        return true;
     }
+
+    // create evebox container
+    try {
+        await runCmd("podman", ["inspect", EVEBOX_CONTAINER_NAME]);
+        log.info("[Server] [SecureSwitch] Evebox container already exists!");
+    } catch(e: any) {
+        log.info("[Server] [SecureSwitch] Evebox container does not exist, creating...");
+        await runCmd("podman",
+            [
+                "create", "--name", EVEBOX_CONTAINER_NAME,
+                "-v", "/sineware/data/server/secure_switch/evebox:/var/lib/evebox",
+                "-v", "/sineware/data/server/secure_switch/logs:/var/log/suricata",
+                // listen on localhost only
+                "-p", "127.0.0.1:5636:5636",
+                EVEBOX_IMAGE_NAME, "evebox", "server", "--datastore", "sqlite", "-D", "/var/lib/evebox",
+                "--input", "/var/log/suricata/eve.json", "--port", "5636", "--host", "0.0.0.0", "--no-auth"
+            ], true, 3600000
+        );
+    }
+
+    return true;
 }
 export async function deleteSecureSwitchRole() {
     log.info("[Server] [SecureSwitch] Deleting Suricata container...");
@@ -69,10 +97,7 @@ export async function deleteSecureSwitchRole() {
 
 export async function startSecureSwitchRole() {
     // setup directories
-    await runCmd("mkdir", ["-pv", "/sineware/data/server/secure_switch"]);
-    await runCmd("mkdir", ["-pv", "/sineware/data/server/secure_switch/logs"]);
-    await runCmd("mkdir", ["-pv", "/sineware/data/server/secure_switch/rules"]);
-    await runCmd("mkdir", ["-pv", "/sineware/data/server/secure_switch/etc"]);
+    await makeDirs();
 
     // the bridge setup script is in /opt/prolinux-server/setup-bridge.sh
     log.info("[Server] [SecureSwitch] Starting SecureSwitch Appliance Server Role...");
@@ -111,12 +136,14 @@ export async function startSecureSwitchRole() {
             await runCmd("podman", ["rm", SURICATA_CONTAINER_NAME], true);
             if(await setupSecureSwitchRole()) {
                 await runCmd("podman", ["start", SURICATA_CONTAINER_NAME], true);
+                await runCmd("podman", ["start", EVEBOX_CONTAINER_NAME], true);
             }
             await runCmd("podman", ["exec", SURICATA_CONTAINER_NAME, "suricata-update", "-f"], true, 3600000);
         } else {
             await runCmd("podman", ["rm", SURICATA_CONTAINER_NAME], true);
             if(await setupSecureSwitchRole()) {
                 await runCmd("podman", ["start", SURICATA_CONTAINER_NAME], true);
+                await runCmd("podman", ["start", EVEBOX_CONTAINER_NAME], true);
             }
         }
 
