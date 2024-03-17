@@ -9,11 +9,19 @@ sudo systemctl stop NetworkManager
 # Define the bridge interface name
 bridgeInterface="br0"
 
+echo "loading br_netfilter kernel module..."
+modprobe br_netfilter
+
 # Check if the bridge interface already exists, if not, create it
 if ! ip link show $bridgeInterface > /dev/null 2>&1; then
     echo "Creating bridge interface $bridgeInterface with MAC address $1..."
     ip link add name $bridgeInterface type bridge
     ip link set dev $bridgeInterface address $1
+
+    echo "Adding NFQUEUE to bridge $bridgeInterface..."
+    iptables -A FORWARD -i $bridgeInterface -j NFQUEUE --queue-num 0
+    iptables -A FORWARD -o $bridgeInterface -j NFQUEUE --queue-num 0
+    
 else
     echo "Bridge interface $bridgeInterface already exists"
 fi

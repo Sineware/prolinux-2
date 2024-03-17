@@ -42,7 +42,7 @@ export async function setupSecureSwitchRole(): Promise<boolean> {
                 "-v", "/sineware/data/server/secure_switch/logs:/var/log/suricata",
                 "-v", "/sineware/data/server/secure_switch/rules:/var/lib/suricata",
                 "-v", "/sineware/data/server/secure_switch/etc:/etc/suricata",
-                SURICATA_IMAGE_NAME, "-i", "br0"
+                SURICATA_IMAGE_NAME, "-q", "0" // runs on nfqueue 0, set in setup-bridge.sh
             ]
         );
         
@@ -112,15 +112,24 @@ export async function startSecureSwitchRole() {
             if(await setupSecureSwitchRole()) {
                 await runCmd("podman", ["start", SURICATA_CONTAINER_NAME], true);
             }
+            await runCmd("podman", ["exec", SURICATA_CONTAINER_NAME, "suricata-update", "-f"], true, 3600000);
         } else {
-            await runCmd("podman", ["start", SURICATA_CONTAINER_NAME], true);
+            await runCmd("podman", ["rm", SURICATA_CONTAINER_NAME], true);
+            if(await setupSecureSwitchRole()) {
+                await runCmd("podman", ["start", SURICATA_CONTAINER_NAME], true);
+            }
         }
 
         // logrotate
-        await runCmd("podman", ["exec", SURICATA_CONTAINER_NAME, "logrotate", "/etc/logrotate.d/suricata"]);
+        await runCmd("podman", ["exec", SURICATA_CONTAINER_NAME, "logrotate", "/etc/logrotate.d/suricata"], true, 3600000);
         setInterval(async () => {
-            await runCmd("podman", ["exec", SURICATA_CONTAINER_NAME, "logrotate", "/etc/logrotate.d/suricata"]);
+            await runCmd("podman", ["exec", SURICATA_CONTAINER_NAME, "logrotate", "/etc/logrotate.d/suricata"], true, 3600000);
         }, 86400000);
+
+        // suricata-update
+        setInterval(async () => {
+            await runCmd("podman", ["exec", SURICATA_CONTAINER_NAME, "suricata-update", "-f"], true, 3600000);
+        }, 7200000);
     }
 }
 export async function stopSecureSwichRole() {
