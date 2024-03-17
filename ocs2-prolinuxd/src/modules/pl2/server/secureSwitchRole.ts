@@ -67,7 +67,7 @@ export async function startSecureSwitchRole() {
         log.info("[Server] [SecureSwitch] Starting Suricata container...");
         // we need to check if the container image is the version specified in SURICATA_IMAGE_NAME. If it's not, wait for the network to come up using isReachable, then pull the new image and start the container
         const suricataVersion = await runCmd("podman", ["inspect", "--format", "{{.ImageName}}", SURICATA_CONTAINER_NAME], true);
-        if(suricataVersion !== SURICATA_IMAGE_NAME) {
+        if(suricataVersion.trim() !== SURICATA_IMAGE_NAME) {
             // check if the network is up or timeout after 1 minute
             log.info("[Server] [SecureSwitch] Post-update, pulling new Suricata image...");
             log.info("Waiting for network to come up...")
