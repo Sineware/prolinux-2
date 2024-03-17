@@ -18,6 +18,11 @@ export enum LocalActions {
     DESCRIBE_API = "describe-api",
     SET_REMOTE_API = "set-remote-api",
     SET_RESET_PERSISTROOT_FLAG = "set-reset-persistroot-flag",
+    RUNTIME_VERIFY_STATE_INTEGRITY = "runtime-verify-state-integrity",
+    // Server actions
+    SERVER_STATUS = "server-status",
+    SERVER_ROLE_ENABLE = "server-role-enable",
+    SERVER_ROLE_DISABLE = "server-role-disable",
 }
 export interface LocalWSMessage {
     action: LocalActions,
@@ -49,3 +54,33 @@ export interface RemoteUpdate {
     url: string,
     jwt: string
 }
+
+/* ProLinux Server Roles */
+export enum ServerRoleType {
+    WEBSERVER = "webserver",
+    SECURE_SWITCH_APPLIANCE = "secure-switch-appliance"
+}
+export interface ServerRole<T> {
+    name: ServerRoleType,
+    description: string,
+    enabled: boolean
+    config: T
+}
+export type ServerRoleWebserverConfig = {
+    port: number,
+    root: string,
+    index: string,
+    ssl: boolean,
+    ssl_cert: string,
+    ssl_key: string
+};
+export type ServerRoleSecureSwitchConfig = {
+    interfaces: string[],
+    bridge_mac: string,
+    dhcp: boolean,
+    ip: string,
+    netmask: string,
+    gateway: string,
+    dns: string,
+};
+

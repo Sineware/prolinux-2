@@ -3,6 +3,7 @@ import { state } from "../../state/systemStateContainer";
 import { runCmd } from "../../helpers/runCmd";
 import { log } from "../../logging";
 import { getProLinuxInfo } from "../../helpers/getProLinuxInfo";
+import { startSecureSwitchRole, stopSecureSwichRole } from "./server/secureSwitchRole";
 
 const config = state.config;
 
@@ -65,7 +66,7 @@ async function startPasswordService() {
     }
 
     // Watches /etc/shadow for password changes, and persists them to the config
-    fs.watch("/etc/shadow", async (eventType, filename) => {
+    state.untracked.passwordServiceWatcher = fs.watch("/etc/shadow", async (eventType, filename) => {
         log.info("Shadow file (password) updated: " +  eventType + ", " + filename);
         const shadow = await fs.promises.readFile("/etc/shadow", "utf-8");
         const user_shadow = shadow.split("\n").filter((line) => {
@@ -79,7 +80,7 @@ async function startNMNetworksService() {
     // this function is similar to the password service, in that it watches for changes to the network configuration
     // but here we instead copy the file to /sineware/data/customization/etc/NetworkManager/system-connections
     log.info("Starting NetworkManager networks sync service...");
-    fs.watch("/etc/NetworkManager/system-connections", async (eventType, filename) => {
+    state.untracked.NMNetworksServiceWatcher = fs.watch("/etc/NetworkManager/system-connections", async (eventType, filename) => {
         log.info("NetworkManager configuration updated: " +  eventType + ", " + filename);
         const network = await fs.promises.readFile("/etc/NetworkManager/system-connections/" + filename, "utf-8");
         await fs.promises.writeFile(`/sineware/data/customization/etc/NetworkManager/system-connections/${filename}`, network);
@@ -92,4 +93,24 @@ export async function loadPL2Module() {
     await startDeviceSpecificServices();
     await startPasswordService();
     await startNMNetworksService();
+
+    if(state.extraConfig.server_roles.webserver?.enabled) {
+        log.info("Starting Webserver Server Role...");
+        log.info("Stub: todo");
+        // Start webserver
+    }
+    if(state.extraConfig.server_roles.secure_switch?.enabled) {
+        try {
+            await startSecureSwitchRole();
+        } catch(e: any) {
+            log.error("Failed to start SecureSwitch Appliance Server Role: " + e.message);
+        }
+    }
+    log.info("ProLinux 2 Module loaded!");
+    
+    // return cleanup function
+    return async () => {
+        log.info("Cleaning up PL2 Module...");
+        await stopSecureSwichRole();
+    }
 }

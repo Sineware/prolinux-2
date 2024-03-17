@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# arg $1 is the bridge interface MAC address
+
 # First, let's stop NetworkManager to manually manage the network interfaces.
 echo "Stopping NetworkManager..."
 sudo systemctl stop NetworkManager
@@ -9,8 +11,9 @@ bridgeInterface="br0"
 
 # Check if the bridge interface already exists, if not, create it
 if ! ip link show $bridgeInterface > /dev/null 2>&1; then
-    echo "Creating bridge interface $bridgeInterface"
+    echo "Creating bridge interface $bridgeInterface with MAC address $1..."
     ip link add name $bridgeInterface type bridge
+    ip link set dev $bridgeInterface address $1
 else
     echo "Bridge interface $bridgeInterface already exists"
 fi

@@ -25,22 +25,36 @@ export const localSocketBroadcast = (msg: LocalWSMessage) => {
         }
     });
 }
+let cleanupFunctions = [] as (() => void)[];
 
 async function main() {
     // Read configuration file
+    log.info("Loading base system configuration...");
     try {
         const tomlConfig = TOML.parse(fs.readFileSync(process.env.CONFIG_FILE ?? path.join(__dirname, "prolinux.toml"), "utf-8")) as typeof state.config;
         state.config = deepExtend(state.config, tomlConfig);
         log.info("Configuration file loaded!");
         log.info(JSON.stringify(state.config, null, 4));
-    } catch(e) {
+    } catch(e: any) {
         console.log(e);
-        console.log("Resetting to default configuration file...");
+        log.error("Could not load configuration file, resetting to default... " +  e?.message);
         let tomlConfig = TOML.stringify(state.config, {
             newline: "\n"
         });
-        // todo check for a prolinux-default.toml
         fs.writeFileSync(process.env.CONFIG_FILE ?? path.join(__dirname, "prolinux.toml"), Buffer.from(tomlConfig), "utf-8");
+    }
+    // Read extra-config json file
+    log.info("Loading extra configuration...");
+    try {
+        const extraConfig = JSON.parse(fs.readFileSync(path.join(path.dirname(process.env.CONFIG_FILE ?? path.join(__dirname, "prolinux.toml")), "extra-config.json"), "utf-8")) as typeof state.extraConfig;
+        state.extraConfig = deepExtend(state.extraConfig, extraConfig);
+        log.info("Extra configuration file loaded!");
+        log.info(JSON.stringify(state.extraConfig, null, 4));
+    } catch(e: any) {
+        console.log(e);
+        log.error("Could not load extra configuration file, resetting to default... " + e?.message);
+        let extraConfig = JSON.stringify(state.extraConfig, null, 4);
+        fs.writeFileSync(path.join(path.dirname(process.env.CONFIG_FILE ?? path.join(__dirname, "prolinux.toml")), "extra-config.json"), Buffer.from(extraConfig), "utf-8");
     }
 
     try{
@@ -87,7 +101,8 @@ async function main() {
         }
         if(state.config.prolinuxd.modules.includes("pl2")) {
             log.info("Starting ProLinux 2 Module...");
-            await loadPL2Module();
+            let cleanup = await loadPL2Module();
+            cleanupFunctions.push(cleanup);
         }
         if(state.config.pl2.remote_api) {
             // create a new wss server on port 25567 using wsConnectionHandler
@@ -109,6 +124,13 @@ async function main() {
     });    
 }
 try {
+    // setup cleanup on exit
+    process.on("exit", () => {
+        log.info("Shutting down ProLinuxD...");
+        cleanupFunctions.forEach((cleanup) => {
+            cleanup();
+        });
+    });
     main();
 } catch (err) {
     log.error("Fatal error: " + err);

@@ -5,9 +5,11 @@ import fs from "node:fs";
 import axios from "axios";
 
 import { log, logger } from "../logging";
-import { LocalActions, LocalWSMessage } from "../constants";
+import { LocalActions, LocalWSMessage, ServerRoleType } from "../constants";
 import { OCS2Connection } from "../modules/ocs2/cloudapi";
 import { getProLinuxInfo } from "../helpers/getProLinuxInfo";
+import { verifyStateIntegrity, state } from "../state/systemStateContainer";
+import { deleteSecureSwitchRole, setupSecureSwitchRole } from "../modules/pl2/server/secureSwitchRole";
 
 export const wsConnectionHandler = (socket: WebSocket, config: any, cloud: OCS2Connection, localSocketBroadcast: (msg: LocalWSMessage)=>void) => {
     log.info("Client connected to ProLinuxD!");
@@ -171,6 +173,47 @@ export const wsConnectionHandler = (socket: WebSocket, config: any, cloud: OCS2C
                 case LocalActions.SET_RESET_PERSISTROOT_FLAG: {
                     fs.writeFileSync("/sineware/data/.reset_persistroot", "1");
                     replyResult(LocalActions.SET_RESET_PERSISTROOT_FLAG, true, {});
+                } break;
+                case LocalActions.RUNTIME_VERIFY_STATE_INTEGRITY: {
+                    const res = verifyStateIntegrity();
+                    replyResult(LocalActions.RUNTIME_VERIFY_STATE_INTEGRITY, res.valid, res);
+                } break;
+                // Server actions
+                case LocalActions.SERVER_STATUS: {
+                    replyResult(LocalActions.SERVER_STATUS, true, {
+                        status: "ok",
+                        config: state.extraConfig.server_roles,
+                        roles: ServerRoleType
+                    });
+                } break;
+                case LocalActions.SERVER_ROLE_ENABLE: {
+                    const role = msg.payload.role as ServerRoleType;
+                    if(role == ServerRoleType.WEBSERVER) {
+                        state.extraConfig.server_roles.webserver.enabled = true;
+                    } else if(role == ServerRoleType.SECURE_SWITCH_APPLIANCE) {
+                        let res = await setupSecureSwitchRole();
+                        if(res) {
+                            state.extraConfig.server_roles.secure_switch.enabled = true;
+                            replyResult(LocalActions.SERVER_ROLE_ENABLE, true, {});
+                        } else {
+                            replyResult(LocalActions.SERVER_ROLE_ENABLE, false, {
+                                msg: "Failed to start SecureSwitch Appliance Server Role"
+                            });
+                        }
+                    }
+                } break;
+                case LocalActions.SERVER_ROLE_DISABLE: {
+                    const role = msg.payload.role as ServerRoleType;
+                    if(role == ServerRoleType.WEBSERVER) {
+                        state.extraConfig.server_roles.webserver.enabled = false;
+                    } else if(role == ServerRoleType.SECURE_SWITCH_APPLIANCE) {
+                        await deleteSecureSwitchRole();
+                        state.extraConfig.server_roles.secure_switch.enabled = false;
+                    } else {
+                        replyResult(LocalActions.SERVER_ROLE_DISABLE, false, {
+                            msg: "Invalid role, must be one of: " + Object.values(ServerRoleType).join(", ")
+                        });
+                    }
                 } break;
             }
         } catch(e: any) {

@@ -19,7 +19,7 @@ export function logger(msg: string, type: string, from: string = "prolinuxd") {
         }));
     } else {
         // todo plasma-mobile-nightly only
-        fs.appendFileSync("/dev/tty1", `[prolinuxd] [${type}] ${msg}\n`);
+        //fs.appendFileSync("/dev/tty1", `[prolinuxd] [${type}] ${msg}\n`);
     }
     console.log(`[prolinuxd] [${type}] ${msg}`);
 }

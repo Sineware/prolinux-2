@@ -100,5 +100,36 @@ export async function registerPL2Commands(program: Command) {
             }
             console.log("Done! Please reboot now.");
         });
+    
+    program.command('hostname')
+        .argument('<hostname>', 'hostname')
+        .description('Set the hostname')
+        .action(async (str, options) => {
+            await callWS(LocalActions.SET_HOSTNAME, { hostname: str }, true);
+            console.log("Done! Please reboot now.");
+        });
+
+    const server = program.command('server').description('prolinux server role tools')
+    server.command('status').description('get the status of server roles').action(async () => {
+        const status = (await callWS(LocalActions.SERVER_STATUS, {}, true));
+        console.log("----------------------------------------");
+        console.log("Server Roles:");
+        console.log(JSON.stringify(status, null, 2));
+        console.log("----------------------------------------");
+    });
+    server.command('enable')
+        .argument('<role>', 'role')
+        .description('enable a server role')
+        .action(async (str, options) => {
+            await callWS(LocalActions.SERVER_ROLE_ENABLE, { role: str }, true);
+            console.log("Done! Please reboot now.");
+        });
+    server.command('disable')
+        .argument('<role>', 'role')
+        .description('disable a server role')
+        .action(async (str, options) => {
+            await callWS(LocalActions.SERVER_ROLE_DISABLE, { role: str }, true);
+            console.log("Done! Please reboot now.");
+        });
 }
 // sudo zsync http://espi.sineware.ca/repo/prolinux/mobile/dev/arm64/prolinux-root-mobile-dev.squish.zsync -o ~/prolinux_b.squish

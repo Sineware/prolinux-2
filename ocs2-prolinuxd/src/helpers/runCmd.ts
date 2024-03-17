@@ -1,7 +1,7 @@
 import { spawn } from "child_process";
 import {log} from "../logging";
 
-export async function runCmd(cmd: string, args: string[]): Promise<string> {
+export async function runCmd(cmd: string, args: string[], streamStdout: boolean = false, timeout: number = 30000): Promise<string> {
     log.info(`About to exec: ${cmd} ${args.join(" ")}`);
     return new Promise((resolve, reject) => {
         const proc = spawn(cmd, args);
@@ -9,9 +9,13 @@ export async function runCmd(cmd: string, args: string[]): Promise<string> {
         let stderr = "";
         proc.stdout.on("data", (data) => {
             stdout += data.toString();
+            if (streamStdout)
+                log.info(data.toString());
         });
         proc.stderr.on("data", (data) => {
             stderr += data.toString();
+            if (streamStdout)
+                log.error(data.toString());
         });
         proc.on("close", (code) => {
             if (code === 0) {
@@ -21,10 +25,10 @@ export async function runCmd(cmd: string, args: string[]): Promise<string> {
             }
         });
 
-        // Timeout after 10 seconds
+        // Timeout after 30 seconds
         setTimeout(() => {
             proc.kill();
             reject(new Error(`Command ${cmd} ${args.join(" ")} timed out`));
-        }, 10000);
+        }, timeout);
     });
 }
