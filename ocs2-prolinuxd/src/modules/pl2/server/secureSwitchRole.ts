@@ -20,6 +20,11 @@ function generateMACAddress(): string {
 // this function creates the podman container SURIATA_CONTAINER_NAME
 export async function setupSecureSwitchRole(): Promise<boolean> {
     log.info("[Server] [SecureSwitch] Setting up Suricata container...");
+    await runCmd("mkdir", ["-pv", "/sineware/data/server/secure_switch"]);
+    await runCmd("mkdir", ["-pv", "/sineware/data/server/secure_switch/logs"]);
+    await runCmd("mkdir", ["-pv", "/sineware/data/server/secure_switch/rules"]);
+    await runCmd("mkdir", ["-pv", "/sineware/data/server/secure_switch/etc"]);
+
     try {
         await runCmd("podman", ["inspect", SURICATA_CONTAINER_NAME]);
         log.info("[Server] [SecureSwitch] Suricata container already exists!");
@@ -30,7 +35,16 @@ export async function setupSecureSwitchRole(): Promise<boolean> {
         /* docker run --rm -it --net=host \
         --cap-add=net_admin --cap-add=net_raw --cap-add=sys_nice \
         jasonish/suricata:latest -i <interface>*/
-        await runCmd("podman", ["create", "--name", SURICATA_CONTAINER_NAME, "--net=host", "--cap-add=net_admin", "--cap-add=net_raw", "--cap-add=sys_nice", SURICATA_IMAGE_NAME, "-i", "br0"]);
+        await runCmd("podman", 
+            [
+                "create", "--name", SURICATA_CONTAINER_NAME, 
+                "--net=host", "--cap-add=net_admin", "--cap-add=net_raw", "--cap-add=sys_nice", 
+                "-v", "/sineware/data/server/secure_switch/logs:/var/log/suricata",
+                "-v", "/sineware/data/server/secure_switch/rules:/var/lib/suricata",
+                "-v", "/sineware/data/server/secure_switch/etc:/etc/suricata",
+                SURICATA_IMAGE_NAME, "-i", "br0"
+            ]
+        );
         
         // generate a linux MAC Address for the bridge using the following format: 00:00:00:00:00:00
         if(state.extraConfig.server_roles.secure_switch.config.bridge_mac === "") {
@@ -54,6 +68,12 @@ export async function deleteSecureSwitchRole() {
 }
 
 export async function startSecureSwitchRole() {
+    // setup directories
+    await runCmd("mkdir", ["-pv", "/sineware/data/server/secure_switch"]);
+    await runCmd("mkdir", ["-pv", "/sineware/data/server/secure_switch/logs"]);
+    await runCmd("mkdir", ["-pv", "/sineware/data/server/secure_switch/rules"]);
+    await runCmd("mkdir", ["-pv", "/sineware/data/server/secure_switch/etc"]);
+
     // the bridge setup script is in /opt/prolinux-server/setup-bridge.sh
     log.info("[Server] [SecureSwitch] Starting SecureSwitch Appliance Server Role...");
     await runCmd("/opt/prolinux-server/setup-bridge.sh", [state.extraConfig.server_roles.secure_switch.config.bridge_mac], true, 3600000);
@@ -95,6 +115,12 @@ export async function startSecureSwitchRole() {
         } else {
             await runCmd("podman", ["start", SURICATA_CONTAINER_NAME], true);
         }
+
+        // logrotate
+        await runCmd("podman", ["exec", SURICATA_CONTAINER_NAME, "logrotate", "/etc/logrotate.d/suricata"]);
+        setInterval(async () => {
+            await runCmd("podman", ["exec", SURICATA_CONTAINER_NAME, "logrotate", "/etc/logrotate.d/suricata"]);
+        }, 86400000);
     }
 }
 export async function stopSecureSwichRole() {

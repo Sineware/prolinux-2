@@ -94,6 +94,9 @@ export async function loadPL2Module() {
     await startPasswordService();
     await startNMNetworksService();
 
+    // ensure /sineware/data/server is created
+    await runCmd("mkdir", ["-pv", "/sineware/data/server"]);
+
     if(state.extraConfig.server_roles.webserver?.enabled) {
         log.info("Starting Webserver Server Role...");
         log.info("Stub: todo");
