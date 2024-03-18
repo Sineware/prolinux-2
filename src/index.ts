@@ -206,6 +206,19 @@ EOF`);
             sudo cp -v prolinux-tool.desktop ${ROOTFS_DIR}/usr/share/applications/
         popd
     `);
+
+    /* ------------- PM2 ------------- */
+    exec(`sudo arch-chroot ${ROOTFS_DIR} /bin/bash -x <<'EOF'
+        mkdir /opt/pm2
+        chown user:user /opt/pm2
+        echo "export PATH=/opt/nodejs/bin/:/opt/pm2/node_modules/pm2/bin/:$PATH" >> /etc/profile
+        sudo -u user bash << EOFSU
+            echo "Setting up pm2..."
+            export PATH=/opt/nodejs/bin/:$PATH
+            npm install --prefix /opt/pm2 pm2@latest
+            true
+EOFSU
+EOF`);
     
     if(PROLINUX_VARIANT === "mobile" && PROLINUX_CHANNEL === "dev") {
         /* ------------- ProLinux Mobile Dev (Plasma Mobile Nightly / kdesrc-build ) ------------- */
@@ -242,6 +255,7 @@ EOF`);
         systemctl enable prolinuxd
         systemctl enable getty@tty0
         systemctl enable podman
+        systemctl enable pm2-user
         
         mkdir -pv /opt/build-info
         echo "${buildnum},${builduuid},prolinux,${PROLINUX_VARIANT},${PROLINUX_CHANNEL},$(date),prolinux-root-${PROLINUX_VARIANT}-${PROLINUX_CHANNEL}.squish,${arch}" >> /opt/build-info/prolinux-info.txt

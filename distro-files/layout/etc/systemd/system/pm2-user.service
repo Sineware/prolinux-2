@@ -1,0 +1,22 @@
+[Unit]
+Description=PM2 process manager
+Documentation=https://pm2.keymetrics.io/
+After=network.target
+
+[Service]
+Type=forking
+User=user
+LimitNOFILE=infinity
+LimitNPROC=infinity
+LimitCORE=infinity
+Environment=PATH=/usr/local/sbin:/usr/local/bin:/usr/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl:/opt/nodejs/bin:/opt/pm2/node_modules/pm2/bin
+Environment=PM2_HOME=/home/user/.pm2
+PIDFile=/home/user/.pm2/pm2.pid
+Restart=on-failure
+
+ExecStart=/opt/pm2/node_modules/pm2/bin/pm2 resurrect
+ExecReload=/opt/pm2/node_modules/pm2/bin/pm2 reload all
+ExecStop=/opt/pm2/node_modules/pm2/bin/pm2 kill
+
+[Install]
+WantedBy=multi-user.target
