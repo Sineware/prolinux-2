@@ -159,6 +159,9 @@ export function genPMOSImage(device: string) {
 
         ${customKernelCommands}
 
+        # save some bytes
+        rm -rf ${BUILD_DIR}/initramfs-work/usr/share/pbsplash/pmos-logo-text-epaper.svg
+        
         cd ${BUILD_DIR}/initramfs-work/
         find . -print0 | cpio --null --create --verbose --format=newc | gzip --best > ${BUILD_DIR}/new-initramfs
         sudo cp -v ${BUILD_DIR}/new-initramfs ${BUILD_DIR}/pmos_boot_mnt/initramfs
