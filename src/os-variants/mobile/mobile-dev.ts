@@ -124,6 +124,7 @@ export async function buildMobileDev() {
         "milou",
         "plasma-mobile",
         "plasma-nm",
+        "pulseaudio-qt",
         "plasma-pa",
         "qqc2-breeze-style",
         "plasma-settings",
