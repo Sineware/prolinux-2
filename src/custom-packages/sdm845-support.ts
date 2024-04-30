@@ -21,16 +21,18 @@ export function compileSDM845SupportPackages() {
         install -Dm755 bootmac /usr/bin/bootmac
         cd ..
 
-        git clone https://github.com/andersson/qmic.git
+        git clone https://github.com/linux-msm/qmic.git
         cd qmic
         make -j$(nproc) prefix=/usr
         make -j$(nproc) prefix=/usr install
         cd ..
 
-        git clone https://github.com/andersson/qrtr.git
+        git clone https://github.com/linux-msm/qrtr.git
         cd qrtr
-        make -j$(nproc) prefix=/usr all
-        make -j$(nproc) prefix=/usr install
+        mkdir build
+        meson setup --prefix=/usr --errorlogs --werror . build
+        ninja -C build
+        ninja -C build install
         cd ..
 
         git clone https://github.com/andersson/rmtfs.git
@@ -40,16 +42,18 @@ export function compileSDM845SupportPackages() {
         echo 'SUBSYSTEM=="uio", ATTR{name}=="rmtfs", SYMLINK+="qcom_rmtfs_uio1"' > /usr/lib/udev/rules.d/65-rmtfs.rules
         cd ..
 
-        git clone https://github.com/andersson/pd-mapper.git
+        git clone https://github.com/linux-msm/pd-mapper.git
         cd pd-mapper
         make -j$(nproc) prefix=/usr
         make -j$(nproc) prefix=/usr install
         cd ..
 
-        git clone https://github.com/andersson/tqftpserv.git
+        git clone https://github.com/linux-msm/tqftpserv.git
         cd tqftpserv
-        make -j$(nproc) prefix=/usr
-        make -j$(nproc) prefix=/usr install
+        mkdir build
+        meson setup --prefix=/usr --errorlogs --werror . build
+        ninja -C build
+        ninja -C build install
         cd ..
 
         # ALSA UCM for sound support
@@ -60,7 +64,7 @@ export function compileSDM845SupportPackages() {
         cd ..
 
         # Testing (diag-router)
-        git clone https://github.com/andersson/diag.git
+        git clone https://github.com/linux-msm/diag.git
         cd diag
         make -j$(nproc) prefix=/usr
         make -j$(nproc) prefix=/usr install
