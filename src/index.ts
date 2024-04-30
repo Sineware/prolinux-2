@@ -109,7 +109,7 @@ async function main() {
     exec(`sudo arch-chroot ${ROOTFS_DIR} /bin/bash -x <<'EOF'
         set -e
         chown root:root /
-        echo 'Server = ${arch === "arm64" ? "https://fl.us.mirror.archlinuxarm.org/$arch/$repo" : "https://mirror.xenyth.net/archlinux/$repo/os/$arch"}' > /etc/pacman.d/mirrorlist
+        echo 'Server = ${arch === "arm64" ? "https://fl.us.mirror.archlinuxarm.org/$arch/$repo" : "https://mirror.csclub.uwaterloo.ca/archlinux/$repo/os/$arch"}' > /etc/pacman.d/mirrorlist
         
         sed -i "s/#ParallelDownloads = 5/ParallelDownloads = 5/g" /etc/pacman.conf
         
