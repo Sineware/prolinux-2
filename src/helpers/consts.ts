@@ -19,10 +19,14 @@ export const ACCEPTABLE_STANDARD_DEVICES = [
         "name": "pine64-pinebookpro",
         "should_gunzip_vmlinuz": true
     },
-    { "name": "generic-x86_64",
+    { 
+        "name": "generic-x86_64",
         "should_gunzip_vmlinuz": false
-
-     }
+    },
+    { 
+        "name": "postmarketos-trailblazer",
+        "should_gunzip_vmlinuz": false
+    }
 ];
 export const ACCEPTABLE_ANDROID_DEVICES = [
     {
