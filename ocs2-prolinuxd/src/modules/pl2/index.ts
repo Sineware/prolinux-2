@@ -32,7 +32,8 @@ async function startDeviceSpecificServices() {
         // making sure it doesn't already exist
         await runCmd("/usr/bin/bash", ["-c", String.raw`if ! grep -q "test-quick-suspend-resume" /usr/lib/systemd/system/ModemManager.service; then sed -i 's/ExecStart=\/usr\/bin\/ModemManager/ExecStart=\/usr\/bin\/ModemManager --test-quick-suspend-resume/g' /usr/lib/systemd/system/ModemManager.service; fi`]);
 
-        await runCmd("systemctl", ["start", "qrtr-ns"]);
+        //qrtr-ns replaced with in-kernel?
+        //await runCmd("systemctl", ["start", "qrtr-ns"]);
         await runCmd("systemctl", ["start", "rmtfs"]);
         await runCmd("systemctl", ["start", "msm-modem-uim-selection"]);
         await runCmd("systemctl", ["start", "pd-mapper"]);
