@@ -132,6 +132,8 @@ async function main() {
         pacman -S --noconfirm --needed mpv vlc
         # neochat
         #pacman -S --noconfirm --needed libquotient
+        # spectacle
+        pacman -S --noconfirm --needed opencv
 
         # fixes plasma-mobile app list
         pacman -S --noconfirm --needed xorg
