@@ -161,7 +161,7 @@ export async function buildMobileDev() {
         "koko",
         "mpvqt",
         "tokodon",
-        "spectacle",
+        //"spectacle",
         "plasma-dialer",
         "spacebar",
         "krecorder"
