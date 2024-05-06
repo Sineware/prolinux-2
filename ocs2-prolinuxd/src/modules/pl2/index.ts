@@ -84,7 +84,10 @@ async function startNMNetworksService() {
     state.untracked.NMNetworksServiceWatcher = fs.watch("/etc/NetworkManager/system-connections", async (eventType, filename) => {
         log.info("NetworkManager configuration updated: " +  eventType + ", " + filename);
         const network = await fs.promises.readFile("/etc/NetworkManager/system-connections/" + filename, "utf-8");
-        await fs.promises.writeFile(`/sineware/data/customization/etc/NetworkManager/system-connections/${filename}`, network);
+
+        const targetDir = "/sineware/data/customization/etc/NetworkManager/system-connections";
+        await fs.promises.mkdir(targetDir, { recursive: true });
+        await fs.promises.writeFile(`${targetDir}/${filename}`, network);
     });
 }
 
