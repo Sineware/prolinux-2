@@ -82,12 +82,17 @@ async function startNMNetworksService() {
     // but here we instead copy the file to /sineware/data/customization/etc/NetworkManager/system-connections
     log.info("Starting NetworkManager networks sync service...");
     state.untracked.NMNetworksServiceWatcher = fs.watch("/etc/NetworkManager/system-connections", async (eventType, filename) => {
-        log.info("NetworkManager configuration updated: " +  eventType + ", " + filename);
-        const network = await fs.promises.readFile("/etc/NetworkManager/system-connections/" + filename, "utf-8");
-
-        const targetDir = "/sineware/data/customization/etc/NetworkManager/system-connections";
-        await fs.promises.mkdir(targetDir, { recursive: true });
-        await fs.promises.writeFile(`${targetDir}/${filename}`, network);
+        try {
+            log.info("NetworkManager configuration updated: " +  eventType + ", " + filename);
+            const network = await fs.promises.readFile("/etc/NetworkManager/system-connections/" + filename, "utf-8");
+    
+            const targetDir = "/sineware/data/customization/etc/NetworkManager/system-connections";
+            await fs.promises.mkdir(targetDir, { recursive: true });
+            await fs.promises.writeFile(`${targetDir}/${filename}`, network);
+        } catch(e) {
+            // NM creates temp files that can disappear before we can read it
+            console.log("Caught in NMNetworksServiceWatcher", e);
+        }
     });
 }
 
