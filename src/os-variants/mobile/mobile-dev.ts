@@ -185,7 +185,6 @@ export async function buildMobileDev() {
             chown -R user:user /opt/kde
             ${arch === "arm64" ? 'ln -s /usr/bin/aarch64-unknown-linux-gnu-g++ "/usr/bin/ distcc g++"' : ''}
             ${arch === "arm64" ? 'ln -s /usr/bin/aarch64-unknown-linux-gnu-g++ "/usr/bin/ g++"' : ''}
-            ${arch === "arm64" ? 'pacman --noconfirm -U http://fl.us.mirror.archlinuxarm.org/aarch64/extra/python-dulwich-0.21.7-1-aarch64.pkg.tar.xz' : '' }
             ${arch === "x64" ? 'ln -s /usr/bin/g++ "/usr/bin/ g++"' : ''}
             sudo -u user bash << EOFSU
                 set -e
