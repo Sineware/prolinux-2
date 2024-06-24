@@ -193,7 +193,7 @@ export async function buildMobileDev() {
                 export CCACHE_LOGFILE=/home/user/.cache/ccache.log
                 alias pacman="pacman --needed"
                 
-                sudo pacman --noconfirm -S --needed perl-json-xs
+                sudo pacman --noconfirm -S --needed perl-json-xs glib2-devel c-ares
 
                 cd /opt/kde
 

@@ -23,6 +23,7 @@ RUN pacman-key --init && pacman-key --populate archlinux && pacman -Syy --noconf
     rsync \
     parted \
     squashfs-tools \
+    python-setuptools \
     && \
     pacman -Scc --noconfirm
 
