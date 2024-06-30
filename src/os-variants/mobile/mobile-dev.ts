@@ -211,8 +211,8 @@ export async function buildMobileDev() {
                 ./kdesrc-build --src-only ${packagesToBuild}
                 
                 ${checkoutBranches.map(([repo, branch]) => `cd /opt/kde/src/${repo} && git checkout ${branch} && git pull --rebase && cd /opt/kde/src/kdesrc-build`).join("; ")}
-                ${packagesToBuild.split(" ").map((p, i, a) => `./kdesrc-build --stop-on-failure --no-include-dependencies --no-src ${p}; echo "-- ✅ Built ${i} of ${a.length}!"`).join("; ")}
                 
+                ${packagesToBuild.split(" ").map((p, i, a) => `./kdesrc-build --stop-on-failure --no-include-dependencies --no-src ${p} || (echo "-- ❌ build failed for ${p}, showing logs from: /opt/kde/src/log/latest/${p}"; tail -v -n +1 /opt/kde/src/log/latest/${p}/*); echo "-- ✅ built ${i} of ${a.length}!"`).join("; ")}
 EOFSU
             sleep 2
 EOF`);
