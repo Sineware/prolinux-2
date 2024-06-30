@@ -138,8 +138,9 @@ async function main() {
         # fixes plasma-mobile app list
         pacman -S --noconfirm --needed xorg
 
-        # server related packages
-        pacman -S --noconfirm --needed podman podman-docker netavark aardvark-dns buildah dhclient screen jq smartmontools unzip
+        # server related packages - only x64 for now because archlinuxarm broke podman by disappearing python-protobuf
+        ${arch === "x64" ? 'pacman -S --noconfirm --needed podman podman-docker netavark aardvark-dns buildah dhclient screen jq smartmontools unzip' : ''}
+        
 
         echo "Setting up user"
         ${arch === "x64" ? 'useradd -m -G wheel user' : ''}
