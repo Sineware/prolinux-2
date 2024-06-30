@@ -257,7 +257,7 @@ EOF`);
         systemctl enable prolinux-setup
         systemctl enable prolinuxd
         systemctl enable getty@tty0
-        systemctl enable podman
+        #systemctl enable podman
         systemctl enable pm2-user
         
         mkdir -pv /opt/build-info
