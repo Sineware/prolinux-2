@@ -3,6 +3,7 @@ import exec from "./exec";
 export const BUILD_DIR = path.join(process.cwd() + "/build");
 export const ROOTFS_DIR = path.join(BUILD_DIR + "/rootfs");
 export const OUTPUT_DIR = path.join(process.cwd(), "/output")
+export const KERNEL_INIT_DIR = path.join(process.cwd(), "/prolinux-kernel-init")
 export const FILES_DIR = path.join(__dirname + "/../../distro-files");
 export const arch = process.arch;
 export const TARGET_DEVICE = process.env.TARGET_DEVICE;
@@ -26,7 +27,15 @@ export const ACCEPTABLE_STANDARD_DEVICES = [
     { 
         "name": "postmarketos-trailblazer",
         "should_gunzip_vmlinuz": false
-    }
+    },
+    { 
+        "name": "sineware-x86_64",
+        "should_gunzip_vmlinuz": false
+    },
+    { 
+        "name": "sineware-arm64",
+        "should_gunzip_vmlinuz": false
+    },
 ];
 export const ACCEPTABLE_ANDROID_DEVICES = [
     {

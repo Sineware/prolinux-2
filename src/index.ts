@@ -1,7 +1,7 @@
 import * as dotenv from 'dotenv';
 dotenv.config();
 import fs from "fs";
-import { BUILD_DIR, ROOTFS_DIR, OUTPUT_DIR, FILES_DIR, arch, TARGET_DEVICE, PROLINUX_CHANNEL, PROLINUX_VARIANT, NODEJS_PACKAGE } from './helpers/consts';
+import { BUILD_DIR, ROOTFS_DIR, OUTPUT_DIR, KERNEL_INIT_DIR, FILES_DIR, arch, TARGET_DEVICE, PROLINUX_CHANNEL, PROLINUX_VARIANT, NODEJS_PACKAGE } from './helpers/consts';
 import exec from "./helpers/exec";
 import { createAndMountPMOSImage, genPMOSImage, pmosFinalCleanup } from './pmbootstrap';
 import axios from 'axios';
@@ -15,6 +15,8 @@ import { buildMobileStable } from './os-variants/mobile/mobile-stable';
 import { buildMobileCommon } from './os-variants/mobile/mobile-common';
 import { buildMobileHaliumDev } from './os-variants/mobile-halium/mobile-halium-dev';
 import { buildServerDev } from './os-variants/server/server-dev';
+import http from 'http';
+axios.defaults.httpAgent = new http.Agent({ family: 4 });
 // #  Copyright (C) 2023 Seshan Ravikumar
 // #
 // #  This program is free software: you can redistribute it and/or modify
@@ -46,22 +48,33 @@ async function cleanup() {
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 async function main() {
-    console.log("Build dirs: " + BUILD_DIR + ", " + ROOTFS_DIR + ", " + FILES_DIR);
+    console.log("Build dirs: " + BUILD_DIR + ", " + ROOTFS_DIR + ", " + FILES_DIR + "," + KERNEL_INIT_DIR + ", " + OUTPUT_DIR);
     console.log("Platform arch: " + arch);
     console.log("Target device: " + TARGET_DEVICE + ", variant: " + PROLINUX_VARIANT + ", channel: " + PROLINUX_CHANNEL);
     if(TARGET_DEVICE === undefined || TARGET_DEVICE === "" || PROLINUX_CHANNEL === undefined || PROLINUX_CHANNEL === "" || PROLINUX_VARIANT === undefined || PROLINUX_VARIANT === "") {
         console.log("No target device specified, exiting");
         process.exit(1);
     }
-    /*if(PROLINUX_CHANNEL !== "dev") {
+    // if not dev or stable
+    if(PROLINUX_CHANNEL !== "dev" && PROLINUX_CHANNEL !== "stable") {
         console.log("Unsupported channel: " + PROLINUX_CHANNEL + ", exiting");
         process.exit(1);
-    }*/
+    }
     if(!fs.existsSync(`${__dirname}/../ocs2-prolinuxd/package.json`)) {
         console.log("ocs2-prolinuxd submodule not cloned, exiting");
         process.exit(1);
+    } 
+    // Check for Image and disk-image.raw in KERNEL_INIT_DIR/output
+    if(!fs.existsSync(`${KERNEL_INIT_DIR}/output/Image`) || !fs.existsSync(`${KERNEL_INIT_DIR}/output/disk-image.raw`)) {
+        console.log("Missing files from prolinux-kernel-init!");
+        process.exit(1);
     }
 
+    // Check for ENV MUSL_TOOLCHAIN is set
+    if(!process.env.MUSL_TOOLCHAIN) {
+        console.log("MUSL_TOOLCHAIN not set, exiting");
+        process.exit(1);
+    }
     // Get latest build number for https://update.sineware.ca/updates/prolinux/PROLINUX_VARIANT/PROLINUX_CHANNEL
     // {"url":"https:\/\/example.com\/rootfs.squish","variant":"phone","jwt":"jwt","product":"prolinux","id":1,"buildstring":"test build","buildnum":1001,"channel":"dev","isreleased":true,"uuid":"E0CE308F-4350-41AD-87F7-40D7835DC7D2"}
     const res = await axios.get(`https://update.sineware.ca/updates/prolinux/${PROLINUX_VARIANT}/${PROLINUX_CHANNEL}`, {timeout: 5000});
@@ -137,6 +150,8 @@ async function main() {
 
         # fixes plasma-mobile app list
         pacman -S --noconfirm --needed xorg
+
+        pacman -S --noconfirm --needed meson
 
         # server related packages - only x64 for now because archlinuxarm broke podman by disappearing python-protobuf
         ${arch === "x64" ? 'pacman -S --noconfirm --needed podman podman-docker netavark aardvark-dns buildah dhclient screen jq smartmontools unzip' : ''}
@@ -284,6 +299,15 @@ EOF`);
 
         if(targetDevice.startsWith("halium-")) {
             console.log("Skipping pmbootstrap (halium device).");
+            return;
+        }
+        if(targetDevice.startsWith("sineware-")) {
+            console.log("Skipping pmbootstrap (sineware generic device).");
+            console.log("Adding sineware kernel and modules...");
+            exec(`
+                sudo mkdir -pv ${ROOTFS_DIR}/lib/modules
+                sudo cp -rv ${KERNEL_INIT_DIR}/output/modules/lib/modules/* ${ROOTFS_DIR}/lib/modules/
+            `);
             return;
         }
 

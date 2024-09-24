@@ -8,6 +8,7 @@
     "build": "ts-node src/index.ts",
     "deploy-update": "ts-node src-extra/update-deployer/update-deployer.ts",
     "gen-image": "ts-node src-extra/image-gen/image-gen.ts",
+    "gen-image-generic": "ts-node src-extra/image-gen/image-gen-generic.ts",
     "gen-kernel": "ts-node src-extra/kernel-gen/kernel-gen.ts"
   },
   "author": "Seshan Ravikumar",
