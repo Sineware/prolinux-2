@@ -33,7 +33,7 @@ def find_root_partition():
     """Find the root partition by label or UUID"""
     # Example using blkid to find a partition with a label 'SYSROOT'
     try:
-        result = subprocess.check_output("blkid | grep 'LABEL=\"pmOS_root\"'", shell=True)
+        result = subprocess.check_output("blkid | grep 'LABEL=\"plfs_data\"'", shell=True)
         match = re.search(r'/dev/\w+', result.decode('utf-8'))
         if match:
             return match.group(0)
@@ -83,10 +83,13 @@ def main():
     locked_root = config["pl2"].get("locked_root", False)
     disable_kexec = config["pl2"].get("disable_kexec", False)
 
+    print(config)
     print(f"Selected Root: {selected_root}")
     print(f"Locked Root: {locked_root}")
     print(f"Disable Kexec: {disable_kexec}")
+    
     print("----")
+        
 
     # Mount the selected squashfs
     mount_disk(f"/sysroot/prolinux_{selected_root}.squish", "/sysroot/squishroot", "loop")
@@ -106,7 +109,7 @@ def main():
 
         os.makedirs("/sysroot/data/customization", exist_ok=True)
 
-        if locked_root == "true":
+        if locked_root == True:
             print("Locked rootfs detected, mounting...")
             os.makedirs("/tmproot", exist_ok=True)
             mount_disk("tmpfs", "/tmproot", "tmpfs")

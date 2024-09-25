@@ -78,6 +78,7 @@ const buildTargetStandardPMOSDeviceImage = (targetDevice: string) => {
         sudo cp -r ${FILES_DIR}/layout/home/* ${BUILD_DIR}/pmos_root_mnt/data/home/
         sudo chown -R 1000:1000 ${BUILD_DIR}/pmos_root_mnt/data/home/user
         sudo cp -v ${FILES_DIR}/prolinux.toml ${BUILD_DIR}/pmos_root_mnt/data/prolinux.toml
+        sudo cp -v ${FILES_DIR}/generic-grub.cfg ${BUILD_DIR}/pmos_root_mnt/grub.cfg
 
 
         sudo umount /dev/disk/by-partlabel/prolinux_data

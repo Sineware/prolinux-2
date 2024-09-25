@@ -65,7 +65,7 @@ async function main() {
         process.exit(1);
     } 
     // Check for Image and disk-image.raw in KERNEL_INIT_DIR/output
-    if(!fs.existsSync(`${KERNEL_INIT_DIR}/output/Image`) || !fs.existsSync(`${KERNEL_INIT_DIR}/output/disk-image.raw`)) {
+    if(!fs.existsSync(`${KERNEL_INIT_DIR}/output/Image`) || !fs.existsSync(`${KERNEL_INIT_DIR}/output/disk-image.img`)) {
         console.log("Missing files from prolinux-kernel-init!");
         process.exit(1);
     }
@@ -131,7 +131,7 @@ async function main() {
         ${arch === "arm64" ? 'pacman -R --noconfirm linux-aarch64 linux-firmware linux-firmware-whence mkinitcpio mkinitcpio-busybox' : ''}
         pacman -Syy --noconfirm archlinux-keyring
         pacman -Syu --noconfirm
-        pacman -S --noconfirm --needed base-devel git nano neofetch htop wget curl sudo bash-completion dialog qt6-base qt6-tools polkit libpipewire pipewire pipewire-pulse libwireplumber wireplumber libxcvt libnm networkmanager modemmanager wpa_supplicant libqalculate distcc ccache gdb kwayland5
+        pacman -S --noconfirm --needed base-devel git nano fastfetch htop wget curl sudo bash-completion dialog qt6-base qt6-tools polkit libpipewire pipewire pipewire-pulse libwireplumber wireplumber libxcvt libnm networkmanager modemmanager wpa_supplicant libqalculate distcc ccache gdb kwayland5
         pacman -S --noconfirm --needed bluez xorg-xwayland openssh mold flatpak rsync xdg-desktop-portal xdg-user-dirs ddcutil lcms2
         pacman -S --noconfirm --needed appstream-qt libdmtx libxaw lua ttf-hack qrencode xorg-xmessage xorg-xsetroot zxing-cpp accountsservice exiv2 lmdb zsync
         pacman -S --noconfirm --needed maliit-keyboard qt5-graphicaleffects xdotool libdisplay-info qcoro-qt6 qtkeychain-qt6 libquotient cmark libphonenumber callaudiod reuse gpgme
@@ -305,9 +305,22 @@ EOF`);
             console.log("Skipping pmbootstrap (sineware generic device).");
             console.log("Adding sineware kernel and modules...");
             exec(`
+                sudo mkdir -pv ${ROOTFS_DIR}/opt/device-support/${targetDevice}
+
                 sudo mkdir -pv ${ROOTFS_DIR}/lib/modules
                 sudo cp -rv ${KERNEL_INIT_DIR}/output/modules/lib/modules/* ${ROOTFS_DIR}/lib/modules/
+
+                sudo cp -rv ${KERNEL_INIT_DIR}/output/Image ${ROOTFS_DIR}/opt/device-support/${targetDevice}/vmlinuz
+                sudo cp -rv ${KERNEL_INIT_DIR}/initramfs/output/initramfs.cpio.gz ${ROOTFS_DIR}/opt/device-support/${targetDevice}/initramfs
             `);
+            
+            // Depmod the kernel. By default depmod will use the current kernel, which is wrong. Therefore we need tomanually specify the kernel version.
+            const kernelVer = fs.readdirSync(`${KERNEL_INIT_DIR}/output/modules/lib/modules`)[0];
+            console.log("kernelVer: " + kernelVer);
+            exec(`
+                sudo arch-chroot ${ROOTFS_DIR} /bin/bash -x <<'EOF'
+                    depmod ${kernelVer}
+EOF`);
             return;
         }
 
