@@ -354,7 +354,7 @@ EOF
         sudo rm -rf ${ROOTFS_DIR}/opt/kde/src/
 
         sudo umount -R ${ROOTFS_DIR}/*  || true
-
+        sudo umount ${ROOTFS_DIR}/var/cache/pacman/pkg
         sudo rm -rf ${ROOTFS_DIR}/var/cache/pacman/pkg/*
         sudo rm -rf ${ROOTFS_DIR}/boot/*
     `);

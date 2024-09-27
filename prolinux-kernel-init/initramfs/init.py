@@ -31,14 +31,13 @@ def mount_disk(device, mount_point, options=None, type=None):
 
 def find_root_partition():
     """Find the root partition by label or UUID"""
-    # Example using blkid to find a partition with a label 'SYSROOT'
     try:
         result = subprocess.check_output("blkid | grep 'LABEL=\"plfs_data\"'", shell=True)
         match = re.search(r'/dev/\w+', result.decode('utf-8'))
         if match:
             return match.group(0)
     except subprocess.CalledProcessError:
-        print("ERROR: Could not find SYSROOT partition.")
+        print("ERROR: Could not find plfs_data partition.")
     return None
 
 def splash_error(message):
@@ -112,7 +111,7 @@ def main():
         if locked_root == True:
             print("Locked rootfs detected, mounting...")
             os.makedirs("/tmproot", exist_ok=True)
-            mount_disk("tmpfs", "/tmproot", "tmpfs")
+            mount_disk("tmpfs", "/tmproot", type="tmpfs")
             os.makedirs("/tmproot/overlay", exist_ok=True)
             os.makedirs("/tmproot/workdir", exist_ok=True)
             mount_disk("overlay", "/sysroot/oroot", 
