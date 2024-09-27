@@ -73,7 +73,7 @@ async function main() {
     */
     
     console.log("Compressing images...");
-    exec(`pigz --rsyncable ${OUTPUT_DIR}/*.img || true`);
+    exec(`sudo pigz --rsyncable ${OUTPUT_DIR}/*.img || true`);
     console.log("Compressing complete! Uploading...")
     
     exec(`pushd .
