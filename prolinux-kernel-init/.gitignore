@@ -1,4 +1,2 @@
 output/*
-kernel/work/*
-kernel/ccache/*
 initramfs/work/*
