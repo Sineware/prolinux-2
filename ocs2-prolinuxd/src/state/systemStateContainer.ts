@@ -110,6 +110,8 @@ subscribe(state.config, () => {
     fs.writeFileSync(process.env.CONFIG_FILE ?? path.join(__dirname, "prolinux.toml"), TOML.stringify(state.config as any, {
         newline: "\n"
     }));
+    // todo update grub-source.cfg
+    
 });
 subscribe(state.extraConfig, () => {
     log.info("[State] Extra Config updated, saving to disk...");

@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Name=Sineware Social
+Comment=Mastodon federated social network hosted by Sineware
+Exec=xdg-open https://social.sineware.ca/
+Icon=social
+Terminal=false
+Type=Application
+Categories=Network;WebBrowser;

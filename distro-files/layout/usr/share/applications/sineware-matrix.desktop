@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Name=Sineware Chat
+Comment=Matrix federated messaging hosted by Sineware
+Exec=xdg-open https://sineware.ca/matrix/
+Icon=system-users
+Terminal=false
+Type=Application
+Categories=Network;WebBrowser;

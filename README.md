@@ -34,6 +34,8 @@ ProLinux 2 Plasma Mobile Nightly Edition piggy-backs on parts of postmarketOS (i
 - rsync
 - parted
 - squashfs
+- grub2, grub2-efi, grub2-efi-aa64-modules, grub2-tools, grub2-tools-extra
+- *pip install gpt-image*
 
 `/sbin:/usr/sbin` in PATH
 

@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Name=Sineware Vault
+Comment=Secure password manager hosted by Sineware
+Exec=xdg-open https://vault.sineware.ca/
+Icon=lock
+Terminal=false
+Type=Application
+Categories=Network;WebBrowser;
