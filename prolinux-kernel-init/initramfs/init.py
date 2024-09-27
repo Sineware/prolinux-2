@@ -8,8 +8,6 @@ print("Welcome to ProLinux!")
 os.system("uname -a")
 print(">.<")
 
-deviceinfo_codename = "postmarketos-trailblazer"
-
 def run_command(command, error_message):
     """Run a shell command, handle failure"""
     try:
@@ -137,9 +135,9 @@ def main():
         # os.makedirs("/sysroot/data/containers", exist_ok=True)
         # run_command("mount --bind /sysroot/data/containers /sysroot/oroot/var/lib/containers", "Could not bind container directories")
 
-        print(f"Device Info Codename: {deviceinfo_codename}")
-        with open("/sysroot/deviceinfo_codename", "w") as f:
-           f.write(deviceinfo_codename)
+        # print(f"Device Info Codename: {deviceinfo_codename}")
+        # with open("/sysroot/deviceinfo_codename", "w") as f:
+        #    f.write(deviceinfo_codename)
 
         # List contents of important directories
         run_command("ls -l /sysroot", "Could not list /sysroot")

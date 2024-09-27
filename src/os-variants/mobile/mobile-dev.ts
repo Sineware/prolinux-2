@@ -252,7 +252,7 @@ EOF`);
             # PinePhone EG25 Modem
             pacman -S --noconfirm eg25-manager
             # PinePhone Firmware
-            pacman -S --noconfirm rtl8723bt-firmware anx7688-firmware ov5640-firmware
+            pacman -S --noconfirm anx7688-firmware ov5640-firmware
 
             # Pinephone Pro Firmware
             pacman -S --noconfirm brcm-firmware alsa-ucm-pinephonepro` : ''}

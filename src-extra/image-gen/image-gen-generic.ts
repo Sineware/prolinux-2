@@ -78,8 +78,11 @@ const buildTargetStandardPMOSDeviceImage = (targetDevice: string) => {
         sudo cp -r ${FILES_DIR}/layout/home/* ${BUILD_DIR}/pmos_root_mnt/data/home/
         sudo chown -R 1000:1000 ${BUILD_DIR}/pmos_root_mnt/data/home/user
         sudo cp -v ${FILES_DIR}/prolinux.toml ${BUILD_DIR}/pmos_root_mnt/data/prolinux.toml
-        sudo cp -v ${FILES_DIR}/grub-source.cfg ${BUILD_DIR}/pmos_root_mnt/data/grub-source.cfg
+        echo ${targetDevice} | sudo tee ${BUILD_DIR}/pmos_root_mnt/deviceinfo_codename
 
+        # GRUB source file
+        echo 'set selected_root="a"' | sudo tee -a ${BUILD_DIR}/pmos_root_mnt/data/grub-source.cfg
+        echo 'set deviceinfo_codename="${targetDevice}"' | sudo tee -a ${BUILD_DIR}/pmos_root_mnt/data/grub-source.cfg
 
         sudo umount /dev/disk/by-partlabel/prolinux_data
         sudo umount /dev/disk/by-partlabel/prolinux_boot
