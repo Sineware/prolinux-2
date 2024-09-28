@@ -49,9 +49,9 @@ mkdir -pv /output
 rm -rf /output/*
 ARCH=$(uname -m)
 if [ "$ARCH" == "aarch64" ]; then
-    cp arch/arm64/boot/Image /output/
+    cp arch/arm64/boot/Image /output/Image
 else
-    cp arch/x86_64/boot/bzImage /output/
+    cp arch/x86_64/boot/bzImage /output/Image
 fi
 
 # output kernel modules to /output/
