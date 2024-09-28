@@ -29,7 +29,7 @@ export const ACCEPTABLE_STANDARD_DEVICES = [
         "should_gunzip_vmlinuz": false
     },
     { 
-        "name": "sineware-x86_64",
+        "name": "sineware-x64",
         "should_gunzip_vmlinuz": false
     },
     { 
