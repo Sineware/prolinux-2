@@ -13,4 +13,5 @@ RUN apt-get update && apt-get install -y \
     python3 \
     ccache \
     curl \
-    bsdmainutils
+    bsdmainutils \
+    libelf-dev
