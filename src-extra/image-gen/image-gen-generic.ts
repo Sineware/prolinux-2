@@ -26,6 +26,7 @@ const mountPMOSImage = (targetDevice: string) => {
     }
 
     exec(`
+        mkdir -pv ${BUILD_DIR}/img-staging
         cp -rv ${KERNEL_INIT_DIR}/output/disk-image.img ${BUILD_DIR}/img-staging/${targetDevice}.img
         sudo losetup -f -P ${BUILD_DIR}/img-staging/${targetDevice}.img ${loopExtraArgs}
         losetup -l
