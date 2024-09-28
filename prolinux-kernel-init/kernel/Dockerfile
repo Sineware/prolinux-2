@@ -15,4 +15,5 @@ RUN apt-get update && apt-get install -y \
     curl \
     bsdmainutils \
     libelf-dev \
-    cpio
+    cpio \
+    zstd
