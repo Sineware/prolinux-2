@@ -14,4 +14,5 @@ RUN apt-get update && apt-get install -y \
     ccache \
     curl \
     bsdmainutils \
-    libelf-dev
+    libelf-dev \
+    cpio
