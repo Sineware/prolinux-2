@@ -7,6 +7,7 @@ echo "~ Sineware Kernel + Init Build System for ProLinux ~"
 KERNEL_DIR=$(pwd)/kernel
 SOURCES_DIR=$(pwd)/sources
 OUTPUT_DIR=$(pwd)/output
+mkdir -pv $KERNEL_DIR $SOURCES_DIR $OUTPUT_DIR
 
 mkdir -pv $KERNEL_DIR/ccache $KERNEL_DIR/work
 

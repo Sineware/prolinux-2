@@ -19,17 +19,27 @@ ccache --max-size=10G
 echo "max_size = 10.0G" > /etc/ccache.conf
 
 make mrproper
-make defconfig
 
-# add PMOS config to existing defconfig
-curl https://gitlab.com/postmarketOS/pmaports/-/raw/master/device/testing/linux-next/pmos.config -o pmos.config
-cat pmos.config >> .config
 
-curl https://gitlab.com/postmarketOS/pmaports/-/raw/master/device/testing/linux-next/devices.config -o devices.config
-cat devices.config >> .config
+ARCH=$(uname -m)
+if [ "$ARCH" == "aarch64" ]; then
+    echo "Applying ARM64 config"
+    make defconfig
 
-# Add our custom config, prolinux.arm64.config
-cat /kernel/prolinux.arm64.config >> .config
+    # add PMOS config to existing defconfig
+    curl https://gitlab.com/postmarketOS/pmaports/-/raw/master/device/testing/linux-next/pmos.config -o pmos.config
+    cat pmos.config >> .config
+
+    curl https://gitlab.com/postmarketOS/pmaports/-/raw/master/device/testing/linux-next/devices.config -o devices.config
+    cat devices.config >> .config
+
+    # Add our custom config, prolinux.arm64.config
+    cat /kernel/prolinux.arm64.config >> .config
+else
+    echo "Applying x86_64 config"
+    cat /kernel/prolinux.x86_64.config > .config
+fi
+
 
 make -j$(nproc) LOCALVERSION=-sineware CC="ccache gcc" CXX="ccache g++"
 
@@ -46,8 +56,8 @@ fi
 
 # output kernel modules to /output/
 mkdir -pv /output/modules /output/dtbs
-make modules_install INSTALL_MOD_PATH=/output/modules
-make dtbs_install INSTALL_DTBS_PATH=/output/dtbs
+make modules_install INSTALL_MOD_PATH=/output/modules INSTALL_MOD_STRIP=1
+# make dtbs_install INSTALL_DTBS_PATH=/output/dtbs
 
 # cleanup
 rm -rf /output/modules/lib/modules/*/build /output/modules/lib/modules/*/source

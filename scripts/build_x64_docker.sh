@@ -6,4 +6,6 @@ if [ ! -f package.json ]; then
   exit 1
 fi
 
+cd prolinux-kernel-init && ./build.sh && cd ..
+
 docker run --rm --privileged=true -t -v /dev:/dev -v $(pwd):/home/user/prolinux-2 sineware/prolinux-sdk:latest bash -c "cd /home/user/prolinux-2 && ./scripts/unmount.sh && ./scripts/build_x64.sh"
