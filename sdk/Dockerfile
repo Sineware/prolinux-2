@@ -24,6 +24,8 @@ RUN pacman-key --init && pacman-key --populate archlinux && pacman -Syy --noconf
     parted \
     squashfs-tools \
     python-setuptools \
+    dosfstools \
+    e2fsprogs \
     && \
     pacman -Scc --noconfirm
 
