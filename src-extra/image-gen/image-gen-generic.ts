@@ -115,5 +115,6 @@ export function main() {
     mountPMOSImage(device);
     buildTargetStandardPMOSDeviceImage(device);
     exec(`sudo losetup -d ${loopDevice} || true`);
+    exec (`sudo chmod -R 644 ${OUTPUT_DIR}/*`);
 }
 main();
