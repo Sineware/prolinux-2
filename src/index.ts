@@ -229,7 +229,7 @@ EOF`);
     exec(`sudo arch-chroot ${ROOTFS_DIR} /bin/bash -x <<'EOF'
         mkdir /opt/pm2
         chown user:user /opt/pm2
-        echo "export PATH=/opt/nodejs/bin/:/opt/pm2/node_modules/pm2/bin/:\$PATH" >> /etc/profile
+        echo "export PATH=/opt/nodejs/bin/:/opt/pm2/node_modules/pm2/bin/:\\$PATH" >> /etc/profile
         sudo -u user bash << EOFSU
             echo "Setting up pm2..."
             export PATH=/opt/nodejs/bin/:$PATH

@@ -28,7 +28,7 @@ StartLimitBurst=5
 StartLimitIntervalSec=30
 
 [Service]
-ExecStart=/opt/kde/usr/lib/libexec/startplasmamobile-dev.sh
+ExecStart=/opt/kde/usr/lib/libexec/startplasma-dev.sh mobile
 TimeoutStartSec=30
 User=1000
 PAMName=login
