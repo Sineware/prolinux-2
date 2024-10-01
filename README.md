@@ -12,14 +12,13 @@ ProLinux builds on the work of other open source projects,
 - [DanctNIX](https://github.com/dreemurrs-embedded)
 - and many more!
 
-## Plasma Mobile Nightly
-Currently the only edition available is the Plasma Mobile Nightly Edition, which is a developer/testing/fun focused OS, 
-building the current state of Plasma Mobile from upstream git main/master using kdesrc-build. It is in some ways the successor to the original 
-Alpine/postmarketOS based Plasma Mobile Nightly repository.
-
-ProLinux 2 Plasma Mobile Nightly Edition piggy-backs on parts of postmarketOS (initramfs, kernel) using pmbootstrap to target devices.
+## Editions
+- mobile
+- embedded (aka Desktop)
+- server
 
 ### Build requirements
+(currently on x64 hosts, most of these requirements are built into a sdk docker image used for building)
 - node, npm
 - cloud-utils
 - pmbootstrap
@@ -35,6 +34,7 @@ ProLinux 2 Plasma Mobile Nightly Edition piggy-backs on parts of postmarketOS (i
 - parted
 - squashfs
 - grub2, grub2-efi, grub2-efi-aa64-modules, grub2-tools, grub2-tools-extra
+- python3 (aliased to python)
 - *pip install gpt-image*
 
 `/sbin:/usr/sbin` in PATH
@@ -52,6 +52,9 @@ MUSL_TOOLCHAIN=
 PROLINUX_VARIANT=mobile
 PROLINUX_CHANNEL=dev
 
+# defines what device to target (sineware-x64 or sineware-arm64)
+TARGET_DEVICE=sineware-x64
+
 # Only used by update-deployer
 PGUSER=
 PGHOST=
@@ -62,24 +65,47 @@ PGPORT=
 PRIVATE_KEY=
 ```
 
-Then run:
+Then (on x64 build hosts) run:
 ```sh
-git submodule update --init
-npm install
-TARGET_DEVICE=generic-x86_64 npm run build
-TARGET_DEVICE=generic-x86_64 npm run gen-image
+mkdir -pv output build
+npm ci
+./scripts/build_x64_docker.sh
 ```
 
-(For x64, also run `npm run gen-kernel` before build)
+or on arm64 build hosts:
+```sh
+mkdir -pv output build
+npm ci
+./scripts/build_arm64.sh
+```
 
 This will (if successful) produce a image in "output/".
 
-TARGET_DEVICE is a postmarketOS device string. Currently only "simple" devices are supported (ones that produce a flashable image, not android sparse images. i.e. pine64-pinephone).
+<!--TARGET_DEVICE is a postmarketOS device string. Currently only "simple" devices are supported (ones that produce a flashable image, not android sparse images. i.e. pine64-pinephone).-->
 
 Cross-compiling is not supported, arm64 targets must be built on arm64 devices. You need at least 64GB of free disk space.
 
 
-### QEMU (generic-x86_64 testing)
+### QEMU (sineware-x64 testing)
 ```sh
 qemu-system-x86_64 --enable-kvm -m 4G -smp 4 -device virtio-tablet-pci -device virtio-keyboard-pci -device virtio-vga-gl -display gtk,gl=on -drive if=pflash,format=raw,readonly=on,file=/usr/share/edk2-ovmf/x64/OVMF_CODE.fd -drive id=disk,file=output/generic-x86_64.img,if=none -device ahci,id=ahci -device ide-hd,drive=disk,bus=ahci.0 -netdev user,id=net0,hostfwd=tcp::8022-:22 -device virtio-net-pci,netdev=net0
+```
+### QEMU (sineware-arm64 testing)
+```sh
+qemu-system-aarch64 
+    -machine virt 
+    -cpu host 
+    -smp 2 
+    -m 2048 
+    -drive if=pflash,format=raw,file=/usr/share/edk2/aarch64/QEMU_EFI-pflash.raw,readonly=on 
+    -serial stdio 
+    -display gtk,gl=on 
+    -device virtio-gpu-pci 
+    -device qemu-xhci,id=usb,bus=pcie.0,addr=0x3 
+    -device usb-kbd 
+    -device usb-tablet 
+    -device virtio-scsi-device,id=scsi 
+    -drive file=sineware-arm64.img,format=raw,if=none,id=hd0 
+    -device scsi-hd,drive=hd0 
+    -enable-kvm
 ```
