@@ -92,20 +92,20 @@ qemu-system-x86_64 --enable-kvm -m 4G -smp 4 -device virtio-tablet-pci -device v
 ```
 ### QEMU (sineware-arm64 testing)
 ```sh
-qemu-system-aarch64 
-    -machine virt 
-    -cpu host 
-    -smp 2 
-    -m 2048 
-    -drive if=pflash,format=raw,file=/usr/share/edk2/aarch64/QEMU_EFI-pflash.raw,readonly=on 
-    -serial stdio 
-    -display gtk,gl=on 
-    -device virtio-gpu-pci 
-    -device qemu-xhci,id=usb,bus=pcie.0,addr=0x3 
-    -device usb-kbd 
-    -device usb-tablet 
-    -device virtio-scsi-device,id=scsi 
-    -drive file=sineware-arm64.img,format=raw,if=none,id=hd0 
-    -device scsi-hd,drive=hd0 
+qemu-system-aarch64 \
+    -machine virt \
+    -cpu host \
+    -smp 2 \
+    -m 2048 \
+    -drive if=pflash,format=raw,file=/usr/share/edk2/aarch64/QEMU_EFI-pflash.raw,readonly=on \
+    -serial stdio \
+    -display gtk,gl=on \
+    -device virtio-gpu-pci \
+    -device qemu-xhci,id=usb,bus=pcie.0,addr=0x3 \
+    -device usb-kbd \
+    -device usb-tablet \
+    -device virtio-scsi-device,id=scsi \
+    -drive file=output/sineware-arm64.img,format=raw,if=none,id=hd0 \
+    -device scsi-hd,drive=hd0 \
     -enable-kvm
 ```
