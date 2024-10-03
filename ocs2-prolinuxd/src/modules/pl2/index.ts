@@ -19,7 +19,14 @@ async function setHostname() {
 }
 async function startDeviceSpecificServices() {
     const prolinuxInfo = await getProLinuxInfo();
-    log.info("Running on platform '" + prolinuxInfo.deviceinfoCodename + "'");
+    // Since sineware-arm64 is a generic image, detect models at runtime
+    let model = "unknown";
+    try {
+        model = fs.readFileSync("/sys/firmware/devicetree/base/model", "utf-8");
+    } catch(e: any) {
+        log.error("Failed to read model from /sys/firmware/devicetree/base/model: " + e.message);
+    }
+    log.info("Running on platform '" + prolinuxInfo.deviceinfoCodename + "' with model '" + model + "'");
 
     const SDM845Devices = [
         "oneplus-enchilada",
@@ -40,12 +47,15 @@ async function startDeviceSpecificServices() {
         await runCmd("systemctl", ["start", "tqftpserv"]);
         await runCmd("systemctl", ["start", "ModemManager"]);
     }
-
-    if(prolinuxInfo.deviceinfoCodename === "pine64-pinephone" || prolinuxInfo.deviceinfoCodename === "pine64-pinephonepro") {
-        log.info("Starting Pinephone(Pro) Support Services...");
+    
+    // PinePhone/PinePhone Pro
+    if(model.includes("Pine64")) {
+        log.info("Starting EG25 Modem Support Services...");
         await runCmd("systemctl", ["start", "eg25-manager"]);
         await runCmd("systemctl", ["start", "ModemManager"]);
     }
+
+
 
 }
 async function startPasswordService() {
