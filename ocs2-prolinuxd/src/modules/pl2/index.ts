@@ -20,20 +20,17 @@ async function setHostname() {
 async function startDeviceSpecificServices() {
     const prolinuxInfo = await getProLinuxInfo();
     // Since sineware-arm64 is a generic image, detect models at runtime
-    let model = "unknown";
+    let compatible = "unknown";
     try {
-        model = fs.readFileSync("/sys/firmware/devicetree/base/model", "utf-8");
+        compatible = fs.readFileSync("/sys/firmware/devicetree/base/compatible", "utf-8");
     } catch(e: any) {
-        log.error("Failed to read model from /sys/firmware/devicetree/base/model: " + e.message);
+        log.error("Failed to read compatible from /sys/firmware/devicetree/base/compatible: " + e.message);
     }
-    log.info("Running on platform '" + prolinuxInfo.deviceinfoCodename + "' with model '" + model + "'");
+    log.info("Running on platform '" + prolinuxInfo.deviceinfoCodename + "' with comaptible '" + compatible + "'");
 
-    const SDM845Devices = [
-        "oneplus-enchilada",
-        "xiaomi-beryllium",
-    ]
+
     // SDM845 Modem Support
-    if(SDM845Devices.includes(prolinuxInfo.deviceinfoCodename)) {
+    if(compatible.includes("qcom,sdm845")) {
         log.info("Starting SDM845 Support Services...");
         // append "test-quick-suspend-resume" argument to ExecStart for ModemManager /usr/lib/systemd/system/ModemManager.service
         // making sure it doesn't already exist
@@ -49,14 +46,11 @@ async function startDeviceSpecificServices() {
     }
     
     // PinePhone/PinePhone Pro
-    if(model.includes("Pine64")) {
+    if(compatible.includes("pine64,pinephone") || compatible.includes("pine64,pinephone-pro")) {
         log.info("Starting EG25 Modem Support Services...");
         await runCmd("systemctl", ["start", "eg25-manager"]);
         await runCmd("systemctl", ["start", "ModemManager"]);
     }
-
-
-
 }
 async function startPasswordService() {
     // Start password service
