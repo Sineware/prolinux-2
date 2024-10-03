@@ -24,17 +24,16 @@ make mrproper
 ARCH=$(uname -m)
 if [ "$ARCH" == "aarch64" ]; then
     echo "Applying ARM64 config"
-    make defconfig
 
-    # add PMOS config to existing defconfig
-    curl https://gitlab.com/postmarketOS/pmaports/-/raw/master/device/testing/linux-next/pmos.config -o pmos.config
-    cat pmos.config >> .config
+    # add PMOS config
+    curl https://gitlab.com/postmarketOS/pmaports/-/raw/master/device/testing/linux-next/pmos.config -o arch/arm64/configs/pmos.config
 
-    curl https://gitlab.com/postmarketOS/pmaports/-/raw/master/device/testing/linux-next/devices.config -o devices.config
-    cat devices.config >> .config
+    curl https://gitlab.com/postmarketOS/pmaports/-/raw/master/device/testing/linux-next/devices.config -o arch/arm64/configs/devices.config
 
     # Add our custom config, prolinux.arm64.config
-    cat /kernel/prolinux.arm64.config >> .config
+    cp /kernel/prolinux.arm64.config arch/arm64/configs/prolinux.arm64.config
+
+    make ARCH=arm64 defconfig pmos.config devices.config prolinux.arm64.config
 else
     echo "Applying x86_64 config"
     cat /kernel/prolinux.x86_64.config > .config
@@ -49,9 +48,10 @@ mkdir -pv /output
 rm -rf /output/*
 ARCH=$(uname -m)
 if [ "$ARCH" == "aarch64" ]; then
-    cp arch/arm64/boot/Image /output/Image
+    cp arch/arm64/boot/vmlinuz.efi /output/Image
+    # todo vmlinuz.efi
 else
-    cp arch/x86_64/boot/bzImage /output/Image
+    cp arch/x86_64/boot/vmlinuz.efi /output/Image
 fi
 
 # output kernel modules to /output/
