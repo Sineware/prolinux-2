@@ -110,8 +110,11 @@ subscribe(state.config, () => {
     fs.writeFileSync(process.env.CONFIG_FILE ?? path.join(__dirname, "prolinux.toml"), TOML.stringify(state.config as any, {
         newline: "\n"
     }));
-    // todo update grub-source.cfg
-    
+    console.log("Updating grub source...");
+    let grubSource = fs.readFileSync("/sineware/data/grub-source.cfg", "utf-8");
+    grubSource = grubSource.replace(/set selected_root=".*"/, `set selected_root="${state.config.pl2.selected_root}"`);
+    console.log("Writing grub source...");
+    fs.writeFileSync("/sineware/data/grub-source.cfg", grubSource);
 });
 subscribe(state.extraConfig, () => {
     log.info("[State] Extra Config updated, saving to disk...");
