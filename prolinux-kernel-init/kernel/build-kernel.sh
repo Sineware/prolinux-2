@@ -51,7 +51,7 @@ if [ "$ARCH" == "aarch64" ]; then
     cp arch/arm64/boot/vmlinuz.efi /output/Image
     # todo vmlinuz.efi
 else
-    cp arch/x86_64/boot/vmlinuz.efi /output/Image
+    cp arch/x86_64/boot/bzImage /output/Image
 fi
 
 # output kernel modules to /output/
